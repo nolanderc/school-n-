@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Backend">
+      <UniqueIdentifier>{7c64f99d-122b-4447-a781-4bec122e756a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Collision">
+      <UniqueIdentifier>{24df51d4-2948-48e1-acef-6ab0d81fcd8c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{2e1ab674-4a36-49d4-9017-3f465c1d518b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{42cf183a-f962-4474-bb91-cab1963eef2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Ninja">
+      <UniqueIdentifier>{495aca49-43e3-43c4-be02-b139afff4942}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Level">
+      <UniqueIdentifier>{837384eb-8297-4604-8674-3ecbec47fc33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{bb74492a-0ae1-49b1-9c6c-24bbd01bcc33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Level\Tiles">
+      <UniqueIdentifier>{1428695b-29d6-4416-896b-713b93a5b999}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Effects">
+      <UniqueIdentifier>{87ff7454-94f7-4bd3-a33a-66706f269a04}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Menu">
+      <UniqueIdentifier>{eb9362b3-c5af-4ad3-bf2e-7a18061cfe04}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="App.cpp">
+      <Filter>Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="Bitmap.cpp">
+      <Filter>Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="Window.cpp">
+      <Filter>Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="ConvexHull.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Level.cpp">
+      <Filter>Game\Level</Filter>
+    </ClCompile>
+    <ClCompile Include="NinjaGame.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Ninja.cpp">
+      <Filter>Game\Ninja</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="BoundingBox.cpp">
+      <Filter>Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Interpolate.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtil.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="SolidTiles.cpp">
+      <Filter>Game\Level\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionalTiles.cpp">
+      <Filter>Game\Level\Tiles</Filter>
+    </ClCompile>
+    <ClCompile Include="Explosion.cpp">
+      <Filter>Game\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="NumberUtil.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
+    <ClCompile Include="Evaporation.cpp">
+      <Filter>Game\Effects</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuApp.cpp">
+      <Filter>Menu</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Window.h">
+      <Filter>Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="Bitmap.h">
+      <Filter>Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="App.h">
+      <Filter>Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="ConvexHull.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Linear.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Level.h">
+      <Filter>Game\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="NinjaGame.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Ninja.h">
+      <Filter>Game\Ninja</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingBox.h">
+      <Filter>Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpolate.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="StringUtil.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="SolidTiles.h">
+      <Filter>Game\Level\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Tiles.h">
+      <Filter>Game\Level\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="Tile.h">
+      <Filter>Game\Level\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionalTiles.h">
+      <Filter>Game\Level\Tiles</Filter>
+    </ClInclude>
+    <ClInclude Include="VectorUtil.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Explosion.h">
+      <Filter>Game\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="Effect.h">
+      <Filter>Game\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="NumberUtil.h">
+      <Filter>Util</Filter>
+    </ClInclude>
+    <ClInclude Include="Evaporation.h">
+      <Filter>Game\Effects</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuApp.h">
+      <Filter>Menu</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
