@@ -10,6 +10,8 @@ class Tile : public Collider
 {
 public:
 
+	virtual ~Tile() = default;
+
 	// Skapar en kopia av detta block
 	virtual Tile* clone() = 0;
 

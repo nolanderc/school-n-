@@ -83,6 +83,8 @@ public:
 	Ninja();
 	Ninja(Vector2i start);
 
+	~Ninja();
+
 
 	// Anger att ninjan ska röra sig åt ett håll nästa uppdatering
 	void move(NinjaMovement movement);

@@ -10,6 +10,15 @@ double lerp(double value, T min, T max) {
 }
 
 
+// Omvandla en parameter i intervallet [0, 1] till intervallet [min, max]
+// Detta sker "mjukare"/långsammare närmare 0 och 1
+template<class T>
+double easeInOut(double value, T min, T max) {
+	return lerp(3 * value*value - 2 * value*value, min, max);
+}
+
+
+
 // Omvandla en parameter i intervallet [inMin, inMax] till intervallet [0, 1]
 double normalize(double value, double inMin, double inMax);
 

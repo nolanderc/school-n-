@@ -117,6 +117,26 @@ Vector2* ConvexHull::overlap(const ConvexHull & other) const
 	return smallestOverlap;
 }
 
+bool ConvexHull::contains(Vector2 point)
+{
+	int axisCount = this->normals.size();
+	for (int i = 0; i < axisCount; i++)
+	{
+		Vector2 axis = this->normals[i];
+
+		double selfMin, selfMax;
+		projectPoints(axis, this->points, &selfMin, &selfMax);
+
+		double pointProj = axis.dot(point);
+
+		if (selfMin > pointProj || pointProj > selfMax) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
 void projectPoints(Vector2 axis, const std::vector<Vector2>& points, double * min, double * max)
 {
 	int pointCount = points.size();

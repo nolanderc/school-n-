@@ -4,13 +4,24 @@
 
 class Bitmap
 {
+	// Bitmapsbilden
 	HBITMAP handle;
 
+	// Bildens storlek
 	SIZE size;
+
+
+	// Hur många kopior av denna bild som finns
+	int* copies;
 
 public:
 
 	Bitmap();
+	~Bitmap();
+
+	// En kopia skapas av en bild
+	Bitmap(Bitmap& source);
+	void operator=(Bitmap& source);
 
 	Bitmap(HBITMAP dc, SIZE size);
 

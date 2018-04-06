@@ -1,6 +1,6 @@
 #pragma once
 
-#include <istream>
+#include <fstream>
 #include <sstream>
 
 #include "ConvexHull.h"
@@ -48,8 +48,11 @@ public:
 
 	Level(int width, int height);
 
-	// Skapar en nivå ifrån en ström av bokstäver i ett "lvl" format
-	Level(std::istream& stream);
+	// Skapar en nivå ifrån en fil i ett "lvl" format
+	Level(std::string path);
+
+
+	~Level();
 
 
 	// Startar om nivån
@@ -159,5 +162,13 @@ private:
 // Gör en kopia av alla block i en vector
 std::vector<Tile*> cloneTiles(const std::vector<Tile*>& source);
 
-// Radera alla block i en vector
-void deleteTiles(std::vector<Tile*>& source);
+// Radera alla element i en vector
+template<class T>
+void deleteVectorElements(std::vector<T*>& source) {
+	int count = source.size();
+	for (int i = 0; i < count; i++){
+		delete source[i];
+	}
+
+	source.clear();
+}

@@ -48,6 +48,10 @@ public:
 
 	// Returnerar en vektor som förflyttar två konvexa skal ur varandra
 	Vector2* overlap(const ConvexHull& other) const;
+
+
+	// Avgör om en punkt finns innuti detta skal
+	bool contains(Vector2 point);
 };
 
 

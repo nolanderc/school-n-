@@ -7,11 +7,41 @@
 Bitmap::Bitmap()
 {
 	this->handle = NULL;
+	this->copies = new int(1);
+}
+
+Bitmap::~Bitmap()
+{
+	*this->copies -= 1;
+	if (*this->copies == 0)
+	{
+		delete this->copies;
+		DeleteObject(this->handle);
+	}
+}
+
+Bitmap::Bitmap(Bitmap& source)
+{
+	this->handle = source.handle;
+	this->size = source.size;
+	this->copies = source.copies;
+
+	*this->copies += 1;
+}
+
+void Bitmap::operator=(Bitmap& source)
+{
+	this->handle = source.handle;
+	this->size = source.size;
+	this->copies = source.copies;
+
+	*this->copies += 1;
 }
 
 Bitmap::Bitmap(HBITMAP bitmap, SIZE size) :
 	size(size), handle(bitmap)
 {
+	this->copies = new int(1);
 }
 
 

@@ -31,15 +31,15 @@
     <Filter Include="Menu">
       <UniqueIdentifier>{eb9362b3-c5af-4ad3-bf2e-7a18061cfe04}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Menu\Buttons">
+      <UniqueIdentifier>{1444b659-4b6d-4c86-b03c-6d0649a9cd29}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
       <Filter>Backend</Filter>
     </ClCompile>
     <ClCompile Include="Bitmap.cpp">
-      <Filter>Backend</Filter>
-    </ClCompile>
-    <ClCompile Include="Button.cpp">
       <Filter>Backend</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp">
@@ -91,15 +91,18 @@
     <ClCompile Include="MenuApp.cpp">
       <Filter>Menu</Filter>
     </ClCompile>
+    <ClCompile Include="MenuButtons.cpp">
+      <Filter>Menu\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuButton.cpp">
+      <Filter>Menu\Buttons</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
       <Filter>Backend</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
-      <Filter>Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="Button.h">
       <Filter>Backend</Filter>
     </ClInclude>
     <ClInclude Include="Bitmap.h">
@@ -164,6 +167,12 @@
     </ClInclude>
     <ClInclude Include="MenuApp.h">
       <Filter>Menu</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuButtons.h">
+      <Filter>Menu\Buttons</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuButton.h">
+      <Filter>Menu\Buttons</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

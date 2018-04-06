@@ -1,6 +1,8 @@
 #include "Window.h"
 #include "NinjaGame.h"
 
+#include "MenuApp.h"
+
 #include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
@@ -8,12 +10,12 @@
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev, LPSTR cmdLine, int nCmdShow)
 {
-	if (false) {
+#if 0
 		AllocConsole();
 		AttachConsole(GetCurrentProcessId());
 		FILE* file;
 		freopen_s(&file, "CON", "w", stdout);
-	}
+#endif
 
 
 	UNREFERENCED_PARAMETER(hInstance);
@@ -24,8 +26,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev, LPSTR cmdLine, int nCmd
 
 	srand(time(nullptr));
 
-	NinjaGame game;
-	game.run();
+	MenuApp menu;
+	menu.run();
 }
 
 

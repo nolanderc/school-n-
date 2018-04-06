@@ -1,26 +1,21 @@
 #include "NinjaGame.h"
 
-#include <fstream>
-
-
-NinjaGame::NinjaGame() : 
-	App(3 * TILE_SIZE, 3 * TILE_SIZE, "N++"), 
-	level(0, 0)
+NinjaGame::NinjaGame(App* parent) :
+	App(parent), level("levels/level0.lvl"), selectedTile(nullptr)
 {
 	currentTile = new CoinTile();
+	
+	this->setWindowTitle("N++");
+	this->setWindowSize(level.getWidth() * TILE_SIZE, level.getHeight() * TILE_SIZE);
 
 	levelBitmap = this->createCompatibleBitmap(this->getWindowSize());
 	this->renderLevel = true;
+}
 
-	std::ifstream file("levels/level0.lvl");
-	if (file.is_open())
-	{
-		level = Level(file);
-		this->setWindowSize(level.getWidth() * TILE_SIZE, level.getHeight() * TILE_SIZE);
-	} else
-	{
-		MessageBox(NULL, "Failed to open 'level0.lvl'", "Error", MB_OK | MB_ICONERROR);
-	}
+NinjaGame::~NinjaGame()
+{
+	delete this->currentTile;
+	delete this->selectedTile;
 }
 
 void NinjaGame::update(float dt)

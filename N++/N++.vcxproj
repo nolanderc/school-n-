@@ -152,7 +152,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Bitmap.cpp" />
     <ClCompile Include="BoundingBox.cpp" />
-    <ClCompile Include="Button.cpp" />
+    <ClCompile Include="MenuButtons.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="ConvexHull.cpp" />
     <ClCompile Include="Evaporation.cpp" />
@@ -162,6 +162,7 @@
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MenuApp.cpp" />
+    <ClCompile Include="MenuButton.cpp" />
     <ClCompile Include="NinjaGame.cpp" />
     <ClCompile Include="Ninja.cpp" />
     <ClCompile Include="NumberUtil.cpp" />
@@ -174,7 +175,7 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="Bitmap.h" />
     <ClInclude Include="BoundingBox.h" />
-    <ClInclude Include="Button.h" />
+    <ClInclude Include="MenuButtons.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="ConvexHull.h" />
     <ClInclude Include="Effect.h" />
@@ -185,6 +186,7 @@
     <ClInclude Include="Level.h" />
     <ClInclude Include="Linear.h" />
     <ClInclude Include="MenuApp.h" />
+    <ClInclude Include="MenuButton.h" />
     <ClInclude Include="NinjaGame.h" />
     <ClInclude Include="Ninja.h" />
     <ClInclude Include="NumberUtil.h" />

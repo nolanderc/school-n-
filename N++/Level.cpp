@@ -8,17 +8,32 @@ Level::Level(int width, int height) :
 	this->spawnNinja();
 }
 
-Level::Level(std::istream& stream) :
+Level::Level(std::string path) :
 	ninja(nullptr), needsRedraw(true)
 {
-	this->parseLVL(stream);
+	std::ifstream file(path);
+
+	if (file.is_open())
+	{
+		this->parseLVL(file);
+		file.close();
+	}
 
 	this->spawnNinja();
 }
 
+Level::~Level()
+{
+	delete this->ninja;
+	deleteVectorElements(this->tiles);
+	deleteVectorElements(this->originalTiles);
+	deleteVectorElements(this->effects);
+}
+
 void Level::reset()
 {
-	deleteTiles(this->tiles);
+	deleteVectorElements(this->tiles);
+	deleteVectorElements(this->effects);
 	this->interactingTiles.clear();
 
 	this->tiles = cloneTiles(this->originalTiles);
@@ -401,13 +416,3 @@ std::vector<Tile*> cloneTiles(const std::vector<Tile*>& source)
 }
 
 
-void deleteTiles(std::vector<Tile*>& source)
-{
-	int tileCount = source.size();
-	for (int i = 0; i < tileCount; i++)
-	{
-		delete source[i];
-	}
-
-	source.clear();
-}

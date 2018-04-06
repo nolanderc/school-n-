@@ -23,7 +23,10 @@ class NinjaGame: public App
 
 
 public:
-	NinjaGame();
+
+	NinjaGame(App* parent);
+
+	~NinjaGame();
 
 
 	void update(float dt) override;

@@ -8,11 +8,25 @@ class App: public WindowEventHandler
 {
 	// Fönstret appen befinner sig i 
 	Window* window;
-	
+
+	// Den önskade storleken på fönstret
+	SIZE preferredWindowSize;
+
+
+	// Appen som "äger" denna app
+	App* parent;
+
+	// Körs appen fortfarande?
+	bool running;
+
+
+	// En app som denna app "äger"
+	App* child;
+
 public:
 
-	// Skapa en ny app i ett annat fönster.
-	App(Window* window);
+	// Skapa en ny app innuti en annan app
+	App(App* parent);
 
 	// Skapa en ny app i ett nytt fönster.
 	App(int width, int height, std::string title);
@@ -46,8 +60,8 @@ protected:
 	// Hantera att muspekaren rörde sig
 	void mouseMoved(int x, int y) override {}
 
-	// Anger att appen borde ritas om.
-	// Används när en app ritas om sällan
+	
+	// Anropas när delar av fönstret har försvunnit och måste ritas om
 	virtual void redraw() {}
 
 
@@ -69,6 +83,9 @@ protected:
 	// Skapar en bitmap som är kompatibel med fönstret
 	Bitmap createCompatibleBitmap(SIZE size);
 
+
+	// Anger att en ny app ska köras innuti denna app
+	void addChild(App* child);
 
 private:
 

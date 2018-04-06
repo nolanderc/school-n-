@@ -30,6 +30,12 @@ Ninja::Ninja(Vector2i start) :
 	skeleton = this->getSkeleton();
 }
 
+Ninja::~Ninja()
+{
+	delete this->groundNormal;
+	delete this->wallNormal;
+}
+
 void Ninja::move(NinjaMovement movement)
 {
 	switch (movement)

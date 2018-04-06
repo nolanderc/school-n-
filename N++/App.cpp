@@ -1,12 +1,13 @@
 #include "App.h"
 
-App::App(Window* window) :
-	window(window)
+
+App::App(App* parent) :
+	window(parent->window), parent(parent), running(true)
 {
 }
 
 App::App(int width, int height, std::string title) :
-	window(new Window(width, height, title))
+	window(new Window(width, height, title)), preferredWindowSize({width, height}), running(true)
 {
 	this->window->show(SW_SHOW);
 	this->window->setEventHandler(this);
@@ -15,7 +16,7 @@ App::App(int width, int height, std::string title) :
 
 void App::run()
 {
-	while (window->isOpen()) {
+	while (window->isOpen() && this->running) {
 		window->pollMessages();
 
 		static std::chrono::time_point<std::chrono::high_resolution_clock> previousInstant = std::chrono::high_resolution_clock::now();
@@ -33,12 +34,30 @@ void App::run()
 
 			previousInstant = now;
 		//}
+
+
+		if (this->child) {
+			this->window->setEventHandler(this->child);
+			this->child->run();
+			delete this->child;
+			this->child = nullptr;
+
+			this->setWindowSize(preferredWindowSize.cx, preferredWindowSize.cy);
+		}
 	}
 }
 
 void App::close()
 {
-	this->window->close();
+	this->running = false;
+
+	if(this->parent)
+	{
+		this->window->setEventHandler(parent);
+	} else
+	{
+		this->window->close();
+	}
 }
 
 void App::repaint()
@@ -55,6 +74,7 @@ SIZE App::getWindowSize()
 void App::setWindowSize(int width, int height)
 {
 	this->window->setSize(width, height);
+	this->preferredWindowSize = { width, height };
 }
 
 void App::setWindowTitle(std::string title)
@@ -72,6 +92,16 @@ Bitmap App::createCompatibleBitmap(SIZE size)
 {
 	return this->window->createCompatibleBitmap(size);
 }
+
+void App::addChild(App* child)
+{
+	if(this->child) {
+		delete this->child;
+	}
+
+	this->child = child;
+}
+
 
 void App::renderApplication()
 {
