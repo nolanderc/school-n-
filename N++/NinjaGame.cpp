@@ -3,7 +3,7 @@
 NinjaGame::NinjaGame(App* parent) :
 	App(parent), level("levels/level0.lvl"), selectedTile(nullptr)
 {
-	currentTile = new CoinTile();
+	currentTile = new SquareTile();
 	
 	this->setWindowTitle("N++");
 	this->setWindowSize(level.getWidth() * TILE_SIZE, level.getHeight() * TILE_SIZE);

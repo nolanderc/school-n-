@@ -25,7 +25,7 @@ const Vector2 DRAG = {1.0, 0.5};
 
 const double WALL_FRICTION = 6;
 
-const double JUMP_FORCE = 5;
+const double JUMP_FORCE = 6;
 const double MAX_JUMP_DURATION = 1.0;
 
 

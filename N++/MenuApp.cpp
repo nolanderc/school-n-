@@ -68,9 +68,9 @@ void MenuApp::mousePressed(MouseButton button, int x, int y)
 	int buttonCount = this->buttons.size();
 	for (int i = 0; i < buttonCount; i++)
 	{
-		MenuButton* button = this->buttons[i];
-		if (button->contains(Vector2(x, y))) {
-			button->setHighlight(false);
+		MenuButton* menuButton = this->buttons[i];
+		if (menuButton->contains(Vector2(x, y))) {
+			menuButton->setHighlight(false);
 
 			switch (i)
 			{
