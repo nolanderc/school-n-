@@ -1,10 +1,8 @@
 #include "NinjaGame.h"
 
 NinjaGame::NinjaGame(App* parent) :
-	App(parent), level("levels/level0.lvl"), selectedTile(nullptr)
+	App(parent), level("levels/level0.lvl")
 {
-	currentTile = new SquareTile();
-	
 	this->setWindowTitle("N++");
 	this->setWindowSize(level.getWidth() * TILE_SIZE, level.getHeight() * TILE_SIZE);
 
@@ -12,11 +10,6 @@ NinjaGame::NinjaGame(App* parent) :
 	this->renderLevel = true;
 }
 
-NinjaGame::~NinjaGame()
-{
-	delete this->currentTile;
-	delete this->selectedTile;
-}
 
 void NinjaGame::update(float dt)
 {
@@ -48,43 +41,22 @@ void NinjaGame::draw(Renderer & renderer)
 
 	
 	if (this->renderLevel || this->level.needsRerender()) {
-		HDC dc = renderer.createCompatibleDC();
-		HBITMAP old = this->levelBitmap.selectInto(dc);
-
-		Renderer levelRenderer = Renderer(dc, this->levelBitmap.getSize());
+		Renderer levelRenderer = renderer.createBitmapRenderer(this->levelBitmap);
 		levelRenderer.scale(TILE_SIZE);
 
 		levelRenderer.setFillColor(255, 255, 0);
 		levelRenderer.clear();
 
 		levelRenderer.setFillColor(0, 0, 0);
-
 		level.renderStatic(levelRenderer);
 
+		DeleteDC(levelRenderer.releaseDC());
 		
-		SelectObject(dc, old);
-		DeleteDC(dc);
-
 		this->renderLevel = false;
 	}
 
 	renderer.drawBitmap(this->levelBitmap, 0, 0, this->levelBitmap.getWidth(), this->levelBitmap.getHeight(), 0, 0);
 
-
-	if (selectedTile && currentTile) {
-		renderer.setLineStyle(LineStyle::LINE_SOLID);
-		renderer.setColor(255, 0, 0);
-		renderer.setLineWidth(2.0 / TILE_SIZE);
-
-		if (level.getTile(*selectedTile)) {
-			renderer.drawLine(selectedTile->x, selectedTile->y, selectedTile->x + 1, selectedTile->y + 1);
-			renderer.drawLine(selectedTile->x, selectedTile->y + 1, selectedTile->x + 1, selectedTile->y);
-		}
-		else {
-			currentTile->setPosition(*selectedTile);
-			currentTile->render(renderer);
-		}
-	}
 
 	renderer.setColor(100, 100, 100);
 	renderer.setLineWidth(2.0 / TILE_SIZE);
@@ -124,38 +96,6 @@ void NinjaGame::keyReleased(int key)
 {
 	if (key == VK_UP) {
 		this->level.moveNinja(NINJA_CANCEL_JUMP);
-	}
-}
-
-void NinjaGame::mousePressed(MouseButton button, int x, int y)
-{
-	if (button == MOUSE_LEFT) {
-		if (selectedTile) {
-			const Tile* old = level.getTile(*selectedTile);
-
-			if (old) {
-				level.setTile(*selectedTile, nullptr);
-			}
-			else {
-				level.setTile(*selectedTile, currentTile->clone());
-			}
-		}
-
-		this->renderLevel = true;
-	}
-}
-
-void NinjaGame::mouseMoved(int x, int y)
-{
-	int tileX = x / TILE_SIZE;
-	int tileY = y / TILE_SIZE;
-
-	if (selectedTile) {
-		selectedTile->x = tileX;
-		selectedTile->y = tileY;
-	}
-	else {
-		selectedTile = new Vector2i(tileX, tileY);
 	}
 }
 

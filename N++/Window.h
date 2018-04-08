@@ -106,6 +106,7 @@ public:
 	// Stänger fönstret
 	void close();
 
+	
 
 	// Returnerar fönstrets storlek
 	SIZE getSize();

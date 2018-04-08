@@ -65,8 +65,8 @@ public:
 	Renderer(HDC target, SIZE targetSize);
 
 
-	// Skapar en DC som är kompatibel med denna ritare
-	HDC createCompatibleDC();
+	// Skapar en ny ritare som ritar till en bitmapsbild
+	Renderer createBitmapRenderer(Bitmap& bitmap);
 
 
 	// Raderar ritarens HDC

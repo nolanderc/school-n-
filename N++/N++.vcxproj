@@ -152,6 +152,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Bitmap.cpp" />
     <ClCompile Include="BoundingBox.cpp" />
+    <ClCompile Include="LevelEditor.cpp" />
     <ClCompile Include="MenuButtons.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="ConvexHull.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="Bitmap.h" />
     <ClInclude Include="BoundingBox.h" />
+    <ClInclude Include="LevelEditor.h" />
     <ClInclude Include="MenuButtons.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="ConvexHull.h" />
@@ -197,6 +199,9 @@
     <ClInclude Include="Tiles.h" />
     <ClInclude Include="VectorUtil.h" />
     <ClInclude Include="Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="levels\level0.lvl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

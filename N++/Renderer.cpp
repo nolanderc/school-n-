@@ -17,11 +17,13 @@ Renderer::Renderer(HDC target, SIZE targetSize)
 	this->coordScale = 1;
 }
 
-HDC Renderer::createCompatibleDC()
+Renderer Renderer::createBitmapRenderer(Bitmap& bitmap)
 {
-	return CreateCompatibleDC(this->target);
-}
+	HDC dc = CreateCompatibleDC(this->target);
+	bitmap.selectInto(dc);
 
+	return Renderer(dc, bitmap.getSize());
+}
 
 Renderer::~Renderer()
 {

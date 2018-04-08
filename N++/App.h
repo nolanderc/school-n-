@@ -74,7 +74,7 @@ protected:
 
 	// Ändra fönstrets rubrik/titelrad
 	void setWindowTitle(std::string title);
-
+	
 
 	// Avgör om en knapp är nedtryckt
 	bool isKeyDown(int key);

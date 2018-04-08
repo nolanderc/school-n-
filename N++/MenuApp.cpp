@@ -1,12 +1,15 @@
 ﻿#include "MenuApp.h"
 
 MenuApp::MenuApp() :
-	App(512, 512, "N++ --- Main Menu")
+	App(512, 512, "N++")
 {
 	time = 0;
 
-	this->buttons.push_back(new PlayButton({ 256, 256 }, 50));
-	this->buttons.push_back(new ExitButton({ 256, 384 }, 50));
+	this->buttons.push_back(new PlayButton({ 256 - 64, 256 }, 64));
+	this->buttons.push_back(new EditorButton({ 256 + 64, 256 }, 64));
+	this->buttons.push_back(new ExitButton({ 256, 256 + 128 * sqrt(1 - 0.5*0.5) }, 64));
+
+	this->addChild(new LevelEditor(this));
 }
 
 void MenuApp::update(float deltaTime)
@@ -57,10 +60,9 @@ void MenuApp::mouseMoved(int x, int y)
 		else
 		{
 			button->setHighlight(false);
+			button->setSelected(false);
 		}
 	}
-
-	
 }
 
 void MenuApp::mousePressed(MouseButton button, int x, int y)
@@ -70,12 +72,29 @@ void MenuApp::mousePressed(MouseButton button, int x, int y)
 	{
 		MenuButton* menuButton = this->buttons[i];
 		if (menuButton->contains(Vector2(x, y))) {
-			menuButton->setHighlight(false);
+			menuButton->setSelected(true);
+		}
+	}
+}
 
-			switch (i)
+void MenuApp::mouseReleased(MouseButton button, int x, int y)
+{
+	int buttonCount = this->buttons.size();
+	for (int i = 0; i < buttonCount; i++)
+	{
+		MenuButton* menuButton = this->buttons[i];
+		if (menuButton->contains(Vector2(x, y))) {
+			menuButton->setHighlight(false);
+			menuButton->setSelected(false);
+
+			switch (menuButton->getID())
 			{
 			case BUTTON_PLAY:
 				this->addChild(new NinjaGame(this));
+				break;
+
+			case BUTTON_EDITOR:
+				this->addChild(new LevelEditor(this));
 				break;
 
 			case BUTTON_EXIT:

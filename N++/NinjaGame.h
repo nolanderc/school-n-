@@ -10,11 +10,10 @@
 
 class NinjaGame: public App
 {
+	// Nivån
 	Level level;
 
-	Vector2i* selectedTile;
-	Tile* currentTile;
-
+	// Bitmap att rita nivån till
 	Bitmap levelBitmap;
 
 	// Borde nivån ritas om?
@@ -25,8 +24,6 @@ class NinjaGame: public App
 public:
 
 	NinjaGame(App* parent);
-
-	~NinjaGame();
 
 
 	void update(float dt) override;
@@ -39,11 +36,6 @@ protected:
 
 	void keyPressed(int key) override;
 	void keyReleased(int key) override;
-
-	void mousePressed(MouseButton button, int x, int y) override;
-
-	void mouseMoved(int x, int y) override;
-
 
 private:
 

@@ -50,6 +50,9 @@ Window::Window(int width, int height, std::string windowName)
 		return;
 	}
 
+	// Centrera fönstret
+	this->setSize(width, height);
+
 	id = getNextID();
 	windows.push_back(this);
 
@@ -80,7 +83,6 @@ void Window::close()
 	this->open = false;
 }
 
-
 SIZE Window::getSize()
 {
 	return this->size;
@@ -90,7 +92,15 @@ void Window::setSize(int width, int height)
 {
 	SIZE adjusted = adjustSize(width, height, this->style);
 
-	SetWindowPos(this->handle, NULL, 0, 0, adjusted.cx, adjusted.cy, SWP_NOMOVE);
+	SIZE screenSize;
+	screenSize.cx = GetSystemMetrics(SM_CXSCREEN);
+	screenSize.cy = GetSystemMetrics(SM_CYSCREEN);
+
+	// Centerara fönstret
+	int newX = (screenSize.cx - adjusted.cx) / 2;
+	int newY = (screenSize.cy - adjusted.cy) / 2;
+
+	SetWindowPos(this->handle, NULL, newX, newY, adjusted.cx, adjusted.cy, NULL);
 }
 
 void Window::setTitle(std::string title)

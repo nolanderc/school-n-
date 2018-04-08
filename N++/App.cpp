@@ -27,15 +27,12 @@ void App::run()
 
 		double seconds = double(dur.count()) / 1e9;
 
-		//if (seconds > 1.0 / framerate) {
-			this->update(seconds);
+		this->update(seconds);
+		this->renderApplication();
 
-			this->renderApplication();
+		previousInstant = now;
 
-			previousInstant = now;
-		//}
-
-
+		// Kör den ägda appen ifall det är möjligt
 		if (this->child) {
 			this->window->setEventHandler(this->child);
 			this->child->run();
@@ -81,6 +78,7 @@ void App::setWindowTitle(std::string title)
 {
 	this->window->setTitle(title);
 }
+
 
 bool App::isKeyDown(int key)
 {

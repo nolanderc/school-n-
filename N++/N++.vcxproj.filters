@@ -34,6 +34,9 @@
     <Filter Include="Menu\Buttons">
       <UniqueIdentifier>{1444b659-4b6d-4c86-b03c-6d0649a9cd29}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Level Editor">
+      <UniqueIdentifier>{e1d96652-0885-4c1c-ae40-0c8c9ad17dda}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
@@ -96,6 +99,9 @@
     </ClCompile>
     <ClCompile Include="MenuButton.cpp">
       <Filter>Menu\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelEditor.cpp">
+      <Filter>Level Editor</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -174,5 +180,11 @@
     <ClInclude Include="MenuButton.h">
       <Filter>Menu\Buttons</Filter>
     </ClInclude>
+    <ClInclude Include="LevelEditor.h">
+      <Filter>Level Editor</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="levels\level0.lvl" />
   </ItemGroup>
 </Project>

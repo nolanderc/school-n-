@@ -21,6 +21,18 @@ public:
 };
 
 
+class EditorButton : public MenuButton
+{
+public:
+
+	EditorButton(Vector2 position, double radius);
+
+	void renderImage(Renderer& renderer, Vector2 center, double radius) override;
+
+	int getID() override;
+};
+
+
 class ExitButton : public MenuButton
 {
 public:
