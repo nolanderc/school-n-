@@ -7,7 +7,7 @@ Ninja::Ninja() :
 {
 }
 
-Ninja::Ninja(Vector2i start) :
+Ninja::Ninja(Vector2 start) :
 	velocity(0, 0),
 	
 	groundNormal(nullptr),
@@ -123,7 +123,7 @@ void Ninja::render(Renderer & renderer)
 		renderer.setFillColor(200, 50, 200);
 	}
 	else {
-		renderer.setFillColor(50, 50, 200);
+		renderer.setFillColor(50, 200, 200);
 	}
 
 	this->hull.fill(renderer);

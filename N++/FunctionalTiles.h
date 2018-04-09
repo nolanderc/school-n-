@@ -3,7 +3,7 @@
 #include "Explosion.h"
 #include "Evaporation.h"
 
-#define MINE_RADIUS 0.2
+#define MINE_RADIUS 0.3
 
 class ExitTile : public Tile
 {

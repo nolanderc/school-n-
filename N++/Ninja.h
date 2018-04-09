@@ -81,7 +81,7 @@ class Ninja
 public:
 
 	Ninja();
-	Ninja(Vector2i start);
+	Ninja(Vector2 start);
 
 	~Ninja();
 

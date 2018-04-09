@@ -111,6 +111,12 @@ public:
 	// Ger ninjan ett kommando
 	void moveNinja(NinjaMovement move);
 
+	// Sätter positionen där ninjan börjar
+	void setNinjaSpawn(Vector2i coord);
+
+	// Returnerar positionen där ninjan börjar
+	Vector2i getNinjaSpawn();
+
 private:
 
 	Tile*& getTileRef(Vector2i coord);

@@ -12,6 +12,38 @@
 const SIZE LEVEL_SIZE = { 45, 25 };
 const SIZE LEVEL_SIZE_PIXELS = { LEVEL_SIZE.cx * TILE_SIZE, LEVEL_SIZE.cy * TILE_SIZE };
 
+const double PALETTE_MARGIN = (double(PALETTE_WIDTH_PIXELS) / TILE_SIZE - PALETTE_WIDTH) / double(PALETTE_WIDTH + 1);
+
+
+
+// Nummer som identifierar ett block
+enum TileID
+{
+	TILE_SQUARE,
+	TILE_PLAYER_START,
+	TILE_WEDGE0,
+	TILE_WEDGE1,
+	TILE_WEDGE2,
+	TILE_WEDGE3,
+	TILE_MINE_ACTIVE,
+	TILE_MINE_INACTIVE,
+	TILE_EXIT,
+	TILE_COIN
+};
+
+
+// Skapar ett nytt block ifrån ett id
+Tile* createTileFromID(TileID id);
+
+
+// Ritar ett block utifrån dess id
+void renderTileFromID(Renderer& renderer, TileID id);
+
+
+// Ritar en ninja vid en koordinat
+void renderNinja(Renderer& renderer, Vector2 position);
+
+
 class LevelEditor : public App
 {
 	// Nivån som håller på att skapas
@@ -26,7 +58,7 @@ class LevelEditor : public App
 	Vector2i selectionEnd;
 
 	// Den typ av block som är vald
-	Tile* currentTile;
+	const TileID* currentTile;
 	
 	// Vilket block muspekaren markerar
 	Vector2i* currentTileCoord;
@@ -37,7 +69,7 @@ class LevelEditor : public App
 
 
 	// En palett av alla block som kan placeras
-	std::vector<Tile*> tilePalette;
+	std::vector<TileID> tilePalette;
 
 public: 
 
@@ -64,6 +96,8 @@ private:
 	// Ritar ut paletten
 	void drawPalette(Renderer& renderer);
 
+	// Returnerar det block i paletten som finns under musens koordinater (relativt till skärmen)
+	const TileID* selectPaletteTile(Vector2i mouse);
 
 protected:
 

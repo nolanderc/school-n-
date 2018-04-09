@@ -249,6 +249,17 @@ void Level::moveNinja(NinjaMovement move)
 	}
 }
 
+void Level::setNinjaSpawn(Vector2i coord)
+{
+	this->playerStart = coord;
+	this->needsRedraw = true;
+}
+
+Vector2i Level::getNinjaSpawn()
+{
+	return this->playerStart;
+}
+
 Tile *& Level::getTileRef(Vector2i coord)
 {
 	return tiles[coord.x + coord.y * width];

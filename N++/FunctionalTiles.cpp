@@ -238,7 +238,7 @@ void ActiveMine::render(Renderer& renderer)
 
 	for (int i = 0; i < 8; i++)
 	{
-		Vector2 delta = MINE_RADIUS * Vector2::rotated(45 * i);
+		Vector2 delta = MINE_RADIUS / 1.25 * Vector2::rotated(45 * i);
 
 		renderer.drawLine(center, center + delta);
 	}
