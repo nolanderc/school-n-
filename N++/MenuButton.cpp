@@ -12,10 +12,10 @@ MenuButton::MenuButton(Vector2 position, double radius) :
 void MenuButton::update(double deltaTime)
 {
 	double delta = this->highlighted ? deltaTime : -deltaTime;
-	this->highlightAmount = clamp(this->highlightAmount + 6 * delta, 0, 1);
+	this->highlightAmount = clamp(this->highlightAmount + 6 * delta, 0.0, 1.0);
 
 	delta = this->selected ? deltaTime : -deltaTime;
-	this->selectionAmount = clamp(this->selectionAmount + 10 * delta, 0, 1);
+	this->selectionAmount = clamp(this->selectionAmount + 10 * delta, 0.0, 1.0);
 
 	double extraSize = easeInOut(this->highlightAmount, 0, -10) + easeInOut(this->selectionAmount, 0, -10);
 	this->actualRadius = this->radius + extraSize;

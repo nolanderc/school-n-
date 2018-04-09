@@ -1,12 +1,23 @@
 #pragma once
 
 // Returnera ett värde som inte är större eller mindre än ett intervall
-double clamp(double value, double min, double max);
+template <class T>
+T clamp(T value, T min, T max) {
+	if (value < min) {
+		return min;
+	}
+	else if (value > max) {
+		return max;
+	}
+	else {
+		return value;
+	}
+}
 
 // Omvandla en parameter i intervallet [0, 1] till intervallet [min, max]
 template<class T>
 double lerp(double value, T min, T max) {
-	return clamp(value, 0, 1) * (max - min) + min;
+	return clamp(value, 0.0, 1.0) * (max - min) + min;
 }
 
 

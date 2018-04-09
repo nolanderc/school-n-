@@ -227,7 +227,11 @@ LRESULT Window::windowProcedure(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 			case WM_RBUTTONUP: window->eventHandler->mouseReleased(MouseButton::MOUSE_RIGHT, LOWORD(lParam), HIWORD(lParam)); break;
 
 				// Hantera muspekaren
-			case WM_MOUSEMOVE: window->eventHandler->mouseMoved(LOWORD(lParam), HIWORD(lParam)); break;
+			case WM_MOUSEMOVE: 
+				if (LOWORD(lParam) <= window->size.cx && HIWORD(lParam) <= window->size.cy) {
+					window->eventHandler->mouseMoved(LOWORD(lParam), HIWORD(lParam)); 
+				}
+				break;
 
 
 				// Fönstret ändrade storlek

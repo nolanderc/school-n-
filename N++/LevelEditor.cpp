@@ -1,12 +1,15 @@
 ﻿#include "LevelEditor.h"
 
+
 LevelEditor::LevelEditor(App* parent) :
 	App(parent), level(LEVEL_SIZE.cx, LEVEL_SIZE.cy), grid(true)
 {
-	this->setWindowSize(LEVEL_SIZE.cx * TILE_SIZE, LEVEL_SIZE.cy * TILE_SIZE);
+	this->setWindowSize(LEVEL_SIZE_PIXELS.cx + PALETTE_WIDTH_PIXELS, LEVEL_SIZE_PIXELS.cy);
 
-	this->levelBitmap = this->createCompatibleBitmap(this->getWindowSize());
+	this->levelBitmap = this->createCompatibleBitmap(LEVEL_SIZE_PIXELS);
 	this->currentTile = new SquareTile();
+
+	this->createPalette();
 }
 
 void LevelEditor::update(float deltaTime)
@@ -18,7 +21,7 @@ void LevelEditor::draw(Renderer& renderer)
 {
 	renderer.scale(TILE_SIZE);
 
-	renderer.setFillColor(0, 255, 255);
+	renderer.setFillColor(100, 100, 100);
 	renderer.clear();
 
 	this->drawLevel(renderer);
@@ -26,7 +29,29 @@ void LevelEditor::draw(Renderer& renderer)
 	if (grid) this->drawGrid(renderer);
 
 	this->drawSelection(renderer);
+
+	renderer.offset(Vector2i{ this->level.getWidth(), 0 });
+	this->drawPalette(renderer);
 }
+
+
+void LevelEditor::createPalette()
+{
+	deleteVectorElements(this->tilePalette);
+
+	this->tilePalette.push_back(new SquareTile());
+	this->tilePalette.push_back(new ExitTile());
+
+	for (int i = 0; i < 4; i++) {
+		this->tilePalette.push_back(new WedgeTile(i));
+	}
+
+	this->tilePalette.push_back(new ActiveMine());
+	this->tilePalette.push_back(new InactiveMine());
+
+	this->tilePalette.push_back(new CoinTile());
+}
+
 
 void LevelEditor::drawLevel(Renderer& renderer)
 {
@@ -44,7 +69,14 @@ void LevelEditor::drawLevel(Renderer& renderer)
 		DeleteDC(levelRenderer.releaseDC());
 	}
 
+	// Rita nivån
 	renderer.drawBitmap(this->levelBitmap, 0, 0, this->levelBitmap.getWidth(), this->levelBitmap.getHeight(), 0, 0);
+
+	// Rita en ram runt nivån
+	renderer.setColor(0, 0, 0);
+	renderer.setLineStyle(LINE_SOLID);
+	renderer.setLineWidthAbsolute(4);
+	renderer.drawRect(0, 0, this->level.getWidth(), this->level.getHeight());
 }
 
 void LevelEditor::drawGrid(Renderer& renderer)
@@ -68,26 +100,49 @@ void LevelEditor::drawSelection(Renderer& renderer)
 {
 	if (this->currentTile)
 	{
-		renderer.setFillColor(50, 200, 200);
+		renderer.setFillColor(200, 200, 20);
 		renderer.setColor(0, 0, 255);
 		renderer.setLineStyle(LINE_SOLID);
 		renderer.setLineWidthAbsolute(2);
 
-		this->currentTile->render(renderer);
+		if (this->currentTileCoord) {
+			this->currentTile->render(renderer);
+		}
 
 		if (this->selectionStart) {
-			std::vector<Vector2i> coords = getSelectionCoords(*this->selectionStart, this->selectionEnd);
-			int coordCount = coords.size();
-			for (int i = 0; i < coordCount; i++)
-			{
-				Vector2i coord = coords[i];
-
-				this->currentTile->setPosition(coord);
-				this->currentTile->render(renderer);
-			}
+			RECT bounds = getSelectionBounds(*this->selectionStart, this->selectionEnd);
+			bounds.right += 1;
+			bounds.bottom += 1;
+			renderer.drawRect(bounds);
 		}
 	}
 }
+
+void LevelEditor::drawPalette(Renderer& renderer)
+{
+	int tileCount = this->tilePalette.size();
+
+	
+	for (int i = 0; i < tileCount; i++)
+	{
+		int x = i % PALETTE_WIDTH;
+		int y = i / PALETTE_WIDTH;
+
+		double margin = (double(PALETTE_WIDTH_PIXELS) / TILE_SIZE - 2.0) / 3.0;
+
+		this->tilePalette[i]->setPosition({ 0 });
+
+		Vector2 delta = { margin + x * (margin + 1), margin + y * (margin + 1) };
+		renderer.offset(delta);
+	
+		renderer.setFillColor(0, 0, 0);
+		renderer.setLineStyle(LINE_NONE);
+		this->tilePalette[i]->render(renderer);
+
+		renderer.offset(-delta);
+	}
+}
+
 
 
 void LevelEditor::keyPressed(int key)
@@ -104,18 +159,23 @@ void LevelEditor::keyPressed(int key)
 void LevelEditor::mouseMoved(int x, int y)
 {
 	Vector2i tileCoord = { x / TILE_SIZE, y / TILE_SIZE };
+	tileCoord.x = clamp(tileCoord.x, 0, this->level.getWidth() - 1);
+	tileCoord.y = clamp(tileCoord.y, 0, this->level.getHeight() - 1);
 	if (this->currentTile) this->currentTile->setPosition(tileCoord);
 
-	if(this->selectionStart) {
+	if (this->selectionStart) {
 		this->selectionEnd = tileCoord;
 	}
 }
 
 void LevelEditor::mousePressed(MouseButton button, int x, int y)
 {
-	if (button == MOUSE_LEFT) {
-		this->selectionStart = new Vector2i(x / TILE_SIZE, y / TILE_SIZE);
-		this->selectionEnd = *this->selectionStart;
+	if (button == MOUSE_LEFT || button == MOUSE_RIGHT) {
+		if (x < LEVEL_SIZE_PIXELS.cx && y < LEVEL_SIZE_PIXELS.cy) {
+			delete this->selectionStart;
+			this->selectionStart = new Vector2i(x / TILE_SIZE, y / TILE_SIZE);
+			this->selectionEnd = *this->selectionStart;
+		}
 	}
 }
 
@@ -126,16 +186,21 @@ void LevelEditor::mouseReleased(MouseButton button, int x, int y)
 
 		std::vector<Vector2i> coords = getSelectionCoords(*this->selectionStart, this->selectionEnd);
 		int coordCount = coords.size();
-		for (int i = 0; i < coordCount; i++)
-		{
-			Vector2i coord = coords[i];
+		for (int i = 0; i < coordCount; i++) {
+			this->level.setTile(coords[i], this->currentTile->clone());
+		}
 
-			if (this->level.getTile(coord)) {
-				this->level.setTile(coord, nullptr);
-			}
-			else {
-				this->level.setTile(coord, this->currentTile->clone());
-			}
+		delete this->selectionStart;
+		this->selectionStart = nullptr;
+	}
+
+	if (button == MOUSE_RIGHT && this->selectionStart) {
+		this->selectionEnd = { x / TILE_SIZE, y / TILE_SIZE };
+
+		std::vector<Vector2i> coords = getSelectionCoords(*this->selectionStart, this->selectionEnd);
+		int coordCount = coords.size();
+		for (int i = 0; i < coordCount; i++) {
+			this->level.setTile(coords[i], nullptr);
 		}
 
 		delete this->selectionStart;
@@ -143,18 +208,27 @@ void LevelEditor::mouseReleased(MouseButton button, int x, int y)
 	}
 }
 
+RECT getSelectionBounds(Vector2i start, Vector2i end)
+{
+	RECT bounds;
+	if (start.x < end.x) { bounds.left = start.x; bounds.right = end.x; }
+	else { bounds.left = end.x; bounds.right = start.x; }
+
+	if (start.y < end.y) { bounds.top = start.y; bounds.bottom = end.y; }
+	else { bounds.top = end.y; bounds.bottom = start.y; }
+
+	return bounds;
+}
+
 std::vector<Vector2i> getSelectionCoords(Vector2i start, Vector2i end)
 {
-	int minX, maxX, minY, maxY;
-
-	if (start.x < end.x) { minX = start.x; maxX = end.x; } else { minX = end.x; maxX = start.x; }
-	if (start.y < end.y) { minY = start.y; maxY = end.y; } else { minY = end.y; maxY = start.y; }
+	RECT bounds = getSelectionBounds(start, end);
 
 	std::vector<Vector2i> coords;
 
-	for (int x = minX; x <= maxX; x++)
+	for (int x = bounds.left; x <= bounds.right; x++)
 	{
-		for (int y = minY; y <= maxY; y++)
+		for (int y = bounds.top; y <= bounds.bottom; y++)
 		{
 			coords.push_back({ x, y });
 		}

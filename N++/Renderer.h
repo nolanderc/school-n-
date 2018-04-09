@@ -53,8 +53,11 @@ class Renderer
 	// Den tjocklek av linjer som används nu
 	int currentLineWidth;
 
-	// Hur mycket ska alla koordinater förstoras?
+	// Hur mycket alla koordinater ska förstoras
 	double coordScale;
+
+	// Hur mycket alla koordinater ska förflyttas (sker före skalning)
+	Vector2 coordOffset;
 
 	// Pekare till fönstrets storlek
 	SIZE targetSize;
@@ -77,6 +80,10 @@ public:
 
 	// Anger hur mycket ska alla koordinater förstoras
 	void scale(double scale);
+
+	// Anger hur mycket ska alla koordinater förflyttas
+	void offset(Vector2 offset);
+
 
 	// Sätter kanternas färg
 	void setColor(int r, int g, int b);
@@ -179,5 +186,9 @@ private:
 
 	// Byter pensel och raderar den gamla
 	void switchBrush(HBRUSH brush);
+
+
+	// Omvandlar en koordinat till skärmkoordinater (applicerar skalning och förflyttningar)
+	Vector2i transform(Vector2 coord);
 };
 

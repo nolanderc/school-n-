@@ -43,6 +43,11 @@ void Renderer::scale(double scale)
 	this->coordScale *= scale;
 }
 
+void Renderer::offset(Vector2 offset)
+{
+	this->coordOffset += offset;
+}
+
 void Renderer::setColor(int r, int g, int b)
 {
 	this->currentColor = RGB(r, g, b);
@@ -107,8 +112,11 @@ void Renderer::clear()
 
 void Renderer::drawLine(double x1, double y1, double x2, double y2)
 {
-	MoveToEx(this->target, round(this->coordScale * x1), round(this->coordScale * y1), NULL);
-	LineTo(this->target, round(this->coordScale * x2), round(this->coordScale * y2));
+	Vector2i start = this->transform({ x1, y1 });
+	Vector2i end = this->transform({ x2, y2 });
+
+	MoveToEx(this->target, start.x, start.y, NULL);
+	LineTo(this->target, end.x, end.y);
 }
 
 void Renderer::drawLine(Vector2 start, Vector2 end)
@@ -118,11 +126,14 @@ void Renderer::drawLine(Vector2 start, Vector2 end)
 
 void Renderer::fillRect(double x, double y, double width, double height)
 {
+	Vector2i topLeft = this->transform({ x, y });
+	Vector2i bottomRight = this->transform({ x + width, y + height });
+
 	RECT rect;
-	rect.left = round( this->coordScale * x);
-	rect.right = round( this->coordScale * (x + width));
-	rect.bottom = round( this->coordScale * (y + height));
-	rect.top = round( this->coordScale * y);
+	rect.left = topLeft.x;
+	rect.right = bottomRight.x;
+	rect.top = topLeft.y;
+	rect.bottom = bottomRight.y;
 
 	this->fillRect(rect);
 }
@@ -150,24 +161,18 @@ void Renderer::drawRect(RECT rect)
 
 void Renderer::drawCircle(double x, double y, double radius)
 {
-	double x0 = (x - radius) * coordScale;
-	double y0 = (y - radius) * coordScale;
+	Vector2i topLeft = this->transform({ x - radius, y - radius });
+	Vector2i bottomRight = this->transform({ x + radius, y + radius });
 
-	double x1 = (x + radius) * coordScale;
-	double y1 = (y + radius) * coordScale;
-
-	Arc(this->target, x0, y0, x1, y1, 0, 0, 0, 0);
+	Arc(this->target, topLeft.x, topLeft.y, bottomRight.x, bottomRight.y, 0, 0, 0, 0);
 }
 
 void Renderer::fillCircle(double x, double y, double radius)
 {
-	double x0 = (x - radius) * coordScale;
-	double y0 = (y - radius) * coordScale;
+	Vector2i topLeft = this->transform({ x - radius, y - radius });
+	Vector2i bottomRight = this->transform({ x + radius, y + radius });
 
-	double x1 = (x + radius) * coordScale;
-	double y1 = (y + radius) * coordScale;
-
-	Ellipse(this->target, x0, y0, x1, y1);
+	Ellipse(this->target, topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
 }
 
 void Renderer::fillPolygon(std::vector<POINT> points)
@@ -181,10 +186,8 @@ void Renderer::fillPolygon(std::vector<Vector2> points)
 
 	int pointCount = points.size();
 	for (int i = 0; i < pointCount; i++) {
-		POINT point;
-		point.x = round(points[i].x * this->coordScale);
-		point.y = round(points[i].y * this->coordScale);
-		newPoints.push_back(point);
+		Vector2i point = this->transform(points[i]);
+		newPoints.push_back({ point.x, point.y });
 	}
 
 	this->fillPolygon(newPoints);
@@ -202,10 +205,8 @@ void Renderer::drawPolygon(std::vector<Vector2> points)
 
 	int pointCount = points.size();
 	for (int i = 0; i < pointCount; i++) {
-		POINT point;
-		point.x = round(points[i].x * this->coordScale);
-		point.y = round(points[i].y * this->coordScale);
-		newPoints.push_back(point);
+		Vector2i point = this->transform(points[i]);
+		newPoints.push_back({ point.x, point.y });
 	}
 
 	this->drawPolygon(newPoints);
@@ -292,11 +293,14 @@ void Renderer::drawTextCentered(std::string text, RECT rect)
 
 void Renderer::drawTextCentered(std::string text, double left, double right, double top, double bottom)
 {
+	Vector2i topLeft = this->transform({ left, top });
+	Vector2i bottomRight = this->transform({ right, bottom });
+
 	RECT rect;
-	rect.left = left * this->coordScale;
-	rect.right = right * this->coordScale;
-	rect.top = top * this->coordScale;
-	rect.bottom = bottom * this->coordScale;
+	rect.left = topLeft.x;
+	rect.right = bottomRight.x;
+	rect.top = topLeft.y;
+	rect.bottom = bottomRight.y;
 
 	this->drawTextCentered(text, rect);
 }
@@ -373,4 +377,12 @@ void Renderer::switchBrush(HBRUSH brush)
 	SelectObject(this->target, brush);
 	DeleteObject(this->currentBrush);
 	this->currentBrush = brush;
+}
+
+Vector2i Renderer::transform(Vector2 coord)
+{
+	return Vector2i(
+		round((coord.x + this->coordOffset.x) * this->coordScale),
+		round((coord.y + this->coordOffset.y) * this->coordScale)
+	);
 }
