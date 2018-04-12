@@ -15,6 +15,9 @@ LevelEditor::LevelEditor(App* parent) :
 	);
 
 	this->buttons.push_back(new SaveButton(buttonPosition, BUTTONS_HEIGHT_PIXELS / 2));
+
+	buttonPosition.x += BUTTONS_HEIGHT_PIXELS;
+	this->buttons.push_back(new RunButton(buttonPosition, BUTTONS_HEIGHT_PIXELS / 2));
 }
 
 void LevelEditor::update(float deltaTime)
@@ -244,6 +247,13 @@ void LevelEditor::mouseReleased(MouseButton button, int x, int y)
 				{
 				case EDITOR_BUTTON_SAVE:
 					this->level.save("levels/customLevel.lvl");
+					break;
+
+				case EDITOR_BUTTON_RUN:
+					this->level.save("levels/customLevel.lvl");
+
+					// Starta ett spel innuti redigeraren
+					this->addChild(new NinjaGame(this, "levels/customLevel.lvl"));
 					break;
 
 				default: break;

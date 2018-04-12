@@ -23,7 +23,7 @@ class NinjaGame: public App
 
 public:
 
-	NinjaGame(App* parent);
+	NinjaGame(App* parent, std::string levelPath);
 
 
 	void update(float dt) override;

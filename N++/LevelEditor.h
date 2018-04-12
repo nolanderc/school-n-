@@ -7,6 +7,9 @@
 #include "TilePalette.h"
 #include "LevelEditorButtons.h"
 
+#include "NinjaGame.h"
+
+
 #define TILE_SIZE 32
 
 #define PALETTE_WIDTH_PIXELS 128

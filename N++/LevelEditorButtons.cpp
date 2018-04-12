@@ -29,3 +29,30 @@ int SaveButton::getID()
 {
 	return EDITOR_BUTTON_SAVE;
 }
+
+RunButton::RunButton(Vector2 position, double radius) :
+	MenuButton(position, radius, 4)
+{
+}
+
+void RunButton::renderImage(Renderer& renderer, Vector2 center, double radius)
+{
+	double x = center.x;
+	double y = center.y;
+
+	double r = radius;
+
+	double left = x - r / 4.5;
+
+	renderer.setFillColor(0, 255, 0);
+	renderer.fillPolygon({
+		Vector2(left, y - r / 2),
+		Vector2(left + r / 2, y),
+		Vector2(left, y + r / 2),
+		});
+}
+
+int RunButton::getID()
+{
+	return EDITOR_BUTTON_RUN;
+}
