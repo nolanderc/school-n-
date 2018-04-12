@@ -23,7 +23,7 @@
     <ProjectGuid>{17F81144-CF1F-43B5-9015-9DEFBBE926BC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>N</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -155,6 +155,7 @@
     <ClCompile Include="Bitmap.cpp" />
     <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="LevelEditor.cpp" />
+    <ClCompile Include="LevelEditorButtons.cpp" />
     <ClCompile Include="MenuButtons.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="ConvexHull.cpp" />
@@ -172,6 +173,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SolidTiles.cpp" />
     <ClCompile Include="StringUtil.cpp" />
+    <ClCompile Include="TilePalette.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -179,6 +181,7 @@
     <ClInclude Include="Bitmap.h" />
     <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="LevelEditor.h" />
+    <ClInclude Include="LevelEditorButtons.h" />
     <ClInclude Include="MenuButtons.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="ConvexHull.h" />
@@ -198,6 +201,7 @@
     <ClInclude Include="SolidTiles.h" />
     <ClInclude Include="StringUtil.h" />
     <ClInclude Include="Tile.h" />
+    <ClInclude Include="TilePalette.h" />
     <ClInclude Include="Tiles.h" />
     <ClInclude Include="VectorUtil.h" />
     <ClInclude Include="Window.h" />

@@ -12,6 +12,9 @@ class MenuButton
 	double radius;
 	double actualRadius;
 
+	// Antalet hörn
+	int corners;
+
 	// Formen av knappens bakgrund, används för att bestämma om knappen trycks av musen
 	ConvexHull container;
 	
@@ -37,8 +40,8 @@ class MenuButton
 
 public:
 	
-	// Skapar en ny knapp med en viss storlek och bild på en viss position
-	MenuButton(Vector2 position, double radius);
+	// Skapar en ny knapp med en viss storlek och antal hörn
+	MenuButton(Vector2 position, double radius, int corners);
 
 
 	// Uppdaterar knappen

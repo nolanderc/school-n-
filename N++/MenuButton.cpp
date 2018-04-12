@@ -1,7 +1,7 @@
 ﻿#include "MenuButton.h"
 
-MenuButton::MenuButton(Vector2 position, double radius) :
-	center(position), radius(radius), highlighted(false), highlightAmount(0), selected(false), selectionAmount(0)
+MenuButton::MenuButton(Vector2 position, double radius, int corners) :
+	center(position), radius(radius), corners(corners), highlighted(false), highlightAmount(0), selected(false), selectionAmount(0)
 {
 	this->container = createHull(this->radius);
 
@@ -53,10 +53,9 @@ void MenuButton::setSelected(bool selected)
 ConvexHull MenuButton::createHull(double radius)
 {
 	std::vector<Vector2> points;
-	int pointCount = 6;
-	for (int i = 0; i < pointCount; i++)
+	for (int i = 0; i < this->corners; i++)
 	{
-		double angle = i / double(pointCount) * 360 + 180 / double(pointCount);
+		double angle = i / double(this->corners) * 360 + 180 / double(this->corners);
 
 		points.push_back(radius * Vector2::rotated(angle) + this->center);
 	}

@@ -4,44 +4,19 @@
 
 #include "Level.h"
 
+#include "TilePalette.h"
+#include "LevelEditorButtons.h"
+
 #define TILE_SIZE 32
 
 #define PALETTE_WIDTH_PIXELS 128
 #define PALETTE_WIDTH 2
 
+#define BUTTONS_HEIGHT_PIXELS 64
+
 const SIZE LEVEL_SIZE = { 45, 25 };
 const SIZE LEVEL_SIZE_PIXELS = { LEVEL_SIZE.cx * TILE_SIZE, LEVEL_SIZE.cy * TILE_SIZE };
 
-const double PALETTE_MARGIN = (double(PALETTE_WIDTH_PIXELS) / TILE_SIZE - PALETTE_WIDTH) / double(PALETTE_WIDTH + 1);
-
-
-
-// Nummer som identifierar ett block
-enum TileID
-{
-	TILE_SQUARE,
-	TILE_PLAYER_START,
-	TILE_WEDGE0,
-	TILE_WEDGE1,
-	TILE_WEDGE2,
-	TILE_WEDGE3,
-	TILE_MINE_ACTIVE,
-	TILE_MINE_INACTIVE,
-	TILE_EXIT,
-	TILE_COIN
-};
-
-
-// Skapar ett nytt block ifrån ett id
-Tile* createTileFromID(TileID id);
-
-
-// Ritar ett block utifrån dess id
-void renderTileFromID(Renderer& renderer, TileID id);
-
-
-// Ritar en ninja vid en koordinat
-void renderNinja(Renderer& renderer, Vector2 position);
 
 
 class LevelEditor : public App
@@ -56,20 +31,18 @@ class LevelEditor : public App
 	// De block som är markerade
 	Vector2i* selectionStart;
 	Vector2i selectionEnd;
-
-	// Den typ av block som är vald
-	const TileID* currentTile;
 	
-	// Vilket block muspekaren markerar
-	Vector2i* currentTileCoord;
-
 
 	// Borde ett rutnät ritas ut?
 	bool grid;
 
 
-	// En palett av alla block som kan placeras
-	std::vector<TileID> tilePalette;
+	// Hanterar valet av block
+	TilePalette tilePalette;
+
+
+	// Alla knappar
+	std::vector<MenuButton*> buttons;
 
 public: 
 
@@ -78,10 +51,7 @@ public:
 
 
 private:
-
-	// Skapar alla block som går att placera och sparar dem i paletten
-	void createPalette();
-
+	
 
 	// Ritar nivån
 	void drawLevel(Renderer& renderer);
@@ -92,12 +62,18 @@ private:
 	// Ritar markeringen och markören
 	void drawSelection(Renderer& renderer);
 
-	
-	// Ritar ut paletten
-	void drawPalette(Renderer& renderer);
 
-	// Returnerar det block i paletten som finns under musens koordinater (relativt till skärmen)
-	const TileID* selectPaletteTile(Vector2i mouse);
+	// Ritar alla knappar
+	void drawButtons(Renderer& renderer);
+
+
+
+	// Väljer det block i paletten som finns under musens koordinater (relativt till skärmen)
+	void selectPaletteTile(Vector2i mouse);
+
+
+	// Sätter alla block inom markeringen till en kopia av ett annat block
+	void setSelectionTile(Tile* tile);
 
 protected:
 

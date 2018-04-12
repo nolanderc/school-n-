@@ -46,6 +46,11 @@ bool ExitTile::passable() const
 	return true;
 }
 
+std::string ExitTile::getFormattedName() const
+{
+	return "Exit ()";
+}
+
 void ExitTile::onInteractionStart(InteractionHandler* handler)
 {
 	handler->completeLevel();
@@ -126,6 +131,11 @@ bool CoinTile::passable() const
 	return true;
 }
 
+std::string CoinTile::getFormattedName() const
+{
+	return "Coin ()";
+}
+
 void CoinTile::onInteractionStart(InteractionHandler* handler)
 {
 	BoundingBox bounds = this->hull.getBoundingBox();
@@ -191,6 +201,11 @@ bool InactiveMine::passable() const
 	return true;
 }
 
+std::string InactiveMine::getFormattedName() const
+{
+	return "InactiveMine ()";
+}
+
 void InactiveMine::onInteractionStart(InteractionHandler* handler)
 {
 	this->triggered = true;
@@ -252,6 +267,11 @@ Vector2* ActiveMine::overlap(const ConvexHull& other) const
 bool ActiveMine::passable() const
 {
 	return true;
+}
+
+std::string ActiveMine::getFormattedName() const
+{
+	return "ActiveMine ()";
 }
 
 void ActiveMine::onInteractionStart(InteractionHandler* handler)

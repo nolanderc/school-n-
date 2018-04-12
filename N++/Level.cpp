@@ -1,7 +1,8 @@
 #include "Level.h"
+#include <map>
 
 Level::Level(int width, int height) :
-	ninja(nullptr), width(width), height(height), playerStart(0, 0), needsRedraw(true)
+	ninja(nullptr), width(width), height(height), playerStart(width / 2, height / 2), needsRedraw(true)
 {
 	this->tiles.resize(width * height, nullptr);
 
@@ -51,7 +52,7 @@ void Level::retry()
 
 void Level::setTile(Vector2i coord, Tile * tile)
 {
-	if (hasCoord(coord)) {
+	if (hasCoord(coord) && coord != this->playerStart) {
 		this->removeTile(coord);
 
 		if (tile) {
@@ -251,13 +252,24 @@ void Level::moveNinja(NinjaMovement move)
 
 void Level::setNinjaSpawn(Vector2i coord)
 {
+	this->setTile(coord, nullptr);
 	this->playerStart = coord;
-	this->needsRedraw = true;
 }
 
 Vector2i Level::getNinjaSpawn()
 {
 	return this->playerStart;
+}
+
+void Level::save(std::string path)
+{
+	std::ofstream file(path);
+
+	if(file.is_open())
+	{
+		file << this->asText();
+		file.close();
+	}
 }
 
 Tile *& Level::getTileRef(Vector2i coord)
@@ -333,6 +345,46 @@ void Level::parseTile(const std::string& string)
 
 		delete tile;
 	}
+}
+
+std::string Level::asText()
+{
+	std::stringstream ss;
+
+	ss << this->width << ' ' << this->height << std::endl;
+	ss << this->playerStart.x << ' ' << this->playerStart.y << std::endl;
+
+	std::map<std::string, std::vector<Vector2i>> tilePositions;
+	
+	for (int x = 0; x < this->width; ++x)
+	{
+		for (int y = 0; y < this->height; ++y)
+		{
+			const Tile* tile = this->getTile({x, y});
+
+			if (tile)
+			{
+				std::string name = tile->getFormattedName();
+			
+				tilePositions[name].push_back({x, y});
+			}
+		}
+	}
+
+	for (std::map<std::string, std::vector<Vector2i>>::iterator it = tilePositions.begin(); it != tilePositions.end(); ++it)
+	{
+		ss << it->first;
+
+		int count = it->second.size();
+		for (int i = 0; i < count; ++i)
+		{
+			ss << " [" << it->second[i].x << ' ' << it->second[i].y << ']';
+		}
+
+		ss << std::endl;
+	}
+
+	return ss.str();
 }
 
 

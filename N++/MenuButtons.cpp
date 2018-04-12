@@ -1,7 +1,7 @@
 ﻿#include "MenuButtons.h"
 
 PlayButton::PlayButton(Vector2 position, double radius) :
-	MenuButton(position, radius)
+	MenuButton(position, radius, 6)
 {
 }
 
@@ -28,7 +28,7 @@ int PlayButton::getID()
 }
 
 EditorButton::EditorButton(Vector2 position, double radius) :
-	MenuButton(position, radius)
+	MenuButton(position, radius, 6)
 {
 }
 
@@ -70,7 +70,7 @@ int EditorButton::getID()
 }
 
 ExitButton::ExitButton(Vector2 position, double radius) :
-	MenuButton(position, radius)
+	MenuButton(position, radius, 6)
 {
 }
 

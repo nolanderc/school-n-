@@ -23,9 +23,10 @@ public:
 
 	bool passable() const override;
 
+	std::string getFormattedName() const override;
+
 
 	void onInteractionStart(InteractionHandler* handler) override;
-
 
 private:
 
@@ -56,6 +57,9 @@ public:
 
 	bool passable() const override;
 
+	std::string getFormattedName() const override;
+
+
 	void onInteractionStart(InteractionHandler* handler) override;
 };
 
@@ -83,6 +87,9 @@ public:
 
 	bool passable() const override;
 
+	std::string getFormattedName() const override;
+
+
 	void onInteractionStart(InteractionHandler* handler) override;
 
 	void onInteractionEnd(InteractionHandler* handler) override;
@@ -108,6 +115,9 @@ public:
 	Vector2* overlap(const ConvexHull& other) const override;
 
 	bool passable() const override;
+
+	std::string getFormattedName() const override;
+
 
 	void onInteractionStart(InteractionHandler* handler) override;
 };

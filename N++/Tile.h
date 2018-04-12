@@ -35,6 +35,9 @@ public:
 
 	// Anropas när spelaren avslutar sin kontakt med detta block
 	virtual void onInteractionEnd(InteractionHandler* handler) {}
+
+	// Returnera en string (i ett lvl-format med parametrar)
+	virtual std::string getFormattedName() const = 0;
 };
 
 

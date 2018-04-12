@@ -117,6 +117,10 @@ public:
 	// Returnerar positionen där ninjan börjar
 	Vector2i getNinjaSpawn();
 
+
+	// Sparar en nivå
+	void save(std::string path);
+
 private:
 
 	Tile*& getTileRef(Vector2i coord);
@@ -127,6 +131,7 @@ private:
 	// Tar bort ett block ifrån nivån
 	void removeTile(Vector2i coord);
 
+
 	// Laddar en nivå ifrån en ström av bokstäver i ett "lvl" format
 	void parseLVL(std::istream& stream);
 
@@ -134,6 +139,11 @@ private:
 	void parseTile(const std::string& string);
 
 	
+	// Omvandlar en nivå till ett lvl-textformat
+	std::string asText();
+
+
+
 	// Skapar ett block utifrån dess namn och en lista över parametrar
 	Tile* createTile(const std::string& name, std::stringstream& parameters);
 

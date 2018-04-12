@@ -1,7 +1,7 @@
 #include "NinjaGame.h"
 
 NinjaGame::NinjaGame(App* parent) :
-	App(parent), level("levels/level0.lvl")
+	App(parent), level("levels/customLevel.lvl")
 {
 	this->setWindowTitle("N++");
 	this->setWindowSize(level.getWidth() * TILE_SIZE, level.getHeight() * TILE_SIZE);

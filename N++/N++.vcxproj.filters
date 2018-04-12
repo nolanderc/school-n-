@@ -37,6 +37,9 @@
     <Filter Include="Level Editor">
       <UniqueIdentifier>{e1d96652-0885-4c1c-ae40-0c8c9ad17dda}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Level Editor\Buttons">
+      <UniqueIdentifier>{d64906ae-b624-4bb8-8961-a3b09d69ce01}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
@@ -102,6 +105,12 @@
     </ClCompile>
     <ClCompile Include="LevelEditor.cpp">
       <Filter>Level Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="TilePalette.cpp">
+      <Filter>Level Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelEditorButtons.cpp">
+      <Filter>Level Editor\Buttons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +191,12 @@
     </ClInclude>
     <ClInclude Include="LevelEditor.h">
       <Filter>Level Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="TilePalette.h">
+      <Filter>Level Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="LevelEditorButtons.h">
+      <Filter>Level Editor\Buttons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

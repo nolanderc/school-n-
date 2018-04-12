@@ -40,6 +40,10 @@ bool SquareTile::passable() const
 	return false;
 }
 
+std::string SquareTile::getFormattedName() const
+{
+	return "Square ()";
+}
 
 
 WedgeTile::WedgeTile(int type)
@@ -84,4 +88,9 @@ Vector2* WedgeTile::overlap(const ConvexHull& other) const
 bool WedgeTile::passable() const
 {
 	return false;
+}
+
+std::string WedgeTile::getFormattedName() const
+{
+	return "Wedge (" + std::to_string(this->type) + ")";
 }

@@ -86,6 +86,18 @@ struct TypeVector2 {
 	}
 
 
+
+	// Avgör om två vektorer är desamma
+	bool operator==(const TypeVector2<T>& other) {
+		return this->x == other.x && this->y == other.y;
+	}
+
+	// Avgör om två vektorer inte är desamma
+	bool operator!=(const TypeVector2<T>& other) {
+		return this->x != other.x || this->y != other.y;
+	}
+
+
 	// Omvandla en typ av vektor till en annan
 	template<class U>
 	operator TypeVector2<U>() const {

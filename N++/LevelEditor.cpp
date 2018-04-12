@@ -1,68 +1,39 @@
 ﻿#include "LevelEditor.h"
 
 
-Tile* createTileFromID(TileID id)
-{
-	switch (id)
-	{
-	case TILE_SQUARE: return new SquareTile();
-	case TILE_PLAYER_START: return nullptr;
-	case TILE_WEDGE0: return new WedgeTile(0);
-	case TILE_WEDGE1: return new WedgeTile(1);
-	case TILE_WEDGE2: return new WedgeTile(2);
-	case TILE_WEDGE3: return new WedgeTile(3);
-	case TILE_MINE_ACTIVE: return new ActiveMine();
-	case TILE_MINE_INACTIVE: return new InactiveMine();
-	case TILE_EXIT: return new ExitTile();
-	case TILE_COIN: return new CoinTile();
-	default:;
-	}
-}
-
-void renderTileFromID(Renderer& renderer, TileID id)
-{
-	switch (id)
-	{
-	case TILE_PLAYER_START: renderNinja(renderer, { 0 }); break;
-
-	default: {
-		Tile*tile = createTileFromID(id);
-		tile->setPosition({ 0 });
-		tile->render(renderer);
-	} break;
-
-	}
-}
-
-void renderNinja(Renderer& renderer, Vector2 position)
-{
-	Ninja ninja(position);
-	ninja.render(renderer);
-}
-
 LevelEditor::LevelEditor(App* parent) :
-	App(parent), level(LEVEL_SIZE.cx, LEVEL_SIZE.cy), grid(true)
+	App(parent), level("levels/customLevel.lvl"), grid(true), tilePalette(2, PALETTE_WIDTH_PIXELS / double(TILE_SIZE))
 {
 	this->setWindowSize(LEVEL_SIZE_PIXELS.cx + PALETTE_WIDTH_PIXELS, LEVEL_SIZE_PIXELS.cy);
 
 	this->levelBitmap = this->createCompatibleBitmap(LEVEL_SIZE_PIXELS);
 
-	this->createPalette();
 
-	this->currentTile = &this->tilePalette[0];
+	Vector2 buttonPosition = Vector2(
+		LEVEL_SIZE_PIXELS.cx + BUTTONS_HEIGHT_PIXELS / 2,
+		BUTTONS_HEIGHT_PIXELS / 2
+	);
+
+	this->buttons.push_back(new SaveButton(buttonPosition, BUTTONS_HEIGHT_PIXELS / 2));
 }
 
 void LevelEditor::update(float deltaTime)
 {
-
+	int count = this->buttons.size();
+	for (int i = 0; i < count; i++)
+	{
+		this->buttons[i]->update(deltaTime);
+	}
 }
 
 void LevelEditor::draw(Renderer& renderer)
 {
-	renderer.scale(TILE_SIZE);
-
 	renderer.setFillColor(100, 100, 100);
 	renderer.clear();
+
+	this->drawButtons(renderer);
+	
+	renderer.scale(TILE_SIZE);
 
 	this->drawLevel(renderer);
 
@@ -70,25 +41,9 @@ void LevelEditor::draw(Renderer& renderer)
 
 	this->drawSelection(renderer);
 
-	renderer.offset(Vector2i{ this->level.getWidth(), 0 });
-	this->drawPalette(renderer);
-}
 
-
-void LevelEditor::createPalette()
-{
-	this->tilePalette = {
-		TILE_SQUARE,
-		TILE_PLAYER_START,
-		TILE_WEDGE0,
-		TILE_WEDGE1,
-		TILE_WEDGE2,
-		TILE_WEDGE3,
-		TILE_MINE_ACTIVE,
-		TILE_MINE_INACTIVE,
-		TILE_EXIT,
-		TILE_COIN
-	};
+	renderer.offset({ double(this->level.getWidth()), double(BUTTONS_HEIGHT_PIXELS) / double(TILE_SIZE) });
+	this->tilePalette.draw(renderer);
 }
 
 
@@ -125,16 +80,16 @@ void LevelEditor::drawLevel(Renderer& renderer)
 
 void LevelEditor::drawGrid(Renderer& renderer)
 {
-	renderer.setColor(100, 100, 100);
+	renderer.setColor(60, 60, 60);
 	renderer.setLineStyle(LINE_SOLID);
 	renderer.setLineWidthAbsolute(1);
 
-	for (int x = 0; x < this->level.getWidth(); x++)
+	for (int x = 1; x < this->level.getWidth(); x++)
 	{
 		renderer.drawLine(x, 0, x, this->level.getHeight());
 	}
 
-	for (int y = 0; y < this->level.getHeight(); y++)
+	for (int y = 1; y < this->level.getHeight(); y++)
 	{
 		renderer.drawLine(0, y, this->level.getWidth(), y);
 	}
@@ -142,68 +97,52 @@ void LevelEditor::drawGrid(Renderer& renderer)
 
 void LevelEditor::drawSelection(Renderer& renderer)
 {
-	if (this->currentTile)
-	{
+	if (this->selectionStart) {
 		renderer.setFillColor(200, 200, 20);
 		renderer.setColor(0, 0, 255);
 		renderer.setLineStyle(LINE_SOLID);
 		renderer.setLineWidthAbsolute(2);
 
-		if (this->selectionStart) {
-			RECT bounds = getSelectionBounds(*this->selectionStart, this->selectionEnd);
-			bounds.right += 1;
-			bounds.bottom += 1;
-			renderer.drawRect(bounds);
-		}
+		RECT bounds = getSelectionBounds(*this->selectionStart, this->selectionEnd);
+		bounds.right += 1;
+		bounds.bottom += 1;
+		renderer.drawRect(bounds);
+	}
+}
+
+void LevelEditor::drawButtons(Renderer& renderer)
+{
+	int count = this->buttons.size();
+	for (int i = 0; i < count; i++)
+	{
+		this->buttons[i]->render(renderer);
 	}
 }
 
 
-void LevelEditor::drawPalette(Renderer& renderer)
+void LevelEditor::selectPaletteTile(Vector2i mouse)
 {
-	int tileCount = this->tilePalette.size();
+	mouse.x -= this->level.getWidth() * TILE_SIZE;
+	mouse.y -= BUTTONS_HEIGHT_PIXELS;
 
-	for (int i = 0; i < tileCount; i++)
+	if (mouse.x >= 0 && mouse.y >= 0)
 	{
-		int x = i % PALETTE_WIDTH;
-		int y = i / PALETTE_WIDTH;
+		Vector2i coord = (mouse * PALETTE_WIDTH) / PALETTE_WIDTH_PIXELS;
 
-		Vector2 delta = { PALETTE_MARGIN + x * (PALETTE_MARGIN + 1), PALETTE_MARGIN + y * (PALETTE_MARGIN + 1) };
-		renderer.offset(delta);
-
-		renderer.setFillColor(0, 0, 0);
-		renderer.setLineStyle(LINE_NONE);
-
-		renderTileFromID(renderer, this->tilePalette[i]);
-
-		renderer.offset(-delta);
+		this->tilePalette.selectTile(coord);
 	}
 }
 
-const TileID* LevelEditor::selectPaletteTile(Vector2i mouse)
+void LevelEditor::setSelectionTile(Tile* tile)
 {
-	Vector2 cursor = Vector2(mouse) / TILE_SIZE;
-	cursor.x -= this->level.getWidth();
-
-	double size = 1 + PALETTE_MARGIN;
-
-	int x = floor(cursor.x / size);
-	int y = floor(cursor.y / size);
-
-	cursor.x -= x * size;
-	cursor.y -= y * size;
-
-	if (PALETTE_MARGIN < cursor.x && cursor.x < PALETTE_MARGIN + 1 &&
-		PALETTE_MARGIN < cursor.y && cursor.y < PALETTE_MARGIN + 1)
+	if (this->selectionStart)
 	{
-		int index = x + y * PALETTE_WIDTH;
-
-		if (index < this->tilePalette.size())
-		{
-			return &this->tilePalette[index];
+		std::vector<Vector2i> coords = getSelectionCoords(*this->selectionStart, this->selectionEnd);
+		int coordCount = coords.size();
+		for (int i = 0; i < coordCount; i++) {
+			this->level.setTile(coords[i], tile == nullptr ? nullptr : tile->clone());
 		}
 	}
-	return nullptr;
 }
 
 
@@ -227,6 +166,22 @@ void LevelEditor::mouseMoved(int x, int y)
 	if (this->selectionStart) {
 		this->selectionEnd = tileCoord;
 	}
+
+
+	int count = this->buttons.size();
+	for (int i = 0; i < count; i++)
+	{
+		MenuButton* button = this->buttons[i];
+		if (button->contains({double(x), double(y)}))
+		{
+			button->setHighlight(true);
+		}
+		else
+		{
+			button->setHighlight(false);
+			button->setSelected(false);
+		}
+	}
 }
 
 void LevelEditor::mousePressed(MouseButton button, int x, int y)
@@ -239,9 +194,18 @@ void LevelEditor::mousePressed(MouseButton button, int x, int y)
 		}
 		else if (button == MOUSE_LEFT)
 		{
-			if (const TileID* tile = this->selectPaletteTile({ x, y }))
-			{
-				this->currentTile = tile;
+			this->selectPaletteTile({ x, y });
+		}
+	}
+
+	if (button == MOUSE_LEFT)
+	{
+		int buttonCount = this->buttons.size();
+		for (int i = 0; i < buttonCount; i++)
+		{
+			MenuButton* menuButton = this->buttons[i];
+			if (menuButton->contains(Vector2(x, y))) {
+				menuButton->setSelected(true);
 			}
 		}
 	}
@@ -249,37 +213,43 @@ void LevelEditor::mousePressed(MouseButton button, int x, int y)
 
 void LevelEditor::mouseReleased(MouseButton button, int x, int y)
 {
-	if (button == MOUSE_LEFT && this->selectionStart) {
+	if ((button == MOUSE_LEFT || button == MOUSE_RIGHT) && this->selectionStart) {
 		this->selectionEnd = { x / TILE_SIZE, y / TILE_SIZE };
+		TileID tileId = this->tilePalette.getCurrentTile();
 
-		std::vector<Vector2i> coords = getSelectionCoords(*this->selectionStart, this->selectionEnd);
-		int coordCount = coords.size();
-		for (int i = 0; i < coordCount; i++) {
-			TileID tileId = *this->currentTile;
+		Tile* tile = button == MOUSE_LEFT ? createTileFromID(tileId) : nullptr;
+		this->setSelectionTile(tile);
+		delete tile;
 
-			if (tileId == TILE_PLAYER_START)
-			{
-				level.setNinjaSpawn(coords[i]);
-			}
-
-			this->level.setTile(coords[i], createTileFromID(tileId));
+		if (button == MOUSE_LEFT && tileId == TILE_PLAYER_START) {
+			level.setNinjaSpawn(this->selectionEnd);
 		}
 
 		delete this->selectionStart;
 		this->selectionStart = nullptr;
 	}
 
-	if (button == MOUSE_RIGHT && this->selectionStart) {
-		this->selectionEnd = { x / TILE_SIZE, y / TILE_SIZE };
 
-		std::vector<Vector2i> coords = getSelectionCoords(*this->selectionStart, this->selectionEnd);
-		int coordCount = coords.size();
-		for (int i = 0; i < coordCount; i++) {
-			this->level.setTile(coords[i], nullptr);
+	if (button == MOUSE_LEFT)
+	{
+		int buttonCount = this->buttons.size();
+		for (int i = 0; i < buttonCount; i++)
+		{
+			MenuButton* menuButton = this->buttons[i];
+			if (menuButton->contains(Vector2(x, y))) {
+				menuButton->setHighlight(false);
+				menuButton->setSelected(false);
+
+				switch (menuButton->getID())
+				{
+				case EDITOR_BUTTON_SAVE:
+					this->level.save("levels/customLevel.lvl");
+					break;
+
+				default: break;
+				}
+			}
 		}
-
-		delete this->selectionStart;
-		this->selectionStart = nullptr;
 	}
 }
 
