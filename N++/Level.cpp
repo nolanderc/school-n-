@@ -1,16 +1,16 @@
 #include "Level.h"
 #include <map>
 
-Level::Level(int width, int height) :
-	ninja(nullptr), width(width), height(height), playerStart(width / 2, height / 2), needsRedraw(true)
+Level::Level(int width, int height, Difficulty difficulty) :
+	ninja(nullptr), width(width), height(height), playerStart(width / 2, height / 2), needsRedraw(true), difficulty(difficulty)
 {
 	this->tiles.resize(width * height, nullptr);
 
 	this->spawnNinja();
 }
 
-Level::Level(std::string path) :
-	ninja(nullptr), needsRedraw(true)
+Level::Level(std::string path, Difficulty difficulty) :
+	ninja(nullptr), needsRedraw(true), difficulty(difficulty)
 {
 	std::ifstream file(path);
 
@@ -20,6 +20,44 @@ Level::Level(std::string path) :
 		file.close();
 	}
 
+	this->spawnNinja();
+}
+
+Level::Level(const Level& level)
+{
+	this->tiles = cloneTiles(level.tiles);
+	this->originalTiles = cloneTiles(level.tiles);
+	
+	this->width = level.width;
+	this->height = level.height;
+
+	this->playerStart = level.playerStart;
+	this->needsRedraw = true;
+
+	this->currentEnergy = level.currentEnergy;
+
+	this->difficulty = level.difficulty;
+
+	this->ninja = nullptr;
+	this->spawnNinja();
+}
+
+void Level::operator=(const Level& level)
+{
+	this->tiles = cloneTiles(level.tiles);
+	this->originalTiles = cloneTiles(level.tiles);
+
+	this->width = level.width;
+	this->height = level.height;
+
+	this->playerStart = level.playerStart;
+	this->needsRedraw = true;
+
+	this->currentEnergy = level.currentEnergy;
+
+	this->difficulty = level.difficulty;
+
+	this->ninja = nullptr;
 	this->spawnNinja();
 }
 
@@ -64,9 +102,6 @@ void Level::setTile(Vector2i coord, Tile * tile)
 
 void Level::renderStatic(Renderer & renderer)
 {
-	renderer.setFillColor(50, 50, 50);
-	renderer.clear();
-
 	int tileCount = this->tiles.size();
 	for (int i = 0; i < tileCount; i++)
 	{
@@ -156,10 +191,22 @@ int Level::getHeight()
 	return height;
 }
 
+void Level::increaseEnergy(double amount)
+{
+	this->currentEnergy = clamp(this->currentEnergy + amount, 0.0, this->maximalEnergy);
+}
+
+double Level::getEnergyPercentage()
+{
+	return this->currentEnergy / this->maximalEnergy;
+}
+
 void Level::spawnNinja()
 {
 	if (this->ninja) delete this->ninja;
 	this->ninja = new Ninja(this->playerStart);
+
+	this->currentEnergy = 6;
 }
 
 void Level::updateEffects(double deltaTime)
@@ -441,6 +488,21 @@ void Level::update(double deltaTime)
 {
 	if (this->ninja) {
 		ninja->update(deltaTime, {this});
+
+		double energyMultiplier = 1;
+
+		switch (this->difficulty)
+		{
+		case EASY: energyMultiplier /= 1.5; break;;
+		case NORMAL: energyMultiplier /= 1.25; break;
+		case HARD: energyMultiplier /= 1; break;
+		}
+
+		this->currentEnergy -= deltaTime * energyMultiplier;
+
+		if(this->currentEnergy <= 0) {
+			this->killNinja(EXPLOSION);
+		}
 	}
 
 	this->checkInteractions();

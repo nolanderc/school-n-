@@ -51,6 +51,9 @@ class InteractionHandler
 {
 public:
 
+	// Ger ninjan energi
+	virtual void increaseEnergy(double amount) = 0;
+
 	// Avslutar nivån med en vinst
 	virtual void completeLevel() = 0;
 

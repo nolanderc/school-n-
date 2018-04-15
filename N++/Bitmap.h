@@ -20,8 +20,8 @@ public:
 	~Bitmap();
 
 	// En kopia skapas av en bild
-	Bitmap(Bitmap& source);
-	void operator=(Bitmap& source);
+	Bitmap(const Bitmap& source);
+	void operator=(const Bitmap& source);
 
 	Bitmap(HBITMAP dc, SIZE size);
 

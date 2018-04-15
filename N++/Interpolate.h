@@ -16,7 +16,7 @@ T clamp(T value, T min, T max) {
 
 // Omvandla en parameter i intervallet [0, 1] till intervallet [min, max]
 template<class T>
-double lerp(double value, T min, T max) {
+T lerp(double value, T min, T max) {
 	return clamp(value, 0.0, 1.0) * (max - min) + min;
 }
 
@@ -24,7 +24,7 @@ double lerp(double value, T min, T max) {
 // Omvandla en parameter i intervallet [0, 1] till intervallet [min, max]
 // Detta sker "mjukare"/långsammare närmare 0 och 1
 template<class T>
-double easeInOut(double value, T min, T max) {
+T easeInOut(double value, T min, T max) {
 	return lerp(3 * value*value - 2 * value*value, min, max);
 }
 

@@ -219,7 +219,8 @@ void Ninja::handleCollision(Vector2 normal)
 
 		double dot = plane.dot(velocity.normal());
 
-		if (velocity.x > 0 && movement == NINJA_RIGHT || velocity.x < 0 && movement == NINJA_LEFT)
+		if ((velocity.x > 0 && movement == NINJA_RIGHT || velocity.x < 0 && movement == NINJA_LEFT) &&
+			normal.y <= 0 && plane.y * dot <= 0)
 		{
 			velocity = plane * velocity.length() * (dot < 0 ? -1 : dot > 0 ? 1 : 0) * pow(abs(dot), 1.0 / 4);
 		} else

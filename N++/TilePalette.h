@@ -5,6 +5,8 @@
 #include "FunctionalTiles.h"
 #include "Ninja.h"
 
+#include "StringUtil.h"
+
 // Nummer som identifierar ett block
 enum TileID
 {
@@ -23,6 +25,11 @@ enum TileID
 
 // Skapar ett nytt block ifrån ett id
 Tile * createTileFromID(TileID id);
+
+
+// Skapar ett nytt id från ett namn
+TileID createTileIdFromName(const std::string& name);
+
 
 
 class TilePalette
@@ -54,6 +61,9 @@ public:
 
 	// Returnerar det nuvarande blocket
 	TileID getCurrentTile();
+
+	// Sätter det nuvarande blocket
+	void setCurrentTile(TileID tileId);
 
 private:
 	

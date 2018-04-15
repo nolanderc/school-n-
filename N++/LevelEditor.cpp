@@ -2,7 +2,7 @@
 
 
 LevelEditor::LevelEditor(App* parent) :
-	App(parent), level("levels/customLevel.lvl"), grid(true), tilePalette(2, PALETTE_WIDTH_PIXELS / double(TILE_SIZE))
+	App(parent), level("levels/customLevel.lvl", NORMAL), grid(true), tilePalette(2, PALETTE_WIDTH_PIXELS / double(TILE_SIZE))
 {
 	this->setWindowSize(LEVEL_SIZE_PIXELS.cx + PALETTE_WIDTH_PIXELS, LEVEL_SIZE_PIXELS.cy);
 
@@ -18,6 +18,24 @@ LevelEditor::LevelEditor(App* parent) :
 
 	buttonPosition.x += BUTTONS_HEIGHT_PIXELS;
 	this->buttons.push_back(new RunButton(buttonPosition, BUTTONS_HEIGHT_PIXELS / 2));
+
+
+	this->createLevelBorder();
+}
+
+void LevelEditor::createLevelBorder()
+{
+	for (int x = 0; x < this->level.getWidth(); x++)
+	{
+		this->level.setTile({ x, 0 }, new SquareTile());
+		this->level.setTile({ x, this->level.getHeight() - 1 }, new SquareTile());
+	}
+
+	for (int y = 0; y < this->level.getHeight(); y++)
+	{
+		this->level.setTile({ 0, y }, new SquareTile());
+		this->level.setTile({ this->level.getWidth() - 1, y }, new SquareTile());
+	}
 }
 
 void LevelEditor::update(float deltaTime)
@@ -55,10 +73,11 @@ void LevelEditor::drawLevel(Renderer& renderer)
 	if (this->level.needsRerender())
 	{
 		Renderer levelRenderer = renderer.createBitmapRenderer(this->levelBitmap);
-		levelRenderer.scale(TILE_SIZE);
 
-		levelRenderer.setFillColor(255, 255, 0);
+		levelRenderer.setFillColor(50, 50, 50);
 		levelRenderer.clear();
+
+		levelRenderer.scale(TILE_SIZE);
 
 		levelRenderer.setFillColor(0, 0, 0);
 		level.renderStatic(levelRenderer);
@@ -143,7 +162,14 @@ void LevelEditor::setSelectionTile(Tile* tile)
 		std::vector<Vector2i> coords = getSelectionCoords(*this->selectionStart, this->selectionEnd);
 		int coordCount = coords.size();
 		for (int i = 0; i < coordCount; i++) {
-			this->level.setTile(coords[i], tile == nullptr ? nullptr : tile->clone());
+			Vector2i coord = coords[i];
+
+			// Kan inte ändra väggarna
+			if (coord.x > 0 && coord.x < this->level.getWidth() - 1 &&
+				coord.y > 0 && coord.y < this->level.getHeight() - 1)
+			{
+				this->level.setTile(coord, tile == nullptr ? nullptr : tile->clone());
+			}
 		}
 	}
 }
@@ -187,6 +213,7 @@ void LevelEditor::mouseMoved(int x, int y)
 	}
 }
 
+
 void LevelEditor::mousePressed(MouseButton button, int x, int y)
 {
 	if (button == MOUSE_LEFT || button == MOUSE_RIGHT) {
@@ -212,6 +239,22 @@ void LevelEditor::mousePressed(MouseButton button, int x, int y)
 			}
 		}
 	}
+
+	if(button == MOUSE_MIDDLE)
+	{
+		Vector2i tileCoord = { x / TILE_SIZE, y / TILE_SIZE };
+		tileCoord.x = clamp(tileCoord.x, 0, this->level.getWidth() - 1);
+		tileCoord.y = clamp(tileCoord.y, 0, this->level.getHeight() - 1);
+
+		const Tile* tile = this->level.getTile(tileCoord);
+		if (tile)
+		{
+			this->tilePalette.setCurrentTile(createTileIdFromName(tile->getFormattedName()));
+		} else if (tileCoord == this->level.getNinjaSpawn())
+		{
+			this->tilePalette.setCurrentTile(TILE_PLAYER_START);
+		}
+	}
 }
 
 void LevelEditor::mouseReleased(MouseButton button, int x, int y)
@@ -225,7 +268,14 @@ void LevelEditor::mouseReleased(MouseButton button, int x, int y)
 		delete tile;
 
 		if (button == MOUSE_LEFT && tileId == TILE_PLAYER_START) {
-			level.setNinjaSpawn(this->selectionEnd);
+			Vector2i coord = this->selectionEnd;
+
+			// Kan inte ändra väggarna
+			if (coord.x > 0 && coord.x < this->level.getWidth() - 1 &&
+				coord.y > 0 && coord.y < this->level.getHeight() - 1)
+			{
+				level.setNinjaSpawn(coord);
+			}
 		}
 
 		delete this->selectionStart;
@@ -253,7 +303,7 @@ void LevelEditor::mouseReleased(MouseButton button, int x, int y)
 					this->level.save("levels/customLevel.lvl");
 
 					// Starta ett spel innuti redigeraren
-					this->addChild(new NinjaGame(this, "levels/customLevel.lvl"));
+					this->addChild(new NinjaGame(this, this->level));
 					break;
 
 				default: break;

@@ -56,10 +56,10 @@ void TilePalette::draw(Renderer& renderer)
 
 void TilePalette::selectTile(Vector2i coord)
 {
-	if (0 <= coord.x && coord.x < this->columns && 0 < coord.y)
+	if (0 <= coord.x && coord.x < this->columns && 0 <= coord.y)
 	{
 		int	index = coord.x + coord.y * this->columns;
-		
+
 		if (index < this->tiles.size())
 		{
 			this->currentTile = &this->tiles[index];
@@ -70,6 +70,19 @@ void TilePalette::selectTile(Vector2i coord)
 TileID TilePalette::getCurrentTile()
 {
 	return *this->currentTile;
+}
+
+void TilePalette::setCurrentTile(TileID tileId)
+{
+	int count = this->tiles.size();
+	for (int i = 0; i < count; i++)
+	{
+		if (this->tiles[i] == tileId)
+		{
+			this->currentTile = &this->tiles[i];
+			return;
+		}
+	}
 }
 
 Tile* createTileFromID(TileID id)
@@ -90,12 +103,29 @@ Tile* createTileFromID(TileID id)
 	}
 }
 
+TileID createTileIdFromName(const std::string& name)
+{
+	std::string n = toLower(name);
+
+	if (n == "square ()") return TILE_SQUARE;
+	if (n == "wedge (0)") return TILE_WEDGE0;
+	if (n == "wedge (1)") return TILE_WEDGE1;
+	if (n == "wedge (2)") return TILE_WEDGE2;
+	if (n == "wedge (3)") return TILE_WEDGE3;
+	if (n == "activemine ()") return TILE_MINE_ACTIVE;
+	if (n == "inactivemine ()") return TILE_MINE_INACTIVE;
+	if (n == "exit ()") return TILE_EXIT;
+	if (n == "coin ()") return TILE_COIN;
+
+	return TILE_PLAYER_START;
+}
+
 void TilePalette::renderTileFromID(Renderer& renderer, TileID id)
 {
 	switch (id)
 	{
-	case TILE_PLAYER_START: 
-		renderNinja(renderer, { 0 }); 
+	case TILE_PLAYER_START:
+		renderNinja(renderer, { 0 });
 		break;
 
 	default: {

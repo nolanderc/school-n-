@@ -90,8 +90,8 @@ void CoinTile::setPosition(Vector2i position)
 	double x = center.x;
 	double y = center.y;
 
-	double width = 0.2;
-	double height = 0.2;
+	double width = 0.26;
+	double height = 0.26;
 
 	this->hull = ConvexHull({
 		Vector2(x - width, y - height),
@@ -104,6 +104,12 @@ void CoinTile::setPosition(Vector2i position)
 void CoinTile::render(Renderer& renderer)
 {
 	BoundingBox bounds = this->hull.getBoundingBox();
+
+	bounds.left += 0.06;
+	bounds.right -= 0.06;
+	bounds.top += 0.06;
+	bounds.bottom -= 0.06;
+
 
 	renderer.setColor(255, 255, 20);
 	renderer.setFillColor(150, 150, 20);
@@ -146,6 +152,8 @@ void CoinTile::onInteractionStart(InteractionHandler* handler)
 	Vector2 center = this->hull.average();
 	handler->spawnEffect(new Evaporation(center, width, height));
 	handler->setTile(this->position, nullptr);
+
+	handler->increaseEnergy(1.0);
 }
 
 InactiveMine::InactiveMine() :
@@ -177,16 +185,17 @@ void InactiveMine::render(Renderer& renderer)
 {
 	Vector2 center = Vector2(this->hull.average());
 	
-	renderer.setColor(200, 0, 150);
-	renderer.setFillColor(200, 0, 150);
-	renderer.setLineWidthAbsolute(2);
+	renderer.setLineWidth(0.1);
 	renderer.setLineStyle(LINE_SOLID);
 
 	if (this->triggered)
 	{
+		renderer.setColor(200, 0, 100);
+		renderer.setFillColor(200, 0, 150);
 		renderer.fillCircle(center.x, center.y, MINE_RADIUS / 1.5);
 	} else
 	{
+		renderer.setColor(150, 0, 100);
 		renderer.drawCircle(center.x, center.y, MINE_RADIUS / 1.5);
 	}
 }
@@ -248,7 +257,7 @@ void ActiveMine::render(Renderer& renderer)
 
 	renderer.setColor(200, 0, 150);
 	renderer.setFillColor(200, 0, 150);
-	renderer.setLineWidthAbsolute(3);
+	renderer.setLineWidth(0.1);
 	renderer.setLineStyle(LINE_SOLID);
 
 	for (int i = 0; i < 8; i++)

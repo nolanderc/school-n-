@@ -11,7 +11,7 @@ class App: public WindowEventHandler
 
 	// Den önskade storleken på fönstret
 	SIZE preferredWindowSize;
-
+	
 
 	// Appen som "äger" denna app
 	App* parent;

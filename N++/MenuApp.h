@@ -6,10 +6,11 @@
 
 #include "NinjaGame.h"
 #include "LevelEditor.h"
+#include "LevelSelector.h"
+
 
 class MenuApp: public App
 {
-
 	double time;
 
 	std::vector<MenuButton*> buttons;

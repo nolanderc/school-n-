@@ -156,6 +156,7 @@
     <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="LevelEditor.cpp" />
     <ClCompile Include="LevelEditorButtons.cpp" />
+    <ClCompile Include="LevelSelector.cpp" />
     <ClCompile Include="MenuButtons.cpp" />
     <ClCompile Include="Collider.cpp" />
     <ClCompile Include="ConvexHull.cpp" />
@@ -182,6 +183,7 @@
     <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="LevelEditor.h" />
     <ClInclude Include="LevelEditorButtons.h" />
+    <ClInclude Include="LevelSelector.h" />
     <ClInclude Include="MenuButtons.h" />
     <ClInclude Include="Collider.h" />
     <ClInclude Include="ConvexHull.h" />
@@ -207,6 +209,7 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="levels\customLevel.lvl" />
     <None Include="levels\level0.lvl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

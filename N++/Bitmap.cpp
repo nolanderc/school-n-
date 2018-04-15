@@ -20,7 +20,7 @@ Bitmap::~Bitmap()
 	}
 }
 
-Bitmap::Bitmap(Bitmap& source)
+Bitmap::Bitmap(const Bitmap& source)
 {
 	this->handle = source.handle;
 	this->size = source.size;
@@ -29,7 +29,7 @@ Bitmap::Bitmap(Bitmap& source)
 	*this->copies += 1;
 }
 
-void Bitmap::operator=(Bitmap& source)
+void Bitmap::operator=(const Bitmap& source)
 {
 	this->handle = source.handle;
 	this->size = source.size;

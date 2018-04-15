@@ -9,7 +9,7 @@ MenuApp::MenuApp() :
 	this->buttons.push_back(new EditorButton({ 256 + 64, 256 }, 64));
 	this->buttons.push_back(new ExitButton({ 256, 256 + 128 * sqrt(1 - 0.5*0.5) }, 64));
 
-	// this->addChild(new LevelEditor(this));
+	// this->addChild(new NinjaGame(this, "levels/customLevel.lvl"));
 }
 
 void MenuApp::update(float deltaTime)
@@ -87,7 +87,7 @@ void MenuApp::mouseReleased(MouseButton button, int x, int y)
 			switch (menuButton->getID())
 			{
 			case BUTTON_PLAY:
-				this->addChild(new NinjaGame(this, "levels/customLevel.lvl"));
+				this->addChild(new LevelSelector(this));
 				break;
 
 			case BUTTON_EDITOR:

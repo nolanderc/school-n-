@@ -1,15 +1,15 @@
 #include "NinjaGame.h"
 
-NinjaGame::NinjaGame(App* parent, std::string levelPath) :
-	App(parent), level(levelPath)
+
+NinjaGame::NinjaGame(App* parent, Level level) : 
+	App(parent), level(level)
 {
 	this->setWindowTitle("N++");
-	this->setWindowSize(level.getWidth() * TILE_SIZE, level.getHeight() * TILE_SIZE);
+	this->setWindowSize(level.getWidth() * TILE_SIZE, level.getHeight() * TILE_SIZE + ENERGY_BAR_HEIGHT_PIXELS);
 
 	levelBitmap = this->createCompatibleBitmap(this->getWindowSize());
 	this->renderLevel = true;
 }
-
 
 void NinjaGame::update(float dt)
 {
@@ -34,18 +34,23 @@ void NinjaGame::update(float dt)
 
 void NinjaGame::draw(Renderer & renderer)
 {
-	renderer.setFillColor(0, 255, 255);
+	renderer.setFillColor(0, 0, 0);
 	renderer.clear();
+
+	renderer.setFillColor(255, 255, 0);
+
+	double width = this->getWindowSize().cx * this->level.getEnergyPercentage();
+
+	renderer.fillRect(0, 0, width, ENERGY_BAR_HEIGHT_PIXELS);
 
 	renderer.scale(TILE_SIZE);
 
-	
 	if (this->renderLevel || this->level.needsRerender()) {
 		Renderer levelRenderer = renderer.createBitmapRenderer(this->levelBitmap);
-		levelRenderer.scale(TILE_SIZE);
-
-		levelRenderer.setFillColor(255, 255, 0);
+		levelRenderer.setFillColor(50, 50, 50);
 		levelRenderer.clear();
+
+		levelRenderer.scale(TILE_SIZE);
 
 		levelRenderer.setFillColor(0, 0, 0);
 		level.renderStatic(levelRenderer);
@@ -55,11 +60,12 @@ void NinjaGame::draw(Renderer & renderer)
 		this->renderLevel = false;
 	}
 
-	renderer.drawBitmap(this->levelBitmap, 0, 0, this->levelBitmap.getWidth(), this->levelBitmap.getHeight(), 0, 0);
+	renderer.drawBitmap(this->levelBitmap, 0, ENERGY_BAR_HEIGHT_PIXELS, this->levelBitmap.getWidth(), this->levelBitmap.getHeight(), 0, 0);
 
+	renderer.offset({ 0, double(ENERGY_BAR_HEIGHT_PIXELS) / TILE_SIZE });
 
 	renderer.setColor(100, 100, 100);
-	renderer.setLineWidth(2.0 / TILE_SIZE);
+	renderer.setLineWidth(1.0 / TILE_SIZE);
 
 	level.renderDynamic(renderer);
 }

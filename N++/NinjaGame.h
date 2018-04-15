@@ -8,6 +8,8 @@
 
 #define TILE_SIZE 32
 
+#define ENERGY_BAR_HEIGHT_PIXELS 16
+
 class NinjaGame: public App
 {
 	// Nivån
@@ -23,7 +25,7 @@ class NinjaGame: public App
 
 public:
 
-	NinjaGame(App* parent, std::string levelPath);
+	NinjaGame(App* parent, Level level);
 
 
 	void update(float dt) override;

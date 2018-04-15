@@ -1,9 +1,11 @@
 #include "App.h"
+#include "Interpolate.h"
 
 
 App::App(App* parent) :
 	window(parent->window), parent(parent), running(true)
 {
+	this->preferredWindowSize = this->getWindowSize();
 }
 
 App::App(int width, int height, std::string title) :
@@ -26,6 +28,7 @@ void App::run()
 			std::chrono::duration_cast<std::chrono::nanoseconds>(now - previousInstant);
 
 		double seconds = double(dur.count()) / 1e9;
+
 
 		this->update(seconds);
 		this->renderApplication();

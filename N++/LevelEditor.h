@@ -47,7 +47,7 @@ class LevelEditor : public App
 	// Alla knappar
 	std::vector<MenuButton*> buttons;
 
-public: 
+public:
 
 	LevelEditor(App* parent);
 
@@ -55,6 +55,8 @@ public:
 
 private:
 	
+	// Skapar ett rum innuti nivån
+	void createLevelBorder();
 
 	// Ritar nivån
 	void drawLevel(Renderer& renderer);

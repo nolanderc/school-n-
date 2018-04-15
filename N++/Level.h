@@ -15,6 +15,15 @@
 #include "VectorUtil.h"
 
 
+
+// Svårighetsgrad
+enum Difficulty {
+	EASY,
+	NORMAL,
+	HARD
+};
+
+
 class Level: public Collider, public InteractionHandler
 {
 private:
@@ -44,13 +53,28 @@ private:
 	// Behöver nivån ritas om?
 	bool needsRedraw;
 
+	// Ninjans nuvarande energinivå
+	double currentEnergy;
+
+	// Maximala energinivån
+	const double maximalEnergy = 30;
+
+
+	// Nivåns svårighet
+	Difficulty difficulty;
+
+
 public:
 
-	Level(int width, int height);
+	Level(int width, int height, Difficulty difficulty);
 
 	// Skapar en nivå ifrån en fil i ett "lvl" format
-	Level(std::string path);
+	Level(std::string path, Difficulty difficulty);
 
+
+	// Kopierar en nivå
+	Level(const Level& level);
+	void operator=(const Level& level);
 
 	~Level();
 
@@ -96,6 +120,14 @@ public:
 	int getHeight();
 
 	
+	// Ökar ninjans energi
+	void increaseEnergy(double amount) override;
+
+
+	// Returnerar andelen energi
+	double getEnergyPercentage();
+
+
 	// Avslutar nivån med vinst
 	void completeLevel() override;
 
@@ -120,6 +152,8 @@ public:
 
 	// Sparar en nivå
 	void save(std::string path);
+
+
 
 private:
 
