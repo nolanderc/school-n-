@@ -4,7 +4,7 @@
 LevelSelector::LevelSelector(App* parent) :
 	App(parent)
 {
-	this->setWindowSize(45 * 32, 25 * 32 + 16);
+	this->setWindowSize(1280, 720);
 
 	this->levels.push_back(Level("levels/level0.lvl", NORMAL));
 	this->levels.push_back(Level("levels/customLevel.lvl", NORMAL));
