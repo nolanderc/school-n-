@@ -3,7 +3,8 @@
 
 LevelSelector::LevelSelector(App* parent) :
 	App(parent),
-	playButton(Vector2(1280 - TILE_SIZE * TILE_MARGIN - 80, 720 - TILE_SIZE*TILE_MARGIN - 80), 60)
+	playButton(Vector2(1280 - TILE_SIZE * TILE_MARGIN - 80, 720 - TILE_SIZE*TILE_MARGIN - 80), 60),
+	difficulty(NORMAL)
 {
 	this->createThumbnails({
 		"levels/level0.lvl",
@@ -11,7 +12,9 @@ LevelSelector::LevelSelector(App* parent) :
 		"levels/customLevel.lvl"
 	});
 
-	this->setWindowSize(1280, 720);
+	this->setWindowSize(1280, 720); 
+
+	this->createInformationPane();
 }
 
 LevelSelector::~LevelSelector()
@@ -81,8 +84,20 @@ void LevelSelector::mousePressed(MouseButton button, int x, int y)
 			}
 		}
 
+
+		// Spela-knappen
 		if (this->selectedLevel && this->playButton.contains(Vector2(x, y))) {
 			this->playButton.setSelected(true);
+		}
+
+		// Svårihetsgrad
+		int difficulties = this->difficultyContainers.size();
+		for (int i = 0; i < difficulties; ++i)
+		{
+			if (this->difficultyContainers[i].contains(Vector2(x, y)))
+			{
+				this->difficulty = Difficulty(i);
+			}
 		}
 	}
 }
@@ -94,6 +109,7 @@ void LevelSelector::mouseReleased(MouseButton button, int x, int y)
 		if (this->selectedLevel && this->playButton.contains(Vector2(x, y))) {
 			this->playButton.setSelected(false);
 
+			this->levels[*this->selectedLevel].level.setDifficulty(this->difficulty);
 			this->addChild(new NinjaGame(this, this->levels[*this->selectedLevel].level));
 		}
 	}
@@ -104,6 +120,22 @@ void LevelSelector::keyPressed(int key)
 	if (key == VK_ESCAPE)
 	{
 		this->close();
+	}
+}
+
+void LevelSelector::createInformationPane()
+{
+	Vector2 topLeft(TILE_SIZE * (3 * TILE_MARGIN + 2 * LEVEL_SIZE.cx), TILE_SIZE * TILE_MARGIN);
+	SIZE windowSize = this->getWindowSize();
+	double width = windowSize.cx - topLeft.x - TILE_SIZE * TILE_MARGIN;
+	double height = windowSize.cy - topLeft.y - TILE_SIZE * TILE_MARGIN;
+
+	for (int i = 0; i < 3; ++i)
+	{
+		this->difficultyContainers.push_back(BoundingBox(
+			topLeft.x + i * width / 3, topLeft.x + (i + 1) * width / 3,
+			topLeft.y, topLeft.y + 32
+		));
 	}
 }
 
@@ -181,11 +213,40 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 		double width = windowSize.cx - offset.x - TILE_SIZE * TILE_MARGIN;
 		double height = windowSize.cy - offset.y - TILE_SIZE * TILE_MARGIN;
 
-		renderer.setFillColor(150, 100, 100);
+		renderer.setFillColor(75, 75, 75);
 		renderer.fillRect(0, 0, width, height);
 
+		renderer.offset(-offset);
 
 		// Rita svårighet
+		int difficulties = this->difficultyContainers.size();
+		for (int i = 0; i < difficulties; ++i)
+		{
+			if (i == this->difficulty) {
+				renderer.setFillColor(75, 75, 75);
+				renderer.setTextBackgroundColor(75, 75, 75);
+
+				renderer.setTextColor(255, 255, 255);
+			} else {
+				renderer.setFillColor(50, 50, 50);
+				renderer.setTextBackgroundColor(50, 50, 50);
+
+				renderer.setTextColor(150, 150, 150);
+			}
+
+			renderer.fillRect(this->difficultyContainers[i]);
+			
+			std::string text;
+			switch (i)
+			{
+			case EASY: text = "Easy"; break;
+			case NORMAL: text = "Normal"; break;
+			case HARD: text = "Hard"; break;
+			default: text = "Nan";
+			}
+
+			renderer.drawTextCentered(text, this->difficultyContainers[i]);
+		}
 
 
 		// Rita highscores
@@ -193,7 +254,6 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 
 		// Rita spel/start
 		renderer.setLineStyle(LINE_NONE);
-		renderer.offset(-offset);
 		this->playButton.render(renderer);
 		renderer.offset(offset);
 	}

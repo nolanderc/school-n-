@@ -306,6 +306,11 @@ void Renderer::drawTextCentered(std::string text, RECT rect)
 	}
 }
 
+void Renderer::drawTextCentered(std::string text, BoundingBox box)
+{
+	this->drawTextCentered(text, box.left, box.right, box.top, box.bottom);
+}
+
 void Renderer::drawTextCentered(std::string text, double left, double right, double top, double bottom)
 {
 	Vector2i topLeft = this->transform({ left, top });

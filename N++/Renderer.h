@@ -157,6 +157,7 @@ public:
 
 	// Ritar text centrerat inuti en rektangel
 	void drawTextCentered(std::string text, RECT rect);
+	void drawTextCentered(std::string text, BoundingBox box);
 	void drawTextCentered(std::string text, double left, double right, double top, double bottom);
 
 	// Ritar en bitmapsbild

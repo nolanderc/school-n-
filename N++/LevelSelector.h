@@ -24,10 +24,15 @@ class LevelSelector: public App
 	int* highlightedLevel;
 
 
+	Difficulty difficulty;
+
+	std::vector<BoundingBox> difficultyContainers;
+
+
 	PlayButton playButton;
 
 public:
-	
+
 	LevelSelector(App* parent);
 
 	~LevelSelector();
@@ -48,6 +53,9 @@ protected:
 
 
 private:
+
+	// Skapar allt som tillhör informationspanelen
+	void createInformationPane();
 
 	// Skapar alla bilder och kollisionslådor för nivåerna
 	void createThumbnails(const std::vector<std::string>& paths);

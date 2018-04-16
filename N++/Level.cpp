@@ -319,6 +319,11 @@ void Level::save(std::string path)
 	}
 }
 
+void Level::setDifficulty(Difficulty difficulty)
+{
+	this->difficulty = difficulty;
+}
+
 Tile *& Level::getTileRef(Vector2i coord)
 {
 	return tiles[coord.x + coord.y * width];

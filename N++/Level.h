@@ -154,6 +154,9 @@ public:
 	void save(std::string path);
 
 
+	// Sätter nivåns svårighet
+	void setDifficulty(Difficulty difficulty);
+
 
 private:
 
