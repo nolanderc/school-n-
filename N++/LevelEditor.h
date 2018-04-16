@@ -24,6 +24,9 @@ const SIZE LEVEL_SIZE_PIXELS = { LEVEL_SIZE.cx * TILE_SIZE, LEVEL_SIZE.cy * TILE
 
 class LevelEditor : public App
 {
+	// Sökvägen till den nivå som ska redigeras
+	std::string path;
+
 	// Nivån som håller på att skapas
 	Level level;
 
@@ -49,7 +52,7 @@ class LevelEditor : public App
 
 public:
 
-	LevelEditor(App* parent);
+	LevelEditor(App* parent, std::string path);
 
 
 

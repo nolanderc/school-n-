@@ -48,6 +48,11 @@ void Renderer::offset(Vector2 offset)
 	this->coordOffset += offset * this->coordScale;
 }
 
+Vector2 Renderer::getOffset()
+{
+	return this->coordOffset;
+}
+
 void Renderer::setColor(int r, int g, int b)
 {
 	this->currentColor = RGB(r, g, b);

@@ -85,6 +85,9 @@ public:
 	// Anger hur mycket ska alla koordinater förflyttas
 	void offset(Vector2 offset);
 
+	// Returnerar hur mycket koordinater förflyttas
+	Vector2 getOffset();
+
 
 	// Sätter kanternas färg
 	void setColor(int r, int g, int b);

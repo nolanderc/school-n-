@@ -91,7 +91,7 @@ void MenuApp::mouseReleased(MouseButton button, int x, int y)
 				break;
 
 			case BUTTON_EDITOR:
-				this->addChild(new LevelEditor(this));
+				this->addChild(new LevelEditor(this, "levels/level1.lvl"));
 				break;
 
 			case BUTTON_EXIT:
