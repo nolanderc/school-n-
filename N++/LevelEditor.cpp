@@ -2,7 +2,7 @@
 
 
 LevelEditor::LevelEditor(App* parent) :
-	App(parent), level("levels/customLevel.lvl", NORMAL), grid(true), tilePalette(2, PALETTE_WIDTH_PIXELS / double(TILE_SIZE))
+	App(parent), level("levels/level0.lvl", NORMAL), grid(true), tilePalette(2, PALETTE_WIDTH_PIXELS / double(TILE_SIZE))
 {
 	this->setWindowSize(LEVEL_SIZE_PIXELS.cx + PALETTE_WIDTH_PIXELS, LEVEL_SIZE_PIXELS.cy);
 
@@ -296,11 +296,11 @@ void LevelEditor::mouseReleased(MouseButton button, int x, int y)
 				switch (menuButton->getID())
 				{
 				case EDITOR_BUTTON_SAVE:
-					this->level.save("levels/customLevel.lvl");
+					this->level.save("levels/level0.lvl");
 					break;
 
 				case EDITOR_BUTTON_RUN:
-					this->level.save("levels/customLevel.lvl");
+					this->level.save("levels/level0.lvl");
 
 					// Starta ett spel innuti redigeraren
 					this->addChild(new NinjaGame(this, this->level));

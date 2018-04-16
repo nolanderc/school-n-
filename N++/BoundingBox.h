@@ -14,5 +14,8 @@ struct BoundingBox
 
 	// Förflyttar rektangeln med en viss mängd
 	void translate(Vector2 amount);
+
+	// Avgör om en punkt finns innuti rektangeln
+	bool contains(Vector2 point);
 };
 

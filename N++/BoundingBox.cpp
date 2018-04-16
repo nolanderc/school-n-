@@ -24,3 +24,9 @@ void BoundingBox::translate(Vector2 amount)
 	this->top += amount.y;
 	this->bottom += amount.y;
 }
+
+bool BoundingBox::contains(Vector2 point)
+{
+	return this->left <= point.x && point.x <= this->right &&
+		this->top <= point.y && point.y <= this->bottom;
+}

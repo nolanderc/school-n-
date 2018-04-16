@@ -43,9 +43,6 @@
     <Filter Include="Level Selection">
       <UniqueIdentifier>{b6feaae6-f7d0-43d6-b3e4-c35106da2d54}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Level Selection\NewFilter1">
-      <UniqueIdentifier>{6a1522b3-e8fa-44a4-9b23-78512a38bb47}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">

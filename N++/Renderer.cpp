@@ -45,7 +45,7 @@ void Renderer::scale(double scale)
 
 void Renderer::offset(Vector2 offset)
 {
-	this->coordOffset += offset;
+	this->coordOffset += offset * this->coordScale;
 }
 
 void Renderer::setColor(int r, int g, int b)
@@ -138,6 +138,11 @@ void Renderer::fillRect(double x, double y, double width, double height)
 	this->fillRect(rect);
 }
 
+void Renderer::fillRect(BoundingBox box)
+{
+	this->fillRect(box.left, box.top, box.right - box.left, box.bottom - box.top);
+}
+
 void Renderer::fillRect(RECT rect)
 {
 	FillRect(this->target, &rect, this->currentBrush);
@@ -149,6 +154,11 @@ void Renderer::drawRect(double x, double y, double width, double height)
 	drawLine(x + width, y, x + width, y + height);
 	drawLine(x + width, y + height, x, y + height);
 	drawLine(x, y + height, x, y);
+}
+
+void Renderer::drawRect(BoundingBox box)
+{
+	this->drawRect(box.left, box.top, box.right - box.left, box.bottom - box.top);
 }
 
 void Renderer::drawRect(RECT rect)
@@ -382,7 +392,7 @@ void Renderer::switchBrush(HBRUSH brush)
 Vector2i Renderer::transform(Vector2 coord)
 {
 	return Vector2i(
-		round((coord.x + this->coordOffset.x) * this->coordScale),
-		round((coord.y + this->coordOffset.y) * this->coordScale)
+		round(coord.x * this->coordScale + this->coordOffset.x),
+		round(coord.y * this->coordScale + this->coordOffset.y)
 	);
 }

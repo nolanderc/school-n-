@@ -5,6 +5,7 @@
 
 #include "Bitmap.h"
 #include "Linear.h"
+#include "BoundingBox.h"
 
 // Olika stilar på linjer
 enum LineStyle {
@@ -123,10 +124,12 @@ public:
 
 	// Ritar en fylld rektangel
 	void fillRect(double x, double y, double width, double height);
+	void fillRect(BoundingBox box);
 	void fillRect(RECT rect);
 
 	// Ritar omkretsen av en rektangel
 	void drawRect(double x, double y, double width, double height);
+	void drawRect(BoundingBox box);
 	void drawRect(RECT rect);
 
 	// Ritar omkretsen av en cirkel
