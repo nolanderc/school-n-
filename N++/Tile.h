@@ -18,7 +18,6 @@ public:
 	// Sätter blockets position
 	virtual void setPosition(Vector2i position) = 0;
 
-	// virtual const ConvexHull& getConvexHull() const = 0;
 	// Ritar detta block
 	virtual void render(Renderer& renderer) = 0;
 
@@ -35,6 +34,11 @@ public:
 
 	// Anropas när spelaren avslutar sin kontakt med detta block
 	virtual void onInteractionEnd(InteractionHandler* handler) {}
+
+
+	// Anropas när en knapp trycktes
+	virtual void onButtonPressed(InteractionHandler* handler) {}
+
 
 	// Returnera en string (i ett lvl-format med parametrar)
 	virtual std::string getFormattedName() const = 0;
@@ -70,4 +74,8 @@ public:
 
 	// Anropas när alla block borde ritas om
 	virtual void requestRedraw() = 0;
+
+
+	// Anropas när en knapp aktiverades
+	virtual void buttonTriggered() = 0;
 };

@@ -45,6 +45,8 @@ void App::run()
 			this->setWindowSize(preferredWindowSize.cx, preferredWindowSize.cy);
 		}
 	}
+
+	this->closed();
 }
 
 void App::close()

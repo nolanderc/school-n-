@@ -12,8 +12,10 @@ TilePalette::TilePalette(int columns, double width)
 		TILE_WEDGE2,
 		TILE_MINE_ACTIVE,
 		TILE_MINE_INACTIVE,
-		TILE_EXIT,
-		TILE_COIN
+		TILE_EXIT_OPEN,
+		TILE_EXIT_CLOSED,
+		TILE_COIN,
+		TILE_BUTTON
 	};
 
 	this->currentTile = &this->tiles[0];
@@ -89,16 +91,25 @@ Tile* createTileFromID(TileID id)
 {
 	switch (id)
 	{
-	case TILE_SQUARE: return new SquareTile();
 	case TILE_PLAYER_START: return nullptr;
+
+	case TILE_SQUARE: return new SquareTile();
+
 	case TILE_WEDGE0: return new WedgeTile(0);
 	case TILE_WEDGE1: return new WedgeTile(1);
 	case TILE_WEDGE2: return new WedgeTile(2);
 	case TILE_WEDGE3: return new WedgeTile(3);
+
 	case TILE_MINE_ACTIVE: return new ActiveMine();
 	case TILE_MINE_INACTIVE: return new InactiveMine();
-	case TILE_EXIT: return new ExitTile();
+
 	case TILE_COIN: return new CoinTile();
+
+	case TILE_EXIT_OPEN: return new ExitTile(true);
+	case TILE_EXIT_CLOSED: return new ExitTile(false);
+
+	case TILE_BUTTON: return new ButtonTile();
+
 	default: return nullptr;
 	}
 }
@@ -108,14 +119,21 @@ TileID createTileIdFromName(const std::string& name)
 	std::string n = toLower(name);
 
 	if (n == "square ()") return TILE_SQUARE;
+
 	if (n == "wedge (0)") return TILE_WEDGE0;
 	if (n == "wedge (1)") return TILE_WEDGE1;
 	if (n == "wedge (2)") return TILE_WEDGE2;
 	if (n == "wedge (3)") return TILE_WEDGE3;
+
 	if (n == "activemine ()") return TILE_MINE_ACTIVE;
 	if (n == "inactivemine ()") return TILE_MINE_INACTIVE;
-	if (n == "exit ()") return TILE_EXIT;
+
+	if (n == "exit (0)") return TILE_EXIT_CLOSED;
+	if (n == "exit (1)") return TILE_EXIT_OPEN;
+
 	if (n == "coin ()") return TILE_COIN;
+	
+	if (n == "button ()") return TILE_BUTTON;
 
 	return TILE_PLAYER_START;
 }

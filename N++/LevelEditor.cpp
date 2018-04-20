@@ -2,11 +2,11 @@
 
 
 LevelEditor::LevelEditor(App* parent, std::string path) :
-	App(parent), path(path), level(path, NORMAL), grid(true), tilePalette(2, PALETTE_WIDTH_PIXELS / double(TILE_SIZE))
+	App(parent), path(path), level(path, HARD), grid(true), tilePalette(2, PALETTE_WIDTH_PIXELS / double(TILE_SIZE))
 {
 	if (this->level.getWidth() == 0)
 	{
-		this->level = Level(LEVEL_SIZE.cx, LEVEL_SIZE.cy, NORMAL);
+		this->level = Level(LEVEL_SIZE.cx, LEVEL_SIZE.cy, HARD);
 	}
 
 	this->setWindowSize(LEVEL_SIZE_PIXELS.cx + PALETTE_WIDTH_PIXELS, LEVEL_SIZE_PIXELS.cy);
@@ -72,6 +72,11 @@ void LevelEditor::draw(Renderer& renderer)
 	this->tilePalette.draw(renderer);
 }
 
+void LevelEditor::closed()
+{
+	this->level.save(this->path);
+}
+
 
 void LevelEditor::drawLevel(Renderer& renderer)
 {
@@ -91,8 +96,6 @@ void LevelEditor::drawLevel(Renderer& renderer)
 		levelRenderer.setColor(100, 100, 100);
 		Vector2 ninjaPos = this->level.getNinjaSpawn();
 		renderNinja(levelRenderer, ninjaPos);
-
-		DeleteDC(levelRenderer.releaseDC());
 	}
 
 	// Rita nivån

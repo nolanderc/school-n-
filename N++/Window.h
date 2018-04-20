@@ -67,6 +67,10 @@ class Window
 	SIZE size;
 
 
+	// Musens position i fönstret
+	Vector2i mousePosition;
+
+
 	// Lista över alla fönster
 	static std::vector<Window*> windows;
 

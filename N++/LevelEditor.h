@@ -55,9 +55,7 @@ public:
 	LevelEditor(App* parent, std::string path);
 
 
-
 private:
-	
 	// Skapar ett rum innuti nivån
 	void createLevelBorder();
 
@@ -88,6 +86,8 @@ protected:
 	void update(float deltaTime) override;
 
 	void draw(Renderer& renderer) override;
+
+	void closed() override;
 
 	void keyPressed(int key) override;
 

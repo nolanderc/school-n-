@@ -161,11 +161,12 @@ public:
 	void drawTextCentered(std::string text, double left, double right, double top, double bottom);
 
 	// Ritar en bitmapsbild
-	void drawBitmap(Bitmap& bitmap, int x, int y, int w, int h, int srcX, int srcY);
+	// Negativa tal för width och height ritar hela bilden
+	void drawBitmap(Bitmap& bitmap, int x, int y, int width = -1, int height = -1, int srcX = 0, int srcY = 0);
 
 	
 	// Ritar en bitmapsbild
-	void drawBitmapTransparent(Bitmap & bitmap, int x, int y, int w, int h, int srcX, int srcY, int srcW, int srcH, int filterR, int filterG, int filterB);
+	void drawBitmapTransparent(Bitmap & bitmap, int filterR, int filterG, int filterB, int x, int y, int width = -1, int height = -1, int srcX = 0, int srcY = 0, int srcWidth = -1, int srcHeight = -1);
 
 
 	// Kopierar denna ritares resultat till en dc

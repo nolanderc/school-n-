@@ -15,6 +15,9 @@ class LevelSelector: public App
 	struct LevelThumbnail
 	{
 		Level level;
+
+		Bitmap* levelBitmap;
+
 		BoundingBox container;
 	};
 
@@ -57,12 +60,22 @@ private:
 	// Skapar allt som tillhör informationspanelen
 	void createInformationPane();
 
+
 	// Skapar alla bilder och kollisionslådor för nivåerna
 	void createThumbnails(const std::vector<std::string>& paths);
+
+	// Ritar en nivå till en bitmapsbild och returnerar denna
+	Bitmap renderLevelThumbnail(Renderer& renderer, Level& level);
 
 	// Ritar alla nivër
 	void drawLevels(Renderer& renderer);
 
 	// Ritar ut information om den nivå som är vald
 	void drawLevelInformation(Renderer& renderer);
+
+	// Flyttar det valda alternativet
+	void changeSelected(int delta);
+
+	// Startar ett spel med en nivå
+	void playLevel(int levelIndex);
 };

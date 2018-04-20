@@ -47,6 +47,10 @@ protected:
 	virtual void draw(Renderer& renderer) = 0;
 
 
+	// Hantera att appen stängdes ned
+	virtual void closed() {};
+
+
 	// Hantera fönstrets nya storlek
 	void sizeChanged(int width, int height) override {}
 

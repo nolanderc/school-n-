@@ -140,6 +140,10 @@ public:
 	void spawnEffect(Effect* effect) override;
 
 
+	// Anropas när en knapp aktiverades
+	void buttonTriggered() override;
+
+
 	// Ger ninjan ett kommando
 	void moveNinja(NinjaMovement move);
 

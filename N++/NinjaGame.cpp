@@ -55,7 +55,7 @@ void NinjaGame::draw(Renderer & renderer)
 		levelRenderer.setFillColor(0, 0, 0);
 		level.renderStatic(levelRenderer);
 
-		DeleteDC(levelRenderer.releaseDC());
+		// DeleteDC(levelRenderer.releaseDC());
 		
 		this->renderLevel = false;
 	}

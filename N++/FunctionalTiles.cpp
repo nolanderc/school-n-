@@ -1,7 +1,11 @@
 ﻿#include "FunctionalTiles.h"
 
-ExitTile::ExitTile()
+////////////////////////////////////////////////////
+
+ExitTile::ExitTile(bool open) :
+	open(open)
 {
+	this->setPosition({ 0 });
 }
 
 Tile* ExitTile::clone()
@@ -19,11 +23,14 @@ void ExitTile::render(Renderer& renderer)
 	renderer.setFillColor(150, 150, 150);
 	this->renderDoorway(renderer, 0);
 
-	renderer.setFillColor(200, 0, 0);
-	this->renderDoorway(renderer, 0.05);
+	if (this->open)
+	{
+		renderer.setFillColor(200, 0, 0);
+		this->renderDoorway(renderer, 0.05);
 	
-	renderer.setFillColor(200, 200, 0);
-	this->renderDoorway(renderer, 0.15);
+		renderer.setFillColor(200, 200, 0);
+		this->renderDoorway(renderer, 0.15);
+	}
 }
 
 Vector2* ExitTile::overlap(const ConvexHull& other) const
@@ -48,12 +55,22 @@ bool ExitTile::passable() const
 
 std::string ExitTile::getFormattedName() const
 {
-	return "Exit ()";
+	return "Exit (" + std::to_string(int(this->open)) + ")";
 }
 
 void ExitTile::onInteractionStart(InteractionHandler* handler)
 {
-	handler->completeLevel();
+	if (this->open)
+	{
+		handler->completeLevel();
+	}
+}
+
+void ExitTile::onButtonPressed(InteractionHandler* handler)
+{
+	this->open = true;
+
+	handler->requestRedraw();
 }
 
 void ExitTile::renderDoorway(Renderer& renderer, double margin)
@@ -71,6 +88,10 @@ void ExitTile::renderDoorway(Renderer& renderer, double margin)
 		Vector2(x + margin, y + 1),
 	});
 }
+
+
+////////////////////////////////////////////////////
+
 
 CoinTile::CoinTile()
 {
@@ -156,6 +177,10 @@ void CoinTile::onInteractionStart(InteractionHandler* handler)
 	handler->increaseEnergy(1.0);
 }
 
+
+////////////////////////////////////////////////////
+
+
 InactiveMine::InactiveMine() :
 	triggered(false)
 {
@@ -227,6 +252,9 @@ void InactiveMine::onInteractionEnd(InteractionHandler* handler)
 }
 
 
+////////////////////////////////////////////////////
+
+
 ActiveMine::ActiveMine()
 {
 	this->setPosition({ 0 });
@@ -289,3 +317,71 @@ void ActiveMine::onInteractionStart(InteractionHandler* handler)
 	handler->spawnEffect(new Explosion(this->hull.average()));
 	handler->setTile(this->position, nullptr);
 }
+
+
+////////////////////////////////////////////////////
+
+
+ButtonTile::ButtonTile()
+{
+	this->setPosition({ 0 });
+}
+
+Tile* ButtonTile::clone()
+{
+	return new ButtonTile(*this);
+}
+
+void ButtonTile::setPosition(Vector2i position)
+{
+	this->position = position;
+	Vector2 center = Vector2(0.5) + position;
+
+	this->hull = ConvexHull({
+		center + Vector2(-w, -h),
+		center + Vector2(w, -h),
+		center + Vector2(w, h),
+		center + Vector2(-w, h),
+	});
+}
+
+void ButtonTile::render(Renderer& renderer)
+{
+	Vector2 center = Vector2(this->hull.average());
+
+	if (this->triggered)
+	{
+		renderer.setColor(255, 0, 0);
+	} else
+	{
+		renderer.setColor(100, 150, 100);
+	}
+	renderer.setFillColor(200, 0, 150);
+	renderer.setLineWidth(0.1);
+	renderer.setLineStyle(LINE_SOLID);
+
+	renderer.drawRect(center.x - w, center.y - h, 2 * w, 2 * h);
+}
+
+Vector2* ButtonTile::overlap(const ConvexHull& other) const
+{
+	return this->hull.overlap(other);
+}
+
+bool ButtonTile::passable() const
+{
+	return true;
+}
+
+std::string ButtonTile::getFormattedName() const
+{
+	return "Button ()";
+}
+
+void ButtonTile::onInteractionStart(InteractionHandler* handler)
+{
+	handler->buttonTriggered();
+
+	this->triggered = true;
+}
+

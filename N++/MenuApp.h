@@ -15,6 +15,8 @@ class MenuApp: public App
 
 	std::vector<MenuButton*> buttons;
 
+	int* selectedButton;
+
 public:
 
 	MenuApp();
@@ -30,4 +32,13 @@ protected:
 
 	void mousePressed(MouseButton button, int x, int y) override;
 	void mouseReleased(MouseButton button, int x, int y) override;
+
+private:
+
+	// Ändrar den valda knappen
+	void changeSelected(int index);
+
+
+	// Anropas när en knapp trycks
+	void buttonPressed(int buttonIndex);
 };

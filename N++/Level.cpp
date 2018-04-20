@@ -273,7 +273,7 @@ void Level::checkInteractions()
 
 void Level::completeLevel()
 {
-	this->reset();
+	// this->reset();
 }
 
 void Level::killNinja(CauseOfDeath causeOfDeath)
@@ -288,6 +288,20 @@ void Level::killNinja(CauseOfDeath causeOfDeath)
 void Level::spawnEffect(Effect* effect)
 {
 	this->effects.push_back(effect);
+}
+
+void Level::buttonTriggered()
+{
+	int tileCount = this->tiles.size();
+	for (int i = 0; i < tileCount; i++)
+	{
+		Tile* tile = this->tiles[i];
+
+		if (tile)
+		{
+			tile->onButtonPressed(this);
+		}
+	}
 }
 
 void Level::moveNinja(NinjaMovement move)
@@ -460,7 +474,11 @@ Tile* Level::createTile(const std::string& name, std::stringstream& parameters)
 	
 	if (tileName == "exit")
 	{
-		return new ExitTile();
+		int open;
+		if (parameters >> open)
+		{
+			return new ExitTile(open);
+		}
 	}
 
 	if (tileName == "coin")
@@ -476,6 +494,11 @@ Tile* Level::createTile(const std::string& name, std::stringstream& parameters)
 	if (tileName == "inactivemine")
 	{
 		return new InactiveMine();
+	}
+
+	if (tileName == "button")
+	{
+		return new ButtonTile();
 	}
 
 	return nullptr;

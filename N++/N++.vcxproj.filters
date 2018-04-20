@@ -211,5 +211,7 @@
   <ItemGroup>
     <None Include="levels\level0.lvl" />
     <None Include="levels\customLevel.lvl" />
+    <None Include="levels\level1.lvl" />
+    <None Include="levels\level2.lvl" />
   </ItemGroup>
 </Project>

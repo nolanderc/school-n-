@@ -9,7 +9,7 @@ LevelSelector::LevelSelector(App* parent) :
 	this->createThumbnails({
 		"levels/level0.lvl",
 		"levels/level1.lvl",
-		"levels/customLevel.lvl"
+		"levels/level2.lvl"
 	});
 
 	this->setWindowSize(1280, 720); 
@@ -109,8 +109,7 @@ void LevelSelector::mouseReleased(MouseButton button, int x, int y)
 		if (this->selectedLevel && this->playButton.contains(Vector2(x, y))) {
 			this->playButton.setSelected(false);
 
-			this->levels[*this->selectedLevel].level.setDifficulty(this->difficulty);
-			this->addChild(new NinjaGame(this, this->levels[*this->selectedLevel].level));
+			this->playLevel(*this->selectedLevel);
 		}
 	}
 }
@@ -120,6 +119,39 @@ void LevelSelector::keyPressed(int key)
 	if (key == VK_ESCAPE)
 	{
 		this->close();
+	}
+
+	if (key == VK_RETURN || key == VK_SPACE)
+	{
+		if (this->selectedLevel)
+		{
+			this->playLevel(*this->selectedLevel);
+		}
+	}
+
+	if(key == VK_UP || key == 'W')
+	{
+		this->changeSelected(-2);
+	}
+
+	if (key == VK_DOWN || key == 'S')
+	{
+		this->changeSelected(2);
+	}
+
+	if (key == VK_LEFT || key == 'A')
+	{
+		this->changeSelected(-1);
+	}
+
+	if (key == VK_RIGHT || key == 'D')
+	{
+		this->changeSelected(1);
+	}
+
+	if (key == VK_TAB)
+	{
+		this->difficulty = Difficulty((int(this->difficulty) + 1) % 3);
 	}
 }
 
@@ -160,6 +192,8 @@ void LevelSelector::createThumbnails(const std::vector<std::string>& paths)
 
 		LevelThumbnail thumbnail = {
 			level,
+
+			nullptr,
 			
 			BoundingBox(
 				offset.x, offset.x + width, 
@@ -169,6 +203,27 @@ void LevelSelector::createThumbnails(const std::vector<std::string>& paths)
 
 		this->levels.push_back(thumbnail);
 	}
+}
+
+Bitmap LevelSelector::renderLevelThumbnail(Renderer& renderer, Level& level)
+{
+	int width = TILE_SIZE * level.getWidth();
+	int height = TILE_SIZE * level.getHeight();
+
+	Bitmap target = this->createCompatibleBitmap({width, height});
+	Renderer bitmapRenderer = renderer.createBitmapRenderer(target);
+
+	bitmapRenderer.setFillColor(63, 174, 12);
+	bitmapRenderer.clear();
+
+	bitmapRenderer.scale(TILE_SIZE);
+
+	bitmapRenderer.setFillColor(0, 0, 0);
+
+	level.renderStatic(bitmapRenderer);
+	level.renderDynamic(bitmapRenderer);
+
+	return target;
 }
 
 void LevelSelector::drawLevels(Renderer& renderer)
@@ -192,14 +247,17 @@ void LevelSelector::drawLevels(Renderer& renderer)
 
 
 		Vector2 delta(thumbnail.container.left, thumbnail.container.top);
-		renderer.offset(delta);
-		renderer.scale(TILE_SIZE);
 
-		thumbnail.level.renderStatic(renderer);
-		thumbnail.level.renderDynamic(renderer);
+		if (!thumbnail.levelBitmap)
+		{
+			thumbnail.levelBitmap = new Bitmap(this->renderLevelThumbnail(renderer, thumbnail.level));
+		}
 
-		renderer.scale(1.0 / TILE_SIZE);
-		renderer.offset(-delta);
+		renderer.drawBitmapTransparent(
+			*thumbnail.levelBitmap,
+			63, 174, 12,
+			thumbnail.container.left, thumbnail.container.top
+		);
 	}
 }
 
@@ -213,7 +271,9 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 		double width = windowSize.cx - offset.x - TILE_SIZE * TILE_MARGIN;
 		double height = windowSize.cy - offset.y - TILE_SIZE * TILE_MARGIN;
 
-		renderer.setFillColor(75, 75, 75);
+		int grey = 25;
+
+		renderer.setFillColor(grey, grey, grey);
 		renderer.fillRect(0, 0, width, height);
 
 		renderer.offset(-offset);
@@ -223,13 +283,13 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 		for (int i = 0; i < difficulties; ++i)
 		{
 			if (i == this->difficulty) {
-				renderer.setFillColor(75, 75, 75);
-				renderer.setTextBackgroundColor(75, 75, 75);
+				renderer.setFillColor(grey, grey, grey);
+				renderer.setTextBackgroundColor(grey, grey, grey);
 
 				renderer.setTextColor(255, 255, 255);
 			} else {
-				renderer.setFillColor(50, 50, 50);
-				renderer.setTextBackgroundColor(50, 50, 50);
+				renderer.setFillColor(grey / 2, grey / 2, grey / 2);
+				renderer.setTextBackgroundColor(grey / 2, grey / 2, grey / 2);
 
 				renderer.setTextColor(150, 150, 150);
 			}
@@ -256,5 +316,28 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 		renderer.setLineStyle(LINE_NONE);
 		this->playButton.render(renderer);
 		renderer.offset(offset);
+	}
+}
+
+void LevelSelector::changeSelected(int delta)
+{
+	if (this->selectedLevel)
+	{
+		*this->selectedLevel = clamp(
+			*this->selectedLevel + delta,
+			0, int(this->levels.size() - 1)
+		);
+	} else
+	{
+		this->selectedLevel = new int(delta > 0 ? 0 : this->levels.size() - 1);
+	}
+}
+
+void LevelSelector::playLevel(int levelIndex)
+{
+	if (0 <= levelIndex && levelIndex < this->levels.size())
+	{
+		this->levels[levelIndex].level.setDifficulty(this->difficulty);
+		this->addChild(new NinjaGame(this, this->levels[levelIndex].level));
 	}
 }

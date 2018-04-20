@@ -9,9 +9,11 @@ class ExitTile : public Tile
 {
 	Vector2i position;
 
+	bool open;
+
 public:
 
-	ExitTile();
+	ExitTile(bool open);
 
 	Tile* clone() override;
 
@@ -27,6 +29,8 @@ public:
 
 
 	void onInteractionStart(InteractionHandler* handler) override;
+
+	void onButtonPressed(InteractionHandler* handler) override;
 
 private:
 
@@ -122,3 +126,34 @@ public:
 	void onInteractionStart(InteractionHandler* handler) override;
 };
 
+
+class ButtonTile : public Tile
+{
+	Vector2i position;
+
+	ConvexHull hull;
+
+	bool triggered;
+
+	const double w = 0.2;
+	const double h = 0.1;
+
+public:
+
+	ButtonTile();
+
+	Tile* clone() override;
+
+	void setPosition(Vector2i position) override;
+
+	void render(Renderer& renderer) override;
+
+	Vector2* overlap(const ConvexHull& other) const override;
+
+	bool passable() const override;
+
+	std::string getFormattedName() const override;
+
+
+	void onInteractionStart(InteractionHandler* handler) override;
+};

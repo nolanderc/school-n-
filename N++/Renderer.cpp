@@ -29,12 +29,16 @@ Renderer::~Renderer()
 {
 	this->switchPen(this->oldPen);
 	this->switchBrush(this->oldBrush);
+
+	if (this->target) {
+		DeleteDC(this->target);
+	}
 }
 
 HDC Renderer::releaseDC()
 {
 	HDC dc = this->target;
-	this->target = NULL;
+	this->target = nullptr;
 	return dc;
 }
 
@@ -325,20 +329,39 @@ void Renderer::drawTextCentered(std::string text, double left, double right, dou
 	this->drawTextCentered(text, rect);
 }
 
-void Renderer::drawBitmap(Bitmap& bitmap, int x, int y, int w, int h, int srcX, int srcY)
+void Renderer::drawBitmap(Bitmap& bitmap, int x, int y, int width, int height, int srcX, int srcY)
 {
 	HDC bitmapDC = CreateCompatibleDC(this->target);
 	HBITMAP old = bitmap.selectInto(bitmapDC);
-	BitBlt(this->target, x, y, w, h, bitmapDC, srcX, srcY, SRCCOPY);
+
+	BitBlt(
+		this->target,
+		x, y,
+		width < 0 ? bitmap.getWidth() : width, height < 0 ? bitmap.getHeight() : height,
+		bitmapDC,
+		srcX, srcY,
+		SRCCOPY
+	);
+
 	SelectObject(bitmapDC, old);
 	DeleteDC(bitmapDC);
 }
 
-void Renderer::drawBitmapTransparent(Bitmap & bitmap, int x, int y, int w, int h, int srcX, int srcY, int srcW, int srcH, int filterR, int filterG, int filterB)
+void Renderer::drawBitmapTransparent(Bitmap & bitmap, int filterR, int filterG, int filterB, int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
 {
 	HDC bitmapDC = CreateCompatibleDC(this->target);
 	HBITMAP old = bitmap.selectInto(bitmapDC);
-	TransparentBlt(this->target, x, y, w, h, bitmapDC, srcX, srcY, srcW, srcH, RGB(filterR, filterG, filterB));
+
+	TransparentBlt(
+		this->target,
+		x, y, 
+		width < 0 ? bitmap.getWidth() : width, height < 0 ? bitmap.getHeight() : height,
+		bitmapDC, 
+		srcX, srcY, 
+		srcWidth < 0 ? bitmap.getWidth() : srcWidth, srcHeight < 0 ? bitmap.getHeight() : srcHeight,
+		RGB(filterR, filterG, filterB)
+	);
+
 	SelectObject(bitmapDC, old);
 	DeleteDC(bitmapDC);
 }
