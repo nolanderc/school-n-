@@ -18,7 +18,7 @@ public:
 
 	Vector2* overlap(const ConvexHull& other) const override;
 
-	bool passable() const override;
+	bool isPassable() const override;
 
 	std::string getFormattedName() const override;
 };
@@ -41,7 +41,7 @@ public:
 
 	Vector2* overlap(const ConvexHull& other) const override;
 
-	bool passable() const override;
+	bool isPassable() const override;
 	
 	std::string getFormattedName() const override;
 };

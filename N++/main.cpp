@@ -10,7 +10,7 @@
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev, LPSTR cmdLine, int nCmdShow)
 {
-#if 0
+#if 1
 		AllocConsole();
 		AttachConsole(GetCurrentProcessId());
 		FILE* file;

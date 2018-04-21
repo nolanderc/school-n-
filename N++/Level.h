@@ -47,6 +47,10 @@ private:
 	std::vector<Effect*> effects;
 
 
+	// Alla entiteter
+	std::vector<Entity*> entities;
+
+
 	// Positionen där spelaren börjar
 	Vector2i playerStart;
 
@@ -139,9 +143,17 @@ public:
 	// Skapar en ny effekt
 	void spawnEffect(Effect* effect) override;
 
+	
+	// Skapar en ny entitet
+	void spawnEntity(Entity* entity) override;
+
 
 	// Anropas när en knapp aktiverades
 	void buttonTriggered() override;
+
+
+	// Returnerar ninjans nuvarande position
+	Vector2 getNinjaPosition() override;
 
 
 	// Ger ninjan ett kommando
@@ -160,6 +172,7 @@ public:
 
 	// Sätter nivåns svårighet
 	void setDifficulty(Difficulty difficulty);
+
 
 
 private:
@@ -197,8 +210,17 @@ private:
 	void updateEffects(double deltaTime);
 
 
+	// Uppdaterar alla entiteter
+	void updateEntities(double deltaTime);
+
+
+	// Uppdaterar alla block
+	void updateTiles(double deltaTime);
+
+
 	// Koller efter interaktioner mellan ninjan och block
 	void checkInteractions();
+
 
 };
 

@@ -91,15 +91,12 @@ void LevelEditor::drawLevel(Renderer& renderer)
 
 		levelRenderer.setFillColor(0, 0, 0);
 		level.renderStatic(levelRenderer);
-
-		levelRenderer.setLineStyle(LINE_SOLID);
-		levelRenderer.setColor(100, 100, 100);
-		Vector2 ninjaPos = this->level.getNinjaSpawn();
-		renderNinja(levelRenderer, ninjaPos);
 	}
 
 	// Rita nivån
 	renderer.drawBitmap(this->levelBitmap, 0, 0, this->levelBitmap.getWidth(), this->levelBitmap.getHeight(), 0, 0);
+
+	this->level.renderDynamic(renderer);
 
 	// Rita en ram runt nivån
 	renderer.setColor(0, 0, 0);

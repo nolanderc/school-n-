@@ -35,7 +35,7 @@ Vector2* SquareTile::overlap(const ConvexHull& other) const
 	return this->hull.overlap(other);
 }
 
-bool SquareTile::passable() const
+bool SquareTile::isPassable() const
 {
 	return false;
 }
@@ -85,7 +85,7 @@ Vector2* WedgeTile::overlap(const ConvexHull& other) const
 	return this->hull.overlap(other);
 }
 
-bool WedgeTile::passable() const
+bool WedgeTile::isPassable() const
 {
 	return false;
 }

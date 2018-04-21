@@ -15,7 +15,8 @@ TilePalette::TilePalette(int columns, double width)
 		TILE_EXIT_OPEN,
 		TILE_EXIT_CLOSED,
 		TILE_COIN,
-		TILE_BUTTON
+		TILE_BUTTON,
+		TILE_ROCKET
 	};
 
 	this->currentTile = &this->tiles[0];
@@ -110,6 +111,9 @@ Tile* createTileFromID(TileID id)
 
 	case TILE_BUTTON: return new ButtonTile();
 
+	case TILE_ROCKET: return new RocketTile();
+
+
 	default: return nullptr;
 	}
 }
@@ -134,6 +138,8 @@ TileID createTileIdFromName(const std::string& name)
 	if (n == "coin ()") return TILE_COIN;
 	
 	if (n == "button ()") return TILE_BUTTON;
+
+	if (n == "rocket ()") return TILE_ROCKET;
 
 	return TILE_PLAYER_START;
 }

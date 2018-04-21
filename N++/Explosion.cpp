@@ -1,6 +1,6 @@
 ﻿#include "Explosion.h"
 
-Explosion::Explosion(Vector2 center) :
+Explosion::Explosion(Vector2 center, double size) :
 	center(center), age(0)
 {
 	enum ParticleType {
@@ -10,8 +10,9 @@ Explosion::Explosion(Vector2 center) :
 		TYPE_COUNT
 	};
 
+	this->lifetime = random(0.4, 0.5);
 
-	int flameCount = random(100, 200);
+	int flameCount = random(10 * size, 20 * size);
 	for (int i = 0; i < flameCount; i++)
 	{
 		Flame flame;
@@ -19,7 +20,7 @@ Explosion::Explosion(Vector2 center) :
 		flame.distance = random(0.0, 1.0);
 		flame.speed = random(16.0, 24.0);
 		flame.direction = Vector2::rotated(random(0, 360));
-		flame.lifetime = random(LIFETIME * 0.8, LIFETIME);
+		flame.lifetime = random(lifetime * size * 0.08, lifetime);
 
 		int type;
 		int r = rand() % 100;
@@ -76,7 +77,7 @@ Explosion::Explosion(Vector2 center) :
 
 bool Explosion::isAlive()
 {
-	return this->age < LIFETIME;
+	return this->age < lifetime;
 }
 
 void Explosion::update(double deltaTime)
@@ -104,8 +105,8 @@ void Explosion::render(Renderer& renderer)
 		Flame& flame = this->flames[i];
 
 		renderer.setColor(flame.red, flame.green, flame.blue);
-
 		renderer.setLineWidth(lerp(this->age / flame.lifetime, flame.width, 0.0));
+		renderer.setLineStyle(LINE_SOLID);
 
 		Vector2 end = flame.center + flame.distance * flame.direction;
 		Vector2 start = (flame.distance > flame.maxLength ? end - flame.maxLength * flame.direction : flame.center);

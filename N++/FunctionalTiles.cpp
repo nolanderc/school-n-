@@ -3,7 +3,8 @@
 ////////////////////////////////////////////////////
 
 ExitTile::ExitTile(bool open) :
-	open(open)
+	open(open),
+	openAmount(double(open))
 {
 	this->setPosition({ 0 });
 }
@@ -18,18 +19,25 @@ void ExitTile::setPosition(Vector2i position)
 	this->position = position;
 }
 
+void ExitTile::update(InteractionHandler* handler, double deltaTime)
+{
+	if(this->open) {
+		this->openAmount = clamp(this->openAmount + deltaTime * 4, 0.0, 1.0);
+	}
+}
+
 void ExitTile::render(Renderer& renderer)
 {
 	renderer.setFillColor(150, 150, 150);
-	this->renderDoorway(renderer, 0);
+	this->renderDoorway(renderer, 1, 1);
 
 	if (this->open)
 	{
 		renderer.setFillColor(200, 0, 0);
-		this->renderDoorway(renderer, 0.05);
+		this->renderDoorway(renderer, easeInOut(this->openAmount, 0.0, 0.9), 0.95);
 	
 		renderer.setFillColor(200, 200, 0);
-		this->renderDoorway(renderer, 0.15);
+		this->renderDoorway(renderer, easeInOut(this->openAmount, 0.0, 0.75), 0.85);
 	}
 }
 
@@ -48,8 +56,12 @@ Vector2* ExitTile::overlap(const ConvexHull& other) const
 	return nullptr;
 }
 
-bool ExitTile::passable() const
+bool ExitTile::isPassable() const
 {
+	return true;
+}
+
+bool ExitTile::isDynamic() const {
 	return true;
 }
 
@@ -73,19 +85,21 @@ void ExitTile::onButtonPressed(InteractionHandler* handler)
 	handler->requestRedraw();
 }
 
-void ExitTile::renderDoorway(Renderer& renderer, double margin)
+void ExitTile::renderDoorway(Renderer& renderer, double width, double height)
 {
-	double x = this->position.x;
-	double y = this->position.y;
+	double w = width / 2;
+
+	double x = this->position.x + 0.5;
+	double y = this->position.y + 1;
 
 	renderer.fillPolygon({
-		Vector2(x + margin, y + 0.25 + margin),
-		Vector2(x + 0.25 + margin, y + margin),
-		Vector2(x + 0.75 - margin, y + margin),
-		Vector2(x + 1 - margin, y + 0.25 + margin),
+		Vector2(x - w, y - 0.75*height),
+		Vector2(x - 0.5*w, y - height),
+		Vector2(x + 0.5*w, y - height),
+		Vector2(x + w, y - 0.75*height),
 
-		Vector2(x + 1 - margin, y + 1),
-		Vector2(x + margin, y + 1),
+		Vector2(x + w, y),
+		Vector2(x - w, y),
 	});
 }
 
@@ -153,7 +167,7 @@ Vector2* CoinTile::overlap(const ConvexHull& other) const
 	return this->hull.overlap(other);
 }
 
-bool CoinTile::passable() const
+bool CoinTile::isPassable() const
 {
 	return true;
 }
@@ -230,7 +244,7 @@ Vector2* InactiveMine::overlap(const ConvexHull& other) const
 	return this->hull.overlap(other);
 }
 
-bool InactiveMine::passable() const
+bool InactiveMine::isPassable() const
 {
 	return true;
 }
@@ -301,7 +315,7 @@ Vector2* ActiveMine::overlap(const ConvexHull& other) const
 	return this->hull.overlap(other);
 }
 
-bool ActiveMine::passable() const
+bool ActiveMine::isPassable() const
 {
 	return true;
 }
@@ -314,7 +328,7 @@ std::string ActiveMine::getFormattedName() const
 void ActiveMine::onInteractionStart(InteractionHandler* handler)
 {
 	handler->killNinja(CauseOfDeath::EXPLOSION);
-	handler->spawnEffect(new Explosion(this->hull.average()));
+	handler->spawnEffect(new Explosion(this->hull.average(), 10));
 	handler->setTile(this->position, nullptr);
 }
 
@@ -368,7 +382,7 @@ Vector2* ButtonTile::overlap(const ConvexHull& other) const
 	return this->hull.overlap(other);
 }
 
-bool ButtonTile::passable() const
+bool ButtonTile::isPassable() const
 {
 	return true;
 }
@@ -385,3 +399,84 @@ void ButtonTile::onInteractionStart(InteractionHandler* handler)
 	this->triggered = true;
 }
 
+
+
+////////////////////////////////////////////////////
+
+
+RocketTile::RocketTile() :
+	cooldown(1), canFire(true)
+{
+	this->setPosition({ 0 });
+}
+
+Tile* RocketTile::clone()
+{
+	return new RocketTile(*this);
+}
+
+void RocketTile::setPosition(Vector2i position)
+{
+	this->position = position;
+}
+
+void RocketTile::update(InteractionHandler* handler, double deltaTime)
+{
+	if (canFire)
+	{
+		this->cooldown = clamp(this->cooldown - deltaTime * 1.0, 0.0, 1.0);
+
+		if(this->cooldown == 0)
+		{
+			Vector2 center = Vector2(this->position) + Vector2(0.5);
+			Vector2 velocity = 5 * (handler->getNinjaPosition() - center).normal();
+
+			handler->spawnEntity(new Rocket(this, center, velocity));
+
+			this->cooldown = 1;
+			this->canFire = false;
+		}
+	}
+
+}
+
+void RocketTile::render(Renderer& renderer)
+{
+	Vector2 center = Vector2(this->position) + Vector2(0.5);
+
+	renderer.setColor(100, 100, 200);
+	renderer.setFillColor(100, 100, 200);
+
+	renderer.setLineStyle(LINE_SOLID);
+	renderer.setLineWidth(1.0 / 20);
+
+	renderer.drawCircle(center.x, center.y, 0.3);
+
+	renderer.setLineStyle(LINE_NONE);
+	renderer.fillCircle(center.x, center.y, lerp(this->cooldown, 0.3, 0.0));
+}
+
+Vector2* RocketTile::overlap(const ConvexHull& other) const
+{
+	return nullptr;
+}
+
+bool RocketTile::isPassable() const
+{
+	return true;
+}
+
+bool RocketTile::isDynamic() const
+{
+	return true;
+}
+
+std::string RocketTile::getFormattedName() const
+{
+	return "Rocket ()";
+}
+
+void RocketTile::onRocketExplode()
+{
+	this->canFire = true;
+}

@@ -154,6 +154,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="Bitmap.cpp" />
     <ClCompile Include="BoundingBox.cpp" />
+    <ClCompile Include="Entities.cpp" />
     <ClCompile Include="LevelEditor.cpp" />
     <ClCompile Include="LevelEditorButtons.cpp" />
     <ClCompile Include="LevelSelector.cpp" />
@@ -181,6 +182,9 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="Bitmap.h" />
     <ClInclude Include="BoundingBox.h" />
+    <ClInclude Include="Entities.h" />
+    <ClInclude Include="Entity.h" />
+    <ClInclude Include="InteractionHandler.h" />
     <ClInclude Include="LevelEditor.h" />
     <ClInclude Include="LevelEditorButtons.h" />
     <ClInclude Include="LevelSelector.h" />

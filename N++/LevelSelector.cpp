@@ -3,8 +3,8 @@
 
 LevelSelector::LevelSelector(App* parent) :
 	App(parent),
-	playButton(Vector2(1280 - TILE_SIZE * TILE_MARGIN - 80, 720 - TILE_SIZE*TILE_MARGIN - 80), 60),
-	difficulty(NORMAL)
+	difficulty(NORMAL),
+	playButton(Vector2(1280 - TILE_SIZE * TILE_MARGIN - 80, 720 - TILE_SIZE*TILE_MARGIN - 80), 60)
 {
 	this->createThumbnails({
 		"levels/level0.lvl",

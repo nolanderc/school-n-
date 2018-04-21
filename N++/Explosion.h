@@ -25,14 +25,14 @@ class Explosion: public Effect
 	Vector2 center;
 
 	double age;
-	const double LIFETIME = 0.5;
+	double lifetime;
 
 	std::vector<Flame> flames;
 
 public:
 	
 	// Skapar en ny, slumpmässig, explosion
-	Explosion(Vector2 center);
+	Explosion(Vector2 center, double size);
 
 	bool isAlive() override;
 

@@ -73,7 +73,9 @@ void Level::reset()
 {
 	deleteVectorElements(this->tiles);
 	deleteVectorElements(this->effects);
+	deleteVectorElements(this->entities);
 	this->interactingTiles.clear();
+
 
 	this->tiles = cloneTiles(this->originalTiles);
 	this->spawnNinja();
@@ -106,7 +108,7 @@ void Level::renderStatic(Renderer & renderer)
 	for (int i = 0; i < tileCount; i++)
 	{
 		Tile* tile = this->tiles[i];
-		if (tile) {
+		if (tile && !tile->isDynamic()) {
 			renderer.setColor(0, 0, 0);
 			renderer.setFillColor(0, 0, 0);
 			renderer.setLineStyle(LINE_NONE);
@@ -120,13 +122,20 @@ void Level::renderStatic(Renderer & renderer)
 
 void Level::renderDynamic(Renderer& renderer)
 {
-	if (this->ninja) {
-		this->ninja->render(renderer);
-	} else {
-		
-		renderer.drawTextCentered("Press SPACE to retry!", 0, this->width, 0, this->height);
-	}
+	// Rita dynamiska block
+	int tileCount = this->tiles.size();
+	for (int i = 0; i < tileCount; i++)
+	{
+		Tile* tile = this->tiles[i];
 
+		if (tile && tile->isDynamic()) {
+			renderer.setColor(0, 0, 0);
+			renderer.setFillColor(0, 0, 0);
+			renderer.setLineStyle(LINE_NONE);
+
+			tile->render(renderer);
+		}
+	}
 
 	// Rita alla effekter
 	int effectCount = this->effects.size();
@@ -135,6 +144,28 @@ void Level::renderDynamic(Renderer& renderer)
 		Effect* effect = this->effects[i];
 
 		effect->render(renderer);
+	}
+
+
+	// Rita alla entiteter
+	int entityCount = this->entities.size();
+	for (int i = 0; i < entityCount; ++i)
+	{
+		Entity* entity = this->entities[i];
+
+		entity->render(renderer);
+	}
+
+
+	// Rita ninjan
+	if (this->ninja) {
+		renderer.setColor(100, 100, 100);
+		renderer.setLineWidthAbsolute(1);
+
+		this->ninja->render(renderer);
+	}
+	else {
+		renderer.drawTextCentered("Press SPACE to retry!", 0, this->width, 0, this->height);
 	}
 }
 
@@ -155,7 +186,7 @@ Vector2 * Level::overlap(const ConvexHull & other) const
 		for (int y = top; y <= bottom; y++)
 		{
 			const Tile* tile = getTile({ x, y });
-			if (tile && !tile->passable()) {
+			if (tile && !tile->isPassable()) {
 				Vector2* overlap = tile->overlap(other);
 				if (overlap) {
 					double length = overlap->length();
@@ -224,6 +255,68 @@ void Level::updateEffects(double deltaTime)
 	}
 }
 
+void Level::updateEntities(double deltaTime)
+{
+	int entityCount = this->entities.size();
+	for (int i = 0; i < entityCount; ++i)
+	{
+		Entity* entity = this->entities[i];
+
+		entity->update(this, deltaTime);
+
+		if (this->ninja)
+		{
+			if (Vector2* overlap = findFirstOverlap(this->ninja->getConvexHull(), {entity}))
+			{
+				delete overlap;
+				entity->onNinjaCollide(this);
+			}
+		}
+
+		BoundingBox bounds = entity->getBoundingBox();
+
+		int left = floor(bounds.left);
+		int right = ceil(bounds.right);
+		int top = floor(bounds.top);
+		int bottom = ceil(bounds.bottom);
+
+		for (int x = left; x <= right; x++)
+		{
+			for (int y = top; y <= bottom; y++)
+			{
+				if (!this->hasCoord({ x, y })) continue;
+
+				Tile* tile = getTileRef({ x, y });
+				if (tile && !tile->isPassable()) {
+					if (Vector2* overlap = entity->overlap(tile))
+					{
+						delete overlap;
+						entity->onCollide(this);
+					}
+				}
+			}
+		}
+
+		if (!entity->isAlive()) {
+			this->entities.erase(this->entities.begin() + i);
+			i--; entityCount--;
+		}
+	}
+}
+
+void Level::updateTiles(double deltaTime)
+{
+	int tileCount = this->tiles.size();
+	for (int i = 0; i < tileCount; i++)
+	{
+		Tile* tile = this->tiles[i];
+
+		if (tile) {
+			tile->update(this, deltaTime);
+		}
+	}
+}
+
 void Level::checkInteractions()
 {
 	if (!this->ninja) return;
@@ -243,7 +336,7 @@ void Level::checkInteractions()
 			if (!this->hasCoord({ x, y })) continue;
 
 			Tile* tile = getTileRef({ x, y });
-			if (tile && tile->passable()) {
+			if (tile && tile->isPassable()) {
 				int index = find(this->interactingTiles, tile);
 				Vector2* overlap = tile->overlap(ninja->getConvexHull());
 
@@ -273,7 +366,7 @@ void Level::checkInteractions()
 
 void Level::completeLevel()
 {
-	// this->reset();
+	this->reset();
 }
 
 void Level::killNinja(CauseOfDeath causeOfDeath)
@@ -290,6 +383,11 @@ void Level::spawnEffect(Effect* effect)
 	this->effects.push_back(effect);
 }
 
+void Level::spawnEntity(Entity* entity)
+{
+	this->entities.push_back(entity);
+}
+
 void Level::buttonTriggered()
 {
 	int tileCount = this->tiles.size();
@@ -297,11 +395,21 @@ void Level::buttonTriggered()
 	{
 		Tile* tile = this->tiles[i];
 
-		if (tile)
-		{
+		if (tile) {
 			tile->onButtonPressed(this);
 		}
 	}
+}
+
+Vector2 Level::getNinjaPosition()
+{
+	static Vector2 lastPosition = Vector2(this->playerStart) + Vector2(0.5);
+
+	if (this->ninja) {
+		lastPosition = this->ninja->getConvexHull().average();
+	}
+
+	return lastPosition;
 }
 
 void Level::moveNinja(NinjaMovement move)
@@ -315,6 +423,7 @@ void Level::setNinjaSpawn(Vector2i coord)
 {
 	this->setTile(coord, nullptr);
 	this->playerStart = coord;
+	this->spawnNinja();
 }
 
 Vector2i Level::getNinjaSpawn()
@@ -501,6 +610,11 @@ Tile* Level::createTile(const std::string& name, std::stringstream& parameters)
 		return new ButtonTile();
 	}
 
+	if (tileName == "rocket")
+	{
+		return new RocketTile();
+	}
+
 	return nullptr;
 }
 
@@ -533,7 +647,11 @@ void Level::update(double deltaTime)
 		}
 	}
 
+	this->updateTiles(deltaTime);
+
 	this->checkInteractions();
+
+	this->updateEntities(deltaTime);
 
 	this->updateEffects(deltaTime);
 }

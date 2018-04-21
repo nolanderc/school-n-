@@ -43,6 +43,12 @@
     <Filter Include="Level Selection">
       <UniqueIdentifier>{b6feaae6-f7d0-43d6-b3e4-c35106da2d54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Game\Entities">
+      <UniqueIdentifier>{625af435-85aa-4279-8739-b6ceced43ee1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\Interactions">
+      <UniqueIdentifier>{79eb9d4a-101c-4212-9ef2-201f92be95d7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
@@ -117,6 +123,9 @@
     </ClCompile>
     <ClCompile Include="LevelSelector.cpp">
       <Filter>Level Selection</Filter>
+    </ClCompile>
+    <ClCompile Include="Entities.cpp">
+      <Filter>Game\Entities</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -206,6 +215,15 @@
     </ClInclude>
     <ClInclude Include="LevelSelector.h">
       <Filter>Level Selection</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>Game\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="Entities.h">
+      <Filter>Game\Entities</Filter>
+    </ClInclude>
+    <ClInclude Include="InteractionHandler.h">
+      <Filter>Game\Interactions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

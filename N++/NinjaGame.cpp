@@ -17,7 +17,7 @@ void NinjaGame::update(float dt)
 
 	static double accumulator = 0;
 	accumulator += dt;
-	const double deltaTime = 1.0 / 1000;
+	const double deltaTime = 1.0 / 240;
 
 	while (accumulator > deltaTime) {
 		accumulator -= deltaTime;
@@ -55,8 +55,6 @@ void NinjaGame::draw(Renderer & renderer)
 		levelRenderer.setFillColor(0, 0, 0);
 		level.renderStatic(levelRenderer);
 
-		// DeleteDC(levelRenderer.releaseDC());
-		
 		this->renderLevel = false;
 	}
 
@@ -85,7 +83,7 @@ void NinjaGame::keyPressed(int key)
 		this->level.moveNinja(NINJA_DROP);
 	}
 
-	if (key == ' ') {
+	if (key == VK_SPACE) {
 		this->level.retry();
 	}
 

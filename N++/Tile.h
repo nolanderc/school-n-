@@ -1,9 +1,9 @@
 #pragma once
 #include "Collider.h"
 #include "Effect.h"
+#include "Entities.h"
 
-class InteractionHandler;
-
+#include "InteractionHandler.h"
 
 // Ett block i en nivå
 class Tile : public Collider
@@ -18,14 +18,22 @@ public:
 	// Sätter blockets position
 	virtual void setPosition(Vector2i position) = 0;
 
+	// Uppdaterar blocket
+	virtual void update(InteractionHandler* handler, double deltaTime) {}
+
 	// Ritar detta block
 	virtual void render(Renderer& renderer) = 0;
 
 	// Returnerar den minsta förflyttning som krävs för att undvika en kollision
 	Vector2* overlap(const ConvexHull& other) const override = 0;
 
+
 	// Avgör om objekt kan röra sig genom detta block
-	virtual bool passable() const = 0;
+	virtual bool isPassable() const { return false; }
+
+
+	// Avgör om detta block är dynamiskt (ändras ofta)
+	virtual bool isDynamic() const { return false; };
 
 
 	// Anropas när spelaren kommer i kontakt med detta block
@@ -45,37 +53,3 @@ public:
 };
 
 
-enum CauseOfDeath
-{
-	EXPLOSION
-};
-
-// En klass som hanterar interaktioner med block
-class InteractionHandler
-{
-public:
-
-	// Ger ninjan energi
-	virtual void increaseEnergy(double amount) = 0;
-
-	// Avslutar nivån med en vinst
-	virtual void completeLevel() = 0;
-
-	// Dödar ninjan (på valfritt sätt)
-	virtual void killNinja(CauseOfDeath causeOfDeath) = 0;
-
-	// Ersätter ett block vid en viss koordinat
-	virtual void setTile(Vector2i coord, Tile* tile) = 0;
-
-
-	// Skapar en ny effekt
-	virtual void spawnEffect(Effect* effect) = 0;
-
-
-	// Anropas när alla block borde ritas om
-	virtual void requestRedraw() = 0;
-
-
-	// Anropas när en knapp aktiverades
-	virtual void buttonTriggered() = 0;
-};
