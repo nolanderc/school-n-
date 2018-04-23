@@ -23,7 +23,7 @@
     <ProjectGuid>{17F81144-CF1F-43B5-9015-9DEFBBE926BC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>N</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -157,6 +157,7 @@
     <ClCompile Include="Entities.cpp" />
     <ClCompile Include="LevelEditor.cpp" />
     <ClCompile Include="LevelEditorButtons.cpp" />
+    <ClCompile Include="LevelList.cpp" />
     <ClCompile Include="LevelSelector.cpp" />
     <ClCompile Include="MenuButtons.cpp" />
     <ClCompile Include="Collider.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="InteractionHandler.h" />
     <ClInclude Include="LevelEditor.h" />
     <ClInclude Include="LevelEditorButtons.h" />
+    <ClInclude Include="LevelList.h" />
     <ClInclude Include="LevelSelector.h" />
     <ClInclude Include="MenuButtons.h" />
     <ClInclude Include="Collider.h" />
@@ -217,6 +219,8 @@
     <None Include="levels\level0.lvl" />
     <None Include="levels\level1.lvl" />
     <None Include="levels\level2.lvl" />
+    <None Include="levels\level3.lvl" />
+    <None Include="levels\levels.list" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

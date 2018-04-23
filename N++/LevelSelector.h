@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "App.h"
 #include "Level.h"
+#include "LevelList.h"
 
 #include "NinjaGame.h"
 #include "LevelEditor.h"
@@ -21,7 +22,11 @@ class LevelSelector: public App
 		BoundingBox container;
 	};
 
+	// Alla nivåer
 	std::vector<LevelThumbnail> levels;
+
+	// Lista över alla spelbara nivåer och deras poäng
+	LevelList levelList;
 
 	int* selectedLevel;
 	int* highlightedLevel;
@@ -62,7 +67,7 @@ private:
 
 
 	// Skapar alla bilder och kollisionslådor för nivåerna
-	void createThumbnails(const std::vector<std::string>& paths);
+	void createThumbnails(const LevelList& list);
 
 	// Ritar en nivå till en bitmapsbild och returnerar denna
 	Bitmap renderLevelThumbnail(Renderer& renderer, Level& level);

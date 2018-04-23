@@ -3,14 +3,11 @@
 
 LevelSelector::LevelSelector(App* parent) :
 	App(parent),
+	levelList("levels/levels.list"),
 	difficulty(NORMAL),
 	playButton(Vector2(1280 - TILE_SIZE * TILE_MARGIN - 80, 720 - TILE_SIZE*TILE_MARGIN - 80), 60)
 {
-	this->createThumbnails({
-		"levels/level0.lvl",
-		"levels/level1.lvl",
-		"levels/level2.lvl"
-	});
+	this->createThumbnails(this->levelList);
 
 	this->setWindowSize(1280, 720); 
 
@@ -171,16 +168,16 @@ void LevelSelector::createInformationPane()
 	}
 }
 
-void LevelSelector::createThumbnails(const std::vector<std::string>& paths)
+void LevelSelector::createThumbnails(const LevelList& list)
 {
 	double width = LEVEL_SIZE.cx * TILE_SIZE;
 	double height = LEVEL_SIZE.cy * TILE_SIZE;
 	double margin = TILE_SIZE * TILE_MARGIN;
 
-	int pathCount = paths.size();
-	for (int i = 0; i < pathCount; i++)
+	int levelCount = list.size();
+	for (int i = 0; i < levelCount; i++)
 	{
-		Level level = Level(paths[i], NORMAL);
+		Level level = list.getLevel(i);
 
 		int x = i % 2;
 		int y = i / 2;
@@ -240,7 +237,7 @@ void LevelSelector::drawLevels(Renderer& renderer)
 			renderer.setFillColor(125, 125, 125);
 		}
 		else {
-			renderer.setFillColor(100, 100, 100);
+			renderer.setFillColor(50, 50, 50);
 		}
 
 		renderer.fillRect(thumbnail.container);
@@ -308,14 +305,29 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 			renderer.drawTextCentered(text, this->difficultyContainers[i]);
 		}
 
-
-		// Rita highscores
-
-
 		// Rita spel/start
 		renderer.setLineStyle(LINE_NONE);
 		this->playButton.render(renderer);
 		renderer.offset(offset);
+
+
+		// Rita highscores
+		std::vector<Score> highscores = this->levelList.getScores(*this->selectedLevel);
+
+		int scoreCount = highscores.size();
+		for (int i = 0; i < scoreCount && i < 3; ++i)
+		{
+			Score score = highscores[i];
+
+			RECT rect;
+			rect.left = 32;
+			rect.right = width - 64;
+			rect.top = 32 + 32 * i;
+			rect.bottom = 32 + 32 * (i + 1);
+
+			renderer.setTextColor(255, 0, 0);
+			renderer.drawTextLeftAligned(std::to_string(score.time), rect);
+		}
 	}
 }
 

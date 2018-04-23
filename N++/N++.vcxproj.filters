@@ -49,6 +49,9 @@
     <Filter Include="Game\Interactions">
       <UniqueIdentifier>{79eb9d4a-101c-4212-9ef2-201f92be95d7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Level Selection\Level List">
+      <UniqueIdentifier>{7c02624d-d79d-4d16-8298-b2f8cf3d0d12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
@@ -126,6 +129,9 @@
     </ClCompile>
     <ClCompile Include="Entities.cpp">
       <Filter>Game\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="LevelList.cpp">
+      <Filter>Level Selection\Level List</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -225,11 +231,16 @@
     <ClInclude Include="InteractionHandler.h">
       <Filter>Game\Interactions</Filter>
     </ClInclude>
+    <ClInclude Include="LevelList.h">
+      <Filter>Level Selection\Level List</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="levels\level0.lvl" />
     <None Include="levels\customLevel.lvl" />
     <None Include="levels\level1.lvl" />
     <None Include="levels\level2.lvl" />
+    <None Include="levels\level3.lvl" />
+    <None Include="levels\levels.list" />
   </ItemGroup>
 </Project>
