@@ -10,6 +10,9 @@
 
 #define ENERGY_BAR_HEIGHT_PIXELS 16
 
+
+
+
 class NinjaGame: public App
 {
 	// Nivån
@@ -21,11 +24,13 @@ class NinjaGame: public App
 	// Borde nivån ritas om?
 	bool renderLevel;
 
+	// Att anropa för när nivån är avklarad
+	VictoryCallback* gameCallback;
 
 
 public:
 
-	NinjaGame(App* parent, Level level);
+	NinjaGame(App* parent, Level level, VictoryCallback* gameCallback = nullptr);
 
 
 	void update(float dt) override;

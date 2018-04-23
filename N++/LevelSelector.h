@@ -11,7 +11,7 @@
 #define TILE_MARGIN 5
 
 
-class LevelSelector: public App
+class LevelSelector: public App, public VictoryCallback
 {
 	struct LevelThumbnail
 	{
@@ -45,6 +45,8 @@ public:
 
 	~LevelSelector();
 
+	void onLevelComplete(double time, int coins) override;
+
 protected:
 
 	void update(float deltaTime) override;
@@ -74,6 +76,9 @@ private:
 
 	// Ritar alla nivër
 	void drawLevels(Renderer& renderer);
+
+	// Omvandlar tid (i sekunder) till en fin string
+	std::string formatTime(double time);
 
 	// Ritar ut information om den nivå som är vald
 	void drawLevelInformation(Renderer& renderer);

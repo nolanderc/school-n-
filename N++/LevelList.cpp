@@ -19,10 +19,20 @@ LevelList::LevelData::LevelData(std::string cwd, std::string text) :
 		std::stringstream stream;
 		stream << score;
 
+		std::string difficulty;
+		stream >> difficulty;
+
+
 		Score score;
 		stream >> score.time >> score.coins;
 
-		this->bestScores.push_back(score);
+		if (difficulty == "EASY") {
+			this->bestEasyScores.push_back(score);
+		} else if (difficulty == "NORMAL") {
+			this->bestNormalScores.push_back(score);
+		} else if (difficulty == "HARD") {
+			this->bestHardScores.push_back(score);
+		}
 	}
 }
 
@@ -47,14 +57,24 @@ Level LevelList::getLevel(int index) const
 	return this->levels[index].level;
 }
 
-void LevelList::addNewScore(int level, Score score)
+void LevelList::addNewScore(int level, Difficulty difficulty, Score score)
 {
-	this->levels[level].bestScores.push_back(score);
+	switch (difficulty) { 
+	case EASY: this->levels[level].bestEasyScores.push_back(score); break;
+	case NORMAL: this->levels[level].bestNormalScores.push_back(score); break;
+	case HARD: this->levels[level].bestHardScores.push_back(score); break;
+	default: ; 
+	}
 }
 
-std::vector<Score> LevelList::getScores(int level)
+std::vector<Score> LevelList::getScores(int level, Difficulty difficulty)
 {
-	return this->levels[level].bestScores;
+	switch (difficulty) {
+	case EASY: return this->levels[level].bestEasyScores;
+	case NORMAL: return this->levels[level].bestNormalScores;
+	case HARD: return this->levels[level].bestHardScores;
+	default:;
+	}
 }
 
 void LevelList::load(std::string path)

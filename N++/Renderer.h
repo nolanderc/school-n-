@@ -48,8 +48,8 @@ class Renderer
 	// Den färg som fylls med nu
 	COLORREF currentFillColor;
 
-	// Den färg/färger som används för att rita text
-	std::vector<COLORREF> characterColors;
+	// Den färg som används för att rita text
+	COLORREF textColor;
 
 	// Den tjocklek av linjer som används nu
 	int currentLineWidth;
@@ -99,7 +99,6 @@ public:
 
 	// Sätter textens färg
 	void setTextColor(int r, int g, int b);
-	void setTextColor(std::vector<COLORREF> colors);
 	void setTextBackgroundColor(int r, int g, int b);
 
 	// Sätter linjernas tjocklek, i pixlar
@@ -154,6 +153,7 @@ public:
 
 	// Ritar text till vänster inuti en rektangel
 	void drawTextLeftAligned(std::string text, RECT rect);
+	void drawTextLeftAligned(std::string text, BoundingBox box);
 
 	// Ritar text centrerat inuti en rektangel
 	void drawTextCentered(std::string text, RECT rect);

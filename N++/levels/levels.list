@@ -1,4 +1,4 @@
-"level0.lvl" {47.54 20}
-"level1.lvl" {42.26 16} {10.5 5}
-"level2.lvl" {20.22 75}
-"level3.lvl" {17.12 41}
+"level0.lvl" {EASY 47.54 20}
+"level1.lvl" {EASY 42.26 16} {EASY 10.5 5} {NORMAL 70.25 67}
+"level2.lvl" {EASY 20.22 75}
+"level3.lvl" {EASY 17.12 41}

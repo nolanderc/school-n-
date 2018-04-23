@@ -1,15 +1,22 @@
 #include "Level.h"
 #include <map>
 
-Level::Level(int width, int height, Difficulty difficulty) :
-	ninja(nullptr), width(width), height(height), playerStart(width / 2, height / 2), needsRedraw(true), difficulty(difficulty)
+Level::Level(int width, int height, Difficulty difficulty, VictoryCallback* victoryCallback) :
+	ninja(nullptr),
+	width(width), height(height),
+	playerStart(width / 2, height / 2),
+	needsRedraw(true),
+	difficulty(difficulty),
+	victoryCallback(victoryCallback),
+	coins(0),
+	time(0)
 {
 	this->tiles.resize(width * height, nullptr);
 
 	this->spawnNinja();
 }
 
-Level::Level(std::string path, Difficulty difficulty) :
+Level::Level(std::string path, Difficulty difficulty, VictoryCallback* victoryCallback) :
 	ninja(nullptr), needsRedraw(true), difficulty(difficulty)
 {
 	std::ifstream file(path);
@@ -40,6 +47,10 @@ Level::Level(const Level& level)
 
 	this->ninja = nullptr;
 	this->spawnNinja();
+
+	this->victoryCallback = level.victoryCallback;
+	this->coins = level.coins;
+	this->time = level.time;
 }
 
 void Level::operator=(const Level& level)
@@ -81,6 +92,9 @@ void Level::reset()
 	this->spawnNinja();
 
 	this->needsRedraw = true;
+
+	this->time = 0;
+	this->coins = 0;
 }
 
 void Level::retry()
@@ -224,6 +238,7 @@ int Level::getHeight()
 
 void Level::increaseEnergy(double amount)
 {
+	this->coins++;
 	this->currentEnergy = clamp(this->currentEnergy + amount, 0.0, this->maximalEnergy);
 }
 
@@ -366,6 +381,10 @@ void Level::checkInteractions()
 
 void Level::completeLevel()
 {
+	if (this->victoryCallback) {
+		this->victoryCallback->onLevelComplete(this->time, this->coins);
+	}
+	
 	this->reset();
 }
 
@@ -445,6 +464,11 @@ void Level::save(std::string path)
 void Level::setDifficulty(Difficulty difficulty)
 {
 	this->difficulty = difficulty;
+}
+
+void Level::setVictoryCallback(VictoryCallback* victoryCallback)
+{
+	this->victoryCallback = victoryCallback;
 }
 
 Tile *& Level::getTileRef(Vector2i coord)
@@ -645,6 +669,8 @@ void Level::update(double deltaTime)
 		if(this->currentEnergy <= 0) {
 			this->killNinja(EXPLOSION);
 		}
+
+		this->time += deltaTime;
 	}
 
 	this->updateTiles(deltaTime);

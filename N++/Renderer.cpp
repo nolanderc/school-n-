@@ -88,13 +88,8 @@ void Renderer::setFillStyle(FillStyle style)
 
 void Renderer::setTextColor(int r, int g, int b)
 {
-	this->characterColors.clear();
-	this->characterColors.push_back(RGB(r, g, b));
-}
-
-void Renderer::setTextColor(std::vector<COLORREF> colors)
-{
-	this->characterColors = colors;
+	this->textColor = RGB(r, g, b);
+	SetTextColor(this->target, this->textColor);
 }
 
 void Renderer::setTextBackgroundColor(int r, int g, int b)
@@ -233,81 +228,26 @@ void Renderer::drawPolygon(std::vector<Vector2> points)
 
 void Renderer::drawTextLeftAligned(std::string text, RECT rect)
 {
-	std::vector<int> characterSizes;
-	int totalWidth = 0;
-	int maxHeight = 0;
+	DrawText(this->target, text.c_str(), text.size(), &rect, DT_VCENTER | DT_SINGLELINE);
+}
 
-	int characterCount = text.size();
-	for (int i = 0; i < characterCount; i++)
-	{
-		// Hämta textens storlek
-		SIZE textSize;
-		GetTextExtentPoint(this->target, &text[i], 1, &textSize);
+void Renderer::drawTextLeftAligned(std::string text, BoundingBox box)
+{
+	Vector2i topLeft = this->transform({ box.left, box.top });
+	Vector2i bottomRight = this->transform({ box.right, box.bottom });
 
-		characterSizes.push_back(textSize.cx);
-		totalWidth += textSize.cx;
+	RECT rect;
+	rect.left = topLeft.x;
+	rect.right = bottomRight.x;
+	rect.top = topLeft.y;
+	rect.bottom = bottomRight.y;
 
-		if (textSize.cy > maxHeight) {
-			maxHeight = textSize.cy;
-		}
-	}
-
-	// Anpassa rektangeln efter textens storlek
-	rect.top = (rect.bottom + rect.top - maxHeight) / 2;
-
-	int colorCount = this->characterColors.size();
-	for (int i = 0; i < characterCount; i++)
-	{
-		// Sätt textens färg
-		if (colorCount > 0) {
-			SetTextColor(this->target, this->characterColors[i % colorCount]);
-		}
-
-		int size = characterSizes[i];
-		rect.right = rect.left + size;
-		DrawText(this->target, &text[i], 1, &rect, DT_CENTER);
-		rect.left += size;
-	}
+	this->drawTextLeftAligned(text, rect);
 }
 
 void Renderer::drawTextCentered(std::string text, RECT rect)
 {
-	std::vector<int> characterSizes;
-	int totalWidth = 0;
-	int maxHeight = 0;
-
-	int characterCount = text.size();
-	for (int i = 0; i < characterCount; i++)
-	{
-		// Hämta textens storlek
-		SIZE textSize;
-		GetTextExtentPoint(this->target, &text[i], 1, &textSize);
-
-		characterSizes.push_back(textSize.cx);
-		totalWidth += textSize.cx;
-
-		if (textSize.cy > maxHeight) {
-			maxHeight = textSize.cy;
-		}
-	}
-
-	// Anpassa rektangeln efter textens storlek
-	rect.top = (rect.bottom + rect.top - maxHeight) / 2;
-	rect.left = (rect.left + rect.right - totalWidth) / 2;
-
-	int colorCount = this->characterColors.size();
-	for (int i = 0; i < characterCount; i++)
-	{
-		// Sätt textens färg
-		if (colorCount > 0) {
-			SetTextColor(this->target, this->characterColors[i % colorCount]);
-		}
-
-		int size = characterSizes[i];
-		rect.right = rect.left + size;
-		DrawText(this->target, &text[i], 1, &rect, DT_CENTER);
-		rect.left += size;
-	}
+	DrawText(this->target, text.c_str(), text.size(), &rect, DT_VCENTER | DT_CENTER | DT_SINGLELINE);
 }
 
 void Renderer::drawTextCentered(std::string text, BoundingBox box)

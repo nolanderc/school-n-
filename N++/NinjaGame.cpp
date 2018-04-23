@@ -1,9 +1,11 @@
 #include "NinjaGame.h"
 
 
-NinjaGame::NinjaGame(App* parent, Level level) : 
-	App(parent), level(level)
+NinjaGame::NinjaGame(App* parent, Level level, VictoryCallback* victoryCallback) : 
+	App(parent), level(level), gameCallback(victoryCallback)
 {
+	this->level.setVictoryCallback(victoryCallback);
+
 	this->setWindowTitle("N++");
 	this->setWindowSize(level.getWidth() * TILE_SIZE, level.getHeight() * TILE_SIZE + ENERGY_BAR_HEIGHT_PIXELS);
 

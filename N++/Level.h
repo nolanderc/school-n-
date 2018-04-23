@@ -24,6 +24,14 @@ enum Difficulty {
 };
 
 
+
+class VictoryCallback {
+public:
+	// Anropas när en nivå är avklarad
+	virtual void onLevelComplete(double time, int coins) = 0;
+};
+
+
 class Level: public Collider, public InteractionHandler
 {
 private:
@@ -68,12 +76,21 @@ private:
 	Difficulty difficulty;
 
 
+	// Anropas när nivån är avklarad
+	VictoryCallback* victoryCallback;
+
+	// Antal pengar som har samlats
+	int coins;
+
+	// Tid som nivån har spelats
+	double time;
+
 public:
 
-	Level(int width, int height, Difficulty difficulty);
+	Level(int width, int height, Difficulty difficulty, VictoryCallback* victoryCallback = nullptr);
 
 	// Skapar en nivå ifrån en fil i ett "lvl" format
-	Level(std::string path, Difficulty difficulty);
+	Level(std::string path, Difficulty difficulty, VictoryCallback* victoryCallback = nullptr);
 
 
 	// Kopierar en nivå
@@ -174,6 +191,8 @@ public:
 	void setDifficulty(Difficulty difficulty);
 
 
+	// Sätter en klass som ska anropas när nivån avklaras
+	void setVictoryCallback(VictoryCallback* victoryCallback);
 
 private:
 

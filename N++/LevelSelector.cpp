@@ -19,6 +19,14 @@ LevelSelector::~LevelSelector()
 	delete this->selectedLevel;
 }
 
+void LevelSelector::onLevelComplete(double time, int coins)
+{
+	Score score;
+	score.time = time;
+	score.coins = coins;
+	this->levelList.addNewScore(*this->selectedLevel, this->difficulty, score);
+}
+
 void LevelSelector::update(float deltaTime)
 {
 	this->playButton.update(deltaTime);
@@ -258,6 +266,18 @@ void LevelSelector::drawLevels(Renderer& renderer)
 	}
 }
 
+std::string LevelSelector::formatTime(double time)
+{
+	double hundredths = floor(fmod(time, 1) * 100);
+	double minutes = int(time) / 60;
+	double seconds = floor(time) - minutes * 60;
+
+	std::stringstream ss;
+	ss << minutes << " : " << seconds << "." << hundredths;
+
+	return ss.str();
+}
+
 void LevelSelector::drawLevelInformation(Renderer& renderer)
 {
 	if(this->selectedLevel)
@@ -312,21 +332,32 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 
 
 		// Rita highscores
-		std::vector<Score> highscores = this->levelList.getScores(*this->selectedLevel);
+		std::vector<Score> highscores = this->levelList.getScores(*this->selectedLevel, this->difficulty);
 
 		int scoreCount = highscores.size();
 		for (int i = 0; i < scoreCount && i < 3; ++i)
 		{
 			Score score = highscores[i];
 
-			RECT rect;
+			BoundingBox rect;
 			rect.left = 32;
 			rect.right = width - 64;
 			rect.top = 32 + 32 * i;
 			rect.bottom = 32 + 32 * (i + 1);
 
-			renderer.setTextColor(255, 0, 0);
-			renderer.drawTextLeftAligned(std::to_string(score.time), rect);
+			if (i == 0)
+			{
+				renderer.setTextColor(255, 255, 255);
+			} else
+			{
+				renderer.setTextColor(150, 150, 150);
+			}
+			renderer.setTextBackgroundColor(grey, grey, grey);
+
+			renderer.drawTextLeftAligned(formatTime(score.time), rect);
+
+			rect.left += width / 2;
+			renderer.drawTextLeftAligned(std::to_string(score.coins), rect);
 		}
 	}
 }
@@ -350,6 +381,6 @@ void LevelSelector::playLevel(int levelIndex)
 	if (0 <= levelIndex && levelIndex < this->levels.size())
 	{
 		this->levels[levelIndex].level.setDifficulty(this->difficulty);
-		this->addChild(new NinjaGame(this, this->levels[levelIndex].level));
+		this->addChild(new NinjaGame(this, this->levels[levelIndex].level, this));
 	}
 }

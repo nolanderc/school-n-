@@ -16,7 +16,9 @@ class LevelList
 	// Själva nivån och bästa poängen (högst antal upplockade mynt och minsta tid)
 	struct LevelData {
 		Level level;
-		std::vector<Score> bestScores;
+		std::vector<Score> bestEasyScores;
+		std::vector<Score> bestNormalScores;
+		std::vector<Score> bestHardScores;
 
 		// Laddar information om en nivå utifrån en korrekt formaterad string
 		// cwd = current working directory (sökväg till mappen som innehåller nivåerna)
@@ -46,10 +48,10 @@ public:
 	Level getLevel(int index) const;
 
 	// Lägger in en ny poäng i listan av bästa poäng
-	void addNewScore(int level, Score score);
+	void addNewScore(int level, Difficulty difficulty, Score score);
 
 	// Returnerar de bästa poängen för en nivå
-	std::vector<Score> getScores(int level);
+	std::vector<Score> getScores(int level, Difficulty difficulty);
 
 private:
 
