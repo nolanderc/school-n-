@@ -151,14 +151,19 @@ public:
 	void drawPolygon(std::vector<Vector2> points);
 
 
-	// Ritar text till vänster inuti en rektangel
+	// Ritar text till vänster innuti en rektangel
 	void drawTextLeftAligned(std::string text, RECT rect);
 	void drawTextLeftAligned(std::string text, BoundingBox box);
-
+	
 	// Ritar text centrerat inuti en rektangel
 	void drawTextCentered(std::string text, RECT rect);
 	void drawTextCentered(std::string text, BoundingBox box);
 	void drawTextCentered(std::string text, double left, double right, double top, double bottom);
+
+	// Ritar text till höger innuti en rektangel
+	void drawTextRightAligned(std::string text, RECT rect);
+	void drawTextRightAligned(std::string text, BoundingBox box);
+
 
 	// Ritar en bitmapsbild
 	// Negativa tal för width och height ritar hela bilden

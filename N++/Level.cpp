@@ -226,6 +226,11 @@ Vector2 * Level::overlap(const ConvexHull & other) const
 	return smallestResolve;
 }
 
+Vector2* Level::getBlockOverlap(const ConvexHull& hull)
+{
+	return this->overlap(hull);
+}
+
 int Level::getWidth()
 {
 	return width;
@@ -464,6 +469,11 @@ void Level::save(std::string path)
 void Level::setDifficulty(Difficulty difficulty)
 {
 	this->difficulty = difficulty;
+}
+
+Difficulty Level::getDifficulty()
+{
+	return this->difficulty;
 }
 
 void Level::setVictoryCallback(VictoryCallback* victoryCallback)

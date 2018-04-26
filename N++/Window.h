@@ -7,7 +7,6 @@
 
 #include "Renderer.h"
 
-
 enum MouseButton {
 	MOUSE_LEFT,
 	MOUSE_MIDDLE,
@@ -40,6 +39,9 @@ public:
 
 	// Muspekaren rörde sig
 	virtual void mouseMoved(int x, int y) {}
+
+	// Musens hjul rörde sig
+	virtual void mouseScrolled(int wheelDelta, int x, int y) {}
 };
 
 

@@ -228,7 +228,7 @@ void Renderer::drawPolygon(std::vector<Vector2> points)
 
 void Renderer::drawTextLeftAligned(std::string text, RECT rect)
 {
-	DrawText(this->target, text.c_str(), text.size(), &rect, DT_VCENTER | DT_SINGLELINE);
+	DrawText(this->target, text.c_str(), text.size(), &rect, DT_VCENTER | DT_SINGLELINE | DT_LEFT | DT_NOCLIP);
 }
 
 void Renderer::drawTextLeftAligned(std::string text, BoundingBox box)
@@ -247,7 +247,7 @@ void Renderer::drawTextLeftAligned(std::string text, BoundingBox box)
 
 void Renderer::drawTextCentered(std::string text, RECT rect)
 {
-	DrawText(this->target, text.c_str(), text.size(), &rect, DT_VCENTER | DT_CENTER | DT_SINGLELINE);
+	DrawText(this->target, text.c_str(), text.size(), &rect, DT_VCENTER | DT_CENTER | DT_SINGLELINE | DT_NOCLIP);
 }
 
 void Renderer::drawTextCentered(std::string text, BoundingBox box)
@@ -267,6 +267,25 @@ void Renderer::drawTextCentered(std::string text, double left, double right, dou
 	rect.bottom = bottomRight.y;
 
 	this->drawTextCentered(text, rect);
+}
+
+void Renderer::drawTextRightAligned(std::string text, RECT rect)
+{
+	DrawText(this->target, text.c_str(), text.size(), &rect, DT_VCENTER | DT_SINGLELINE | DT_RIGHT | DT_NOCLIP);
+}
+
+void Renderer::drawTextRightAligned(std::string text, BoundingBox box)
+{
+	Vector2i topLeft = this->transform({ box.left, box.top });
+	Vector2i bottomRight = this->transform({ box.right, box.bottom });
+
+	RECT rect;
+	rect.left = topLeft.x;
+	rect.right = bottomRight.x;
+	rect.top = topLeft.y;
+	rect.bottom = bottomRight.y;
+
+	this->drawTextRightAligned(text, rect);
 }
 
 void Renderer::drawBitmap(Bitmap& bitmap, int x, int y, int width, int height, int srcX, int srcY)

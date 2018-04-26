@@ -13,16 +13,7 @@
 #include "Ninja.h"
 
 #include "VectorUtil.h"
-
-
-
-// Svårighetsgrad
-enum Difficulty {
-	EASY,
-	NORMAL,
-	HARD
-};
-
+#include "Difficulty.h"
 
 
 class VictoryCallback {
@@ -134,6 +125,7 @@ public:
 
 	// Returnerar en vektor som förflyttar skalet ur kollisionen
 	Vector2* overlap(const ConvexHull& other) const override;
+	Vector2* getBlockOverlap(const ConvexHull& hull) override;
 
 
 	// Returnerar storleken på nivån, i block
@@ -189,6 +181,9 @@ public:
 
 	// Sätter nivåns svårighet
 	void setDifficulty(Difficulty difficulty);
+
+	// Returnerar nivåns svårighet
+	Difficulty getDifficulty() override;
 
 
 	// Sätter en klass som ska anropas när nivån avklaras

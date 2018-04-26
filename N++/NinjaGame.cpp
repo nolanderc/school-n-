@@ -27,8 +27,8 @@ void NinjaGame::update(float dt)
 			accumulator = 0;
 		}
 
-		if (this->isKeyDown(VK_LEFT)) { this->level.moveNinja(NINJA_LEFT); }
-		if (this->isKeyDown(VK_RIGHT)) { this->level.moveNinja(NINJA_RIGHT); }
+		if (this->isKeyDown(VK_LEFT) || this->isKeyDown('A')) { this->level.moveNinja(NINJA_LEFT); }
+		if (this->isKeyDown(VK_RIGHT) || this->isKeyDown('D')) { this->level.moveNinja(NINJA_RIGHT); }
 
 		this->level.update(deltaTime);
 	}
@@ -78,10 +78,10 @@ void NinjaGame::sizeChanged(int width, int height)
 
 void NinjaGame::keyPressed(int key)
 {
-	if (key == VK_UP) {
+	if (key == VK_UP || key == 'W') {
 		this->level.moveNinja(NINJA_JUMP);
 	}
-	if (key == VK_DOWN) {
+	if (key == VK_DOWN || key == 'S') {
 		this->level.moveNinja(NINJA_DROP);
 	}
 

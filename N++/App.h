@@ -64,6 +64,9 @@ protected:
 	// Hantera att muspekaren rörde sig
 	void mouseMoved(int x, int y) override {}
 
+	// Hantera att musens hjul rörde sig
+	void mouseScrolled(int wheelDelta, int x, int y) override {}
+
 	
 	// Anropas när delar av fönstret har försvunnit och måste ritas om
 	virtual void redraw() {}

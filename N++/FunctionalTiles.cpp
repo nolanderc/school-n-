@@ -361,19 +361,17 @@ void ButtonTile::setPosition(Vector2i position)
 
 void ButtonTile::render(Renderer& renderer)
 {
-	Vector2 center = Vector2(this->hull.average());
-
-	if (this->triggered)
-	{
+	if (this->triggered) {
 		renderer.setColor(255, 0, 0);
-	} else
-	{
-		renderer.setColor(100, 150, 100);
+	} else {
+		renderer.setColor(50, 200, 200);
 	}
+
 	renderer.setFillColor(200, 0, 150);
 	renderer.setLineWidth(0.1);
 	renderer.setLineStyle(LINE_SOLID);
 
+	Vector2 center = Vector2(this->hull.average());
 	renderer.drawRect(center.x - w, center.y - h, 2 * w, 2 * h);
 }
 
@@ -424,17 +422,33 @@ void RocketTile::update(InteractionHandler* handler, double deltaTime)
 {
 	if (canFire)
 	{
-		this->cooldown = clamp(this->cooldown - deltaTime * 1.0, 0.0, 1.0);
+		Vector2 center = Vector2(this->position) + Vector2(0.5);
+		
+		ConvexHull line = ConvexHull::newLine(center, handler->getNinjaPosition(), 0.01);
 
-		if(this->cooldown == 0)
-		{
-			Vector2 center = Vector2(this->position) + Vector2(0.5);
-			Vector2 velocity = 5 * (handler->getNinjaPosition() - center).normal();
-
-			handler->spawnEntity(new Rocket(this, center, velocity));
-
+		if (Vector2* overlap = handler->getBlockOverlap(line)) {
+			delete overlap;
 			this->cooldown = 1;
-			this->canFire = false;
+		} else {
+			this->cooldown = clamp(this->cooldown - deltaTime * 1.0, 0.0, 1.0);
+
+			if (this->cooldown == 0)
+			{
+				double speed = 6;
+				switch (handler->getDifficulty()) {
+				case EASY: speed = 6; break;
+				case NORMAL: speed = 7; break;
+				case HARD: speed = 8; break;
+				}
+
+				Vector2 center = Vector2(this->position) + Vector2(0.5);
+				Vector2 velocity = speed * (handler->getNinjaPosition() - center).normal();
+
+				handler->spawnEntity(new Rocket(this, center, velocity));
+
+				this->cooldown = 1;
+				this->canFire = false;
+			}
 		}
 	}
 

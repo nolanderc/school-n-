@@ -230,12 +230,21 @@ LRESULT Window::windowProcedure(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 			case WM_MOUSEMOVE: {
 				int x = LOWORD(lParam);
 				int y = HIWORD(lParam);
-				if (x <= window->size.cx && y <= window->size.cy && x != window->mousePosition.x && y != window->mousePosition.y) {
+				if (x <= window->size.cx && y <= window->size.cy && (x != window->mousePosition.x || y != window->mousePosition.y)) {
 					window->eventHandler->mouseMoved(x, y);
 
 					window->mousePosition.x = x;
 					window->mousePosition.y = y;
 				}
+				} break;
+
+
+			case WM_MOUSEWHEEL: {
+				int x = LOWORD(lParam);
+				int y = HIWORD(lParam);
+				
+				window->eventHandler->mouseScrolled(GET_WHEEL_DELTA_WPARAM(wParam) / WHEEL_DELTA, x, y);
+
 				} break;
 
 

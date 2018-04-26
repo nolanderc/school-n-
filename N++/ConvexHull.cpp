@@ -29,6 +29,19 @@ ConvexHull::ConvexHull(std::vector<Vector2> points)
 	}
 }
 
+ConvexHull ConvexHull::newLine(Vector2 start, Vector2 end, double width)
+{
+	Vector2 delta = end - start;
+	Vector2 direction = delta.normal();
+
+	Vector2 p = direction.perpCCW() * (width / 2);
+
+	return ConvexHull({
+		start + p, end + p,
+		end - p, start - p
+	});
+}
+
 
 void ConvexHull::fill(Renderer & renderer) const
 {

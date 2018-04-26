@@ -1,5 +1,7 @@
 #pragma once
 #include "Linear.h"
+#include "Difficulty.h"
+#include "ConvexHull.h"
 
 class Tile;
 class Effect;
@@ -44,4 +46,12 @@ public:
 
 	// Returnerar ninjans position
 	virtual Vector2 getNinjaPosition() = 0;
+
+
+	// Returnerar den nuvarande svårighetsgraden
+	virtual Difficulty getDifficulty() = 0;
+
+
+	// Returnerar den minsta förflyttningen som krävs för att flytta ett konvext skal ut ur alla block
+	virtual Vector2* getBlockOverlap(const ConvexHull& hull) = 0;
 };

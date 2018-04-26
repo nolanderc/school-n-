@@ -10,3 +10,10 @@ double lmap(double value, double inMin, double inMax, double outMin, double outM
 {
 	return lerp(normalize(value, inMin, inMax), outMin, outMax);
 }
+
+double sign(double v)
+{
+	if (v > 0) return 1;
+	if (v < 0) return -1;
+	return 0;
+}

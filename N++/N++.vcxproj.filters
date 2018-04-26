@@ -234,13 +234,8 @@
     <ClInclude Include="LevelList.h">
       <Filter>Level Selection\Level List</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="levels\level0.lvl" />
-    <None Include="levels\customLevel.lvl" />
-    <None Include="levels\level1.lvl" />
-    <None Include="levels\level2.lvl" />
-    <None Include="levels\level3.lvl" />
-    <None Include="levels\levels.list" />
+    <ClInclude Include="Difficulty.h">
+      <Filter>Game\Level</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

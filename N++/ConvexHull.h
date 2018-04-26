@@ -25,7 +25,9 @@ public:
 	// Skapar ett konvext skal med punkter i klockvis ordning
 	ConvexHull(std::vector<Vector2> points);
 
-	
+	// Skapar ett nytt konvext skal i form av en linje mellan två punkter med en viss vidd
+	static ConvexHull newLine(Vector2 start, Vector2 end, double width);
+
 
 	// Fyller det konvexa skalet
 	void fill(Renderer& renderer) const;

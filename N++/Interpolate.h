@@ -36,3 +36,7 @@ double normalize(double value, double inMin, double inMax);
 
 // Omvandla en parameter i intervallet [inMin, inMax] till intervallet [outMin, outMax]
 double lmap(double value, double inMin, double inMax, double outMin, double outMax);
+
+
+// Returnerar -1 för ett negativt tal, 1 för ett positivt tal och 0 för 0
+double sign(double v);

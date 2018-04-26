@@ -12,7 +12,7 @@ void Rocket::update(InteractionHandler* handler, double deltaTime)
 {
 	Vector2 direction = (handler->getNinjaPosition() - this->position).normal();
 
-	this->velocity = this->velocity.length() * (this->velocity.normal() + direction * 3 * deltaTime).normal();
+	this->velocity = this->velocity.length() * (this->velocity.normal() + direction * 3.5 * deltaTime).normal();
 
 
 	this->position += deltaTime * this->velocity;
