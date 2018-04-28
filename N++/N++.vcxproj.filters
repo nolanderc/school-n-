@@ -133,6 +133,9 @@
     <ClCompile Include="LevelList.cpp">
       <Filter>Level Selection\Level List</Filter>
     </ClCompile>
+    <ClCompile Include="Color.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
@@ -236,6 +239,9 @@
     </ClInclude>
     <ClInclude Include="Difficulty.h">
       <Filter>Game\Level</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>Math</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

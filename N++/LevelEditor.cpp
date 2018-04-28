@@ -185,9 +185,18 @@ void LevelEditor::keyPressed(int key)
 	if (key == VK_ESCAPE) {
 		this->close();
 	}
+
 	if (key == 'G')
 	{
 		this->grid = !this->grid;
+	}
+
+	if (key == 'R' || key == VK_F5)
+	{
+		this->level.save(this->path);
+
+		// Starta ett spel innuti redigeraren
+		this->addChild(new NinjaGame(this, this->level));
 	}
 }
 

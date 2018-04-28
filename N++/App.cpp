@@ -90,6 +90,13 @@ bool App::isKeyDown(int key)
 	return this->window->isKeyDown(key);
 }
 
+Vector2i App::getMousePosition()
+{
+	POINT p = this->window->getMousePosition();
+
+	return { p.x, p.y };
+}
+
 
 Bitmap App::createCompatibleBitmap(SIZE size)
 {

@@ -4,7 +4,8 @@
 
 ExitTile::ExitTile(bool open) :
 	open(open),
-	openAmount(double(open))
+	openAmount(double(open)),
+	time(0)
 {
 	this->setPosition({ 0 });
 }
@@ -21,6 +22,7 @@ void ExitTile::setPosition(Vector2i position)
 
 void ExitTile::update(InteractionHandler* handler, double deltaTime)
 {
+	this->time += deltaTime;
 	if(this->open) {
 		this->openAmount = clamp(this->openAmount + deltaTime * 4, 0.0, 1.0);
 	}
@@ -28,17 +30,26 @@ void ExitTile::update(InteractionHandler* handler, double deltaTime)
 
 void ExitTile::render(Renderer& renderer)
 {
-	renderer.setFillColor(150, 150, 150);
-	this->renderDoorway(renderer, 1, 1);
+	double openWidth = easeInOut(this->openAmount, 0.0, 1.0);
 
-	if (this->open)
-	{
-		renderer.setFillColor(200, 0, 0);
-		this->renderDoorway(renderer, easeInOut(this->openAmount, 0.0, 0.9), 0.95);
-	
-		renderer.setFillColor(200, 200, 0);
-		this->renderDoorway(renderer, easeInOut(this->openAmount, 0.0, 0.75), 0.85);
-	}
+	Color background(50);
+
+	renderer.setFillColor(background);
+	renderer.fillRect(this->position.x + 0.5 - openWidth / 2, this->position.y, openWidth, 1);
+
+	renderer.setFillColor(Color(255, 255, 0));
+	this->renderHighlight(renderer, openWidth,
+		Color(255, 0, 255),
+		Color(background)
+	);
+
+	renderer.setLineStyle(LINE_SOLID);
+	renderer.setColor(Color(0));
+	renderer.setFillColor(150, 150, 150);
+
+
+	this->renderDoorway(renderer, -openWidth / 2, -0.5);
+	this->renderDoorway(renderer, openWidth / 2, 0.5);
 }
 
 Vector2* ExitTile::overlap(const ConvexHull& other) const
@@ -85,22 +96,51 @@ void ExitTile::onButtonPressed(InteractionHandler* handler)
 	handler->requestRedraw();
 }
 
-void ExitTile::renderDoorway(Renderer& renderer, double width, double height)
+void ExitTile::renderDoorway(Renderer& renderer, double dx, double width)
 {
-	double w = width / 2;
+	double x = this->position.x + 0.5 + dx;
+	double y = this->position.y;
+
+	renderer.setLineWidth(0.1);
+	renderer.fillPolygon({
+		Vector2(x, y),
+		Vector2(x, y + 1),
+
+		Vector2(x + width * 0.75, y + 1),
+		Vector2(x + width, y + 0.75),
+		
+		Vector2(x + width, y + 0.25),
+		Vector2(x + width * 0.75, y),
+	});
+
+	renderer.setLineWidth(0.15);
+	renderer.drawLine(Vector2(x, y + 0.5), Vector2(x, y + 1));
+	renderer.drawLine(Vector2(x, y + 1), Vector2(x + width * 0.75, y + 1));
+	renderer.drawLine(Vector2(x + width * 0.75, y + 1), Vector2(x + width, y + 0.75));
+}
+
+void ExitTile::renderHighlight(Renderer& renderer, double width, Color effect, Color background)
+{
+	const double dur = 2;
+	const int n = 5;
 
 	double x = this->position.x + 0.5;
 	double y = this->position.y + 1;
 
-	renderer.fillPolygon({
-		Vector2(x - w, y - 0.75*height),
-		Vector2(x - 0.5*w, y - height),
-		Vector2(x + 0.5*w, y - height),
-		Vector2(x + w, y - 0.75*height),
+	renderer.setFillColor(effect);
+	renderer.fillRect(x - width / 2, y - 0.1, width, 0.1);
 
-		Vector2(x + w, y),
-		Vector2(x - w, y),
-	});
+	for (int i = 0; i < n; i++)
+	{
+		double p = normalize(fmod(this->time + i * dur / n, dur), 0, dur);
+
+		double bottom = y - pow(p, 3) * 0.8;
+		double height = pow(1.0 - p, 0.5) * 0.1;
+
+		
+		renderer.setFillColor(effect.mix(background, p*p));
+		renderer.fillRect(x - width / 2, bottom - height, width, height);
+	}
 }
 
 

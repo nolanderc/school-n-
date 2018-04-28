@@ -87,6 +87,11 @@ protected:
 	bool isKeyDown(int key);
 
 
+	// Returnerar muspekarens position i fönstret
+	Vector2i getMousePosition();
+
+
+
 	// Skapar en bitmap som är kompatibel med fönstret
 	Bitmap createCompatibleBitmap(SIZE size);
 

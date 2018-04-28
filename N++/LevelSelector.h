@@ -10,6 +10,8 @@
 #define TILE_SIZE 8
 #define TILE_MARGIN 5
 
+#define STAR_SIZE (2 * TILE_MARGIN)
+
 
 class LevelSelector : public App, public VictoryCallback
 {
@@ -20,6 +22,9 @@ class LevelSelector : public App, public VictoryCallback
 		Bitmap* levelBitmap;
 
 		BoundingBox container;
+		BoundingBox starContainer;
+
+		int starCount;
 
 		~LevelThumbnail();
 	};
@@ -72,6 +77,10 @@ class LevelSelector : public App, public VictoryCallback
 	// Spela-knappen
 	PlayButton playButton;
 
+
+	// Text som visas under muspekaren
+	std::string tooltip;
+
 public:
 
 	LevelSelector(App* parent);
@@ -108,6 +117,10 @@ private:
 	// Ändrar den nuvarande svårighetsgraden
 	void changeDifficulty(Difficulty difficulty);
 
+
+	// Avgör hur många stjärnor en nivå har
+	int getLevelStarCount(int level);
+
 	// Avgör hur många nivåer som är avklarade
 	void checkCompletedLevels();
 
@@ -122,8 +135,13 @@ private:
 	// Ritar en nivå till en bitmapsbild och returnerar denna
 	Bitmap renderLevelThumbnail(Renderer& renderer, Level& level);
 
-	// Ritar ett frågetecken innuti en rektangel
-	void drawLock(Renderer& renderer, const BoundingBox& container);
+	// Ritar ett lås innuti en rektangel
+	void drawLock(Renderer& renderer, const BoundingBox& container, Color backgroundColor);
+
+
+	// Ritar en stjärna
+	void fillStar(Renderer& renderer, Vector2 center, double radius);
+
 
 	// Ritar alla nivër
 	void drawLevels(Renderer& renderer);

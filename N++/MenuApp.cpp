@@ -150,7 +150,7 @@ void MenuApp::buttonPressed(int buttonIndex)
 		break;
 
 	case BUTTON_EDITOR:
-		this->addChild(new LevelEditor(this, "levels/level4.lvl"));
+		this->addChild(new LevelEditor(this, "levels/tmpLevel.lvl"));
 		break;
 
 	case BUTTON_EXIT:

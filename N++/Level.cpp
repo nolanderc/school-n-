@@ -99,7 +99,7 @@ void Level::reset()
 
 void Level::retry()
 {
-	if (!this->ninja) {
+	if (!this->ninja || this->ninja->isPosing()) {
 		this->reset();
 	}
 }
@@ -173,7 +173,7 @@ void Level::renderDynamic(Renderer& renderer)
 
 	// Rita ninjan
 	if (this->ninja) {
-		renderer.setColor(100, 100, 100);
+		renderer.setColor(150, 150, 150);
 		renderer.setLineWidthAbsolute(1);
 
 		this->ninja->render(renderer);
@@ -390,12 +390,13 @@ void Level::completeLevel()
 		this->victoryCallback->onLevelComplete(this->time, this->coins);
 	}
 	
-	this->reset();
+	this->ninja->pose(POSE_VICTORY);
+	// this->reset();
 }
 
 void Level::killNinja(CauseOfDeath causeOfDeath)
 {
-	if (this->ninja)
+	if (this->ninja && !this->ninja->isPosing())
 	{
 		delete this->ninja;
 		this->ninja = nullptr;
@@ -438,7 +439,7 @@ Vector2 Level::getNinjaPosition()
 
 void Level::moveNinja(NinjaMovement move)
 {
-	if (this->ninja) {
+	if (this->ninja && !this->ninja->isPosing()) {
 		this->ninja->move(move);
 	}
 }
@@ -667,17 +668,20 @@ void Level::update(double deltaTime)
 
 		double energyMultiplier = 1;
 
-		switch (this->difficulty)
+		if (!this->ninja->isPosing())
 		{
-		case EASY: energyMultiplier /= 1.5; break;;
-		case NORMAL: energyMultiplier /= 1.25; break;
-		case HARD: energyMultiplier /= 1; break;
-		}
+			switch (this->difficulty)
+			{
+			case EASY: energyMultiplier /= 1.5; break;;
+			case NORMAL: energyMultiplier /= 1.25; break;
+			case HARD: energyMultiplier /= 1; break;
+			}
 
-		this->currentEnergy -= deltaTime * energyMultiplier;
+			this->currentEnergy -= deltaTime * energyMultiplier;
 
-		if(this->currentEnergy <= 0) {
-			this->killNinja(EXPLOSION);
+			if(this->currentEnergy <= 0) {
+				this->killNinja(EXPLOSION);
+			}
 		}
 
 		this->time += deltaTime;

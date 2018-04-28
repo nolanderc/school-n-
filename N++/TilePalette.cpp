@@ -12,10 +12,10 @@ TilePalette::TilePalette(int columns, double width)
 		TILE_WEDGE2,
 		TILE_MINE_ACTIVE,
 		TILE_MINE_INACTIVE,
-		TILE_EXIT_OPEN,
 		TILE_EXIT_CLOSED,
-		TILE_COIN,
+		TILE_EXIT_OPEN,
 		TILE_BUTTON,
+		TILE_COIN,
 		TILE_ROCKET
 	};
 

@@ -17,6 +17,14 @@ enum NinjaMovement {
 };
 
 
+ // De olika sätt en ninja kan göra en pose
+enum NinjaPose
+{
+	POSE_NONE,
+	POSE_VICTORY
+};
+
+
 // Variabler för att justera parametrar för ninjans rörelse
 const double MOVE_SPEED = 6.25;
 const double GRAVITY = 4.2;
@@ -34,6 +42,22 @@ class Ninja
 	// Ett konvext skal för kollision
 	ConvexHull hull;
 
+
+	struct SkeletonData
+	{
+		BoundingBox bounds;
+
+		double width, height;
+		double backLength, armLength, legLength;
+		Vector2 mid;
+
+		Vector2 velocity;
+
+		Vector2* groundNormal, * wallNormal;
+
+		NinjaPose pose;
+	};
+
 	// Positioner för en ninjas alla leder 
 	struct Skeleton {
 		Vector2 head[2];
@@ -47,11 +71,36 @@ class Ninja
 		Vector2 knees[2];
 		Vector2 feet[2];
 
+
+		Skeleton() = default;
+
+		// Beräkna skelettets strutkur utifrån en bunt parametrar
+		Skeleton(SkeletonData data);
+
+
 		// Rita skelettet
 		void draw(Renderer& renderer);
 
 		// Spegla skelettet runt en punkt i x-led
 		void mirrorX(double x);
+
+	private:
+
+		// Skapar skelettets huvud
+		void createHead(SkeletonData data);
+
+
+		// Skapar ett skelett som står stilla
+		void stand(SkeletonData data);
+
+		// Skapar ett skelett som klättrar
+		void climb(SkeletonData data);
+
+		// Skapar ett skelett som faller
+		void fall(SkeletonData data);
+
+		// Skapar ett skelett som står i en vinnarpose
+		void victory(SkeletonData data);
 	} skeleton;
 
 
@@ -78,6 +127,11 @@ class Ninja
 	// Hur länge ninjan har hoppat
 	double jumpDuration;
 
+
+	// Den nuvarande pose ninjan har
+	NinjaPose currentPose;
+
+
 public:
 
 	Ninja();
@@ -98,6 +152,13 @@ public:
 
 	// Returnerar ninjans konvexa skal
 	const ConvexHull& getConvexHull() const;
+
+
+	// Anger att ninjan ska anta en pose
+	void pose(NinjaPose ninjaPose);
+
+	// Avgör om ninjan gör en pose
+	bool isPosing();
 
 
 private:

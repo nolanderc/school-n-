@@ -63,15 +63,22 @@ void Renderer::setColor(int r, int g, int b)
 	this->switchPen(this->createCurrentPen());
 }
 
+void Renderer::setColor(Color color)
+{
+	color.clampColors();
+	this->setColor(color.r * 255, color.g * 255, color.b * 255);
+}
+
 void Renderer::setFillColor(int r, int g, int b)
 {
 	this->currentFillColor = RGB(r, g, b);
 	this->switchBrush(this->createCurrentBrush());
 }
 
-void Renderer::setFillColor(COLORREF color)
+void Renderer::setFillColor(Color color)
 {
-	this->currentFillColor = color;
+	color.clampColors();
+	this->setFillColor(color.r * 255, color.g * 255, color.b * 255);
 }
 
 void Renderer::setLineStyle(LineStyle style)
@@ -92,9 +99,21 @@ void Renderer::setTextColor(int r, int g, int b)
 	SetTextColor(this->target, this->textColor);
 }
 
+void Renderer::setTextColor(Color color)
+{
+	color.clampColors();
+	this->setTextColor(color.r * 255, color.g * 255, color.b * 255);
+}
+
 void Renderer::setTextBackgroundColor(int r, int g, int b)
 {
 	SetBkColor(this->target, RGB(r, g, b));
+}
+
+void Renderer::setTextBackgroundColor(Color color)
+{
+	color.clampColors();
+	this->setTextBackgroundColor(color.r * 255, color.g * 255, color.b * 255);
 }
 
 void Renderer::setLineWidthAbsolute(int width)
@@ -130,8 +149,11 @@ void Renderer::drawLine(Vector2 start, Vector2 end)
 
 void Renderer::fillRect(double x, double y, double width, double height)
 {
-	Vector2i topLeft = this->transform({ x, y });
-	Vector2i bottomRight = this->transform({ x + width, y + height });
+	Vector2i topLeft = this->transform({x, y});
+	Vector2i bottomRight(
+		int(ceil(width * this->coordScale) + topLeft.x),
+		int(ceil(height * this->coordScale) + topLeft.y)
+	);
 
 	RECT rect;
 	rect.left = topLeft.x;
@@ -384,7 +406,7 @@ void Renderer::switchBrush(HBRUSH brush)
 Vector2i Renderer::transform(Vector2 coord)
 {
 	return Vector2i(
-		round(coord.x * this->coordScale + this->coordOffset.x),
-		round(coord.y * this->coordScale + this->coordOffset.y)
+		floor(coord.x * this->coordScale + this->coordOffset.x),
+		floor (coord.y * this->coordScale + this->coordOffset.y)
 	);
 }

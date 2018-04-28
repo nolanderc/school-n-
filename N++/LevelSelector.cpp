@@ -6,6 +6,7 @@ LevelSelector::LevelThumbnail::~LevelThumbnail()
 	delete this->levelBitmap;
 }
 
+
 LevelSelector::LevelSelector(App* parent) :
 	App(parent),
 	completedLevelCount(0),
@@ -14,13 +15,13 @@ LevelSelector::LevelSelector(App* parent) :
 	scrollTarget(0),
 	recentHighscore(nullptr),
 	difficulty(NORMAL),
-	playButton(Vector2(1280 - TILE_SIZE * TILE_MARGIN - 80, 800 - TILE_SIZE*TILE_MARGIN - 80), 60)
+	playButton(Vector2(1440 - TILE_SIZE * TILE_MARGIN - 80, 800 - TILE_SIZE*TILE_MARGIN - 80), 60)
 {
 	this->createThumbnails(this->levelList);
 	this->checkCompletedLevels();
 
 
-	this->setWindowSize(1280, 800); 
+	this->setWindowSize(1440, 800); 
 	this->maxScroll = this->levels.empty() ? 0 : this->levels.back().container.bottom - this->getWindowSize().cy + TILE_MARGIN * TILE_SIZE;
 
 	this->createInformationPane();
@@ -65,10 +66,21 @@ void LevelSelector::draw(Renderer& renderer)
 
 	this->drawLevels(renderer);
 
-	Vector2 delta(TILE_SIZE * (3 * TILE_MARGIN + 2 * LEVEL_SIZE.cx), TILE_SIZE * TILE_MARGIN);
+	Vector2 delta(TILE_SIZE * (3 * TILE_MARGIN + 2 * (LEVEL_SIZE.cx + STAR_SIZE)), TILE_SIZE * TILE_MARGIN);
 	renderer.offset(delta);
 	this->drawLevelInformation(renderer);
-	renderer.offset(delta);
+	renderer.offset(-delta);
+
+
+	if (!this->tooltip.empty())
+	{
+		renderer.setTextColor(Color(200));
+		renderer.setTextBackgroundColor(Color(75));
+
+		Vector2i mouse = this->getMousePosition();
+
+		renderer.drawTextLeftAligned(this->tooltip, BoundingBox(mouse.x + 10, mouse.x + 10, mouse.y - 10, mouse.y - 10));
+	}
 }
 
 void LevelSelector::mouseMoved(int x, int y)
@@ -79,14 +91,33 @@ void LevelSelector::mouseMoved(int x, int y)
 		this->highlightedLevel = nullptr;
 	}
 
+	this->tooltip.clear();
 	int levelCount = this->levels.size();
 	for (int i = 0; i < levelCount; i++)
 	{
 		LevelThumbnail& thumbnail = this->levels[i];
+		
 		if (thumbnail.container.contains(Vector2(x, y)))
 		{
 			delete this->highlightedLevel;
 			this->highlightedLevel = new int(i);
+
+			if (this->completedLevelCount + 2 <= i)
+			{
+				int necessaryStars = i - this->completedLevelCount - 1;
+				std::string difficulty = this->difficulty == EASY ? "Easy" : this->difficulty == NORMAL ? "Normal" : "Hard";
+				this->tooltip = "You need " + std::to_string(necessaryStars) + " additional `" + difficulty + "`-star" + (necessaryStars > 1 ? "s" : "") + " to unlock";
+			}
+		}
+
+
+		if (thumbnail.starContainer.contains(Vector2(x, y)))
+		{
+			double p = 1.0 - normalize(y, thumbnail.starContainer.top, thumbnail.starContainer.bottom);
+
+			if (p > 2.0 / 3.0) this->tooltip = "Earned by completing level on `Hard` difficulty";
+			else if (p > 1.0 / 3.0) this->tooltip = "Earned by completing level on `Normal` difficulty or higher";
+			else if (p > 0.0 / 3.0) this->tooltip = "Earned by completing level on `Easy` difficulty or higher";
 		}
 	}
 
@@ -195,15 +226,20 @@ void LevelSelector::scroll(double delta)
 {
 	this->scrollAmount += delta;
 
-	if (delta)
-	{
+	if (delta) {
 		int levelCount = this->levels.size();
 		for (int i = 0; i < levelCount; i++) {
 			LevelThumbnail& level = this->levels[i];
 
 			level.container.top -= delta;
 			level.container.bottom -= delta;
+
+			level.starContainer.top -= delta;
+			level.starContainer.bottom -= delta;
 		}
+
+		Vector2i mouse = this->getMousePosition();
+		this->mouseMoved(mouse.x, mouse.y);
 	}
 }
 
@@ -229,39 +265,48 @@ void LevelSelector::changeDifficulty(Difficulty difficulty)
 	this->difficulty = difficulty;
 	this->checkCompletedLevels();
 	if (this->selectedLevel) this->changeSelected(0);
+	
+	Vector2i mouse = this->getMousePosition(); 
+	this->mouseMoved(mouse.x, mouse.y);
+}
+
+int LevelSelector::getLevelStarCount(int level)
+{
+	int stars = 3;
+	for (int d = int(HARD); d >= int(EASY); d--)
+	{
+		std::vector<Score> scores = this->levelList.getScores(level, Difficulty(d));
+
+		if (!scores.empty()) return stars;
+		stars--;
+	}
+
+	return 0;
 }
 
 void LevelSelector::checkCompletedLevels()
 {
 	// Beräkna för alla svårighetsgrader högre än denna
-	int maxCompleted = 0;
+	this->completedLevelCount = 0;
 
 	// Hard låser upp alla.
 	// Normal låser upp Easy och Normal.
 	// Easy låser bara upp sig själv.
-	for (int d = int(this->difficulty); d <= int(HARD); d++) {
-		int completed = 0;
+	int levelCount = this->levelList.size();
+	for (int i = 0; i < levelCount; i++) {
+		int stars = this->getLevelStarCount(i);
 
-		int levelCount = this->levelList.size();
-		for (int i = 0; i < levelCount; i++) {
-			std::vector<Score> scores = this->levelList.getScores(i, Difficulty(d));
-
-			if (!scores.empty()) {
-				completed++;
-			} else {
-				break;
-			}
+		if (stars > int(this->difficulty)) {
+			this->completedLevelCount++;
 		}
 
-		if (completed > maxCompleted) maxCompleted = completed;
+		this->levels[i].starCount = stars;
 	}
-
-	this->completedLevelCount = maxCompleted;
 }
 
 void LevelSelector::createInformationPane()
 {
-	Vector2 topLeft(TILE_SIZE * (3 * TILE_MARGIN + 2 * LEVEL_SIZE.cx), TILE_SIZE * TILE_MARGIN);
+	Vector2 topLeft(TILE_SIZE * (3 * TILE_MARGIN + 2 * (LEVEL_SIZE.cx + STAR_SIZE)), TILE_SIZE * TILE_MARGIN);
 	SIZE windowSize = this->getWindowSize();
 	double width = windowSize.cx - topLeft.x - TILE_SIZE * TILE_MARGIN;
 	double height = windowSize.cy - topLeft.y - TILE_SIZE * TILE_MARGIN;
@@ -279,6 +324,9 @@ void LevelSelector::createThumbnails(const LevelList& list)
 {
 	double width = LEVEL_SIZE.cx * TILE_SIZE;
 	double height = LEVEL_SIZE.cy * TILE_SIZE;
+
+	double starWidth = (LEVEL_SIZE.cx + STAR_SIZE) * TILE_SIZE;
+
 	double margin = TILE_SIZE * TILE_MARGIN;
 
 	int levelCount = list.size();
@@ -290,7 +338,7 @@ void LevelSelector::createThumbnails(const LevelList& list)
 		int y = i / 2;
 
 		Vector2 offset(
-			(width + margin) * x + margin,
+			(starWidth + margin) * x + margin,
 			(height + margin) * y + margin
 		);
 
@@ -303,6 +351,13 @@ void LevelSelector::createThumbnails(const LevelList& list)
 				offset.x, offset.x + width, 
 				offset.y, offset.y + height
 			),
+
+			BoundingBox(
+				offset.x + width, offset.x + starWidth,
+				offset.y, offset.y + height
+			),
+
+			this->getLevelStarCount(i)
 		};
 
 		this->levels.push_back(thumbnail);
@@ -330,7 +385,7 @@ Bitmap LevelSelector::renderLevelThumbnail(Renderer& renderer, Level& level)
 	return target;
 }
 
-void LevelSelector::drawLock(Renderer& renderer, const BoundingBox& container)
+void LevelSelector::drawLock(Renderer & renderer, const BoundingBox & container, Color backgroundColor)
 {
 	double width = container.right - container.left;
 	double height = container.bottom - container.top;
@@ -356,19 +411,38 @@ void LevelSelector::drawLock(Renderer& renderer, const BoundingBox& container)
 	);
 
 	renderer.setLineWidth(size / 8);
-	renderer.setColor(50, 50, 50);
+	renderer.setColor(backgroundColor);
 	renderer.drawLine(
 		center.x, center.y + size * 0.3,
 		center.x, center.y + size * 0.5
 	);
 
 	renderer.setLineStyle(LINE_NONE);
-	renderer.setFillColor(50, 50, 50);
+	renderer.setFillColor(backgroundColor);
 	renderer.fillCircle(
 		center.x, center.y + size * 0.3,
 		size / 8
 	);
 
+}
+
+void LevelSelector::fillStar(Renderer& renderer, Vector2 center, double radius)
+{
+	std::vector<Vector2> points;
+
+	double deltaAngle = 4 * PI / 5.0;
+
+	for (int i = 0; i < 5; i++)
+	{
+		Vector2 direction(
+			radius * cos(deltaAngle * i - PI / 2),
+			radius * sin(deltaAngle * i - PI / 2)
+		);
+
+		points.push_back(center + direction);
+	}
+
+	renderer.fillPolygon(points); 
 }
 
 void LevelSelector::drawLevels(Renderer& renderer)
@@ -378,6 +452,44 @@ void LevelSelector::drawLevels(Renderer& renderer)
 	{
 		LevelThumbnail& thumbnail = this->levels[i];
 
+		renderer.setFillColor(0, 0, 0);
+		renderer.fillRect(thumbnail.starContainer);
+
+		double x = (thumbnail.starContainer.left + thumbnail.starContainer.right) / 2;
+
+		double width = thumbnail.starContainer.right - thumbnail.starContainer.left;
+		double height = thumbnail.starContainer.bottom - thumbnail.starContainer.top;
+
+		for (int i = 0; i < 3; i++) {
+
+			double y = thumbnail.starContainer.bottom - (i + 0.5) * height / 3;
+
+			if (i < thumbnail.starCount) {
+				renderer.setFillColor(200, 200, 0);
+				renderer.setColor(200, 200, 0);
+			} else {
+				renderer.setFillColor(50, 50, 50);
+				renderer.setColor(50, 50, 50);
+			}
+
+			double size = (width < height ? width : height) * 0.35;
+
+			if (i > int(this->difficulty))
+			{
+				this->drawLock(renderer, BoundingBox(
+					x - size, x + size,
+					y - size, y + size
+				), Color(0));
+			}
+			else
+			{
+				renderer.setLineStyle(LINE_NONE);
+				this->fillStar(renderer, { x, y }, size);
+			}
+
+		}
+
+		
 		if (this->completedLevelCount + 2 > i)
 		{
 			if (this->selectedLevel && *this->selectedLevel == i) {
@@ -415,7 +527,7 @@ void LevelSelector::drawLevels(Renderer& renderer)
 
 			renderer.setFillColor(125, 125, 125);
 			renderer.setColor(125, 125, 125);
-			this->drawLock(renderer, thumbnail.container);
+			this->drawLock(renderer, thumbnail.container, Color(50));
 		}
 	}
 }
@@ -507,11 +619,14 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 		renderer.drawTextCentered(text, this->difficultyContainers[i]);
 	}
 
+	renderer.offset(offset);
+
 
 	if (this->selectedLevel)
 	{
 		// Rita spel/start
 		renderer.setLineStyle(LINE_NONE);
+		renderer.offset(-offset);
 		this->playButton.render(renderer);
 		renderer.offset(offset);
 

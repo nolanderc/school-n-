@@ -14,6 +14,8 @@ class ExitTile : public Tile
 
 	double openAmount;
 
+	double time;
+
 public:
 
 	ExitTile(bool open);
@@ -42,9 +44,11 @@ public:
 
 private:
 
-	// Rita en dörr med ett visst avstånd ifrån "dörrkarmen"
-	void renderDoorway(Renderer& renderer, double width, double height);
+	// Rita en dörr med ett visst avstånd ifrån mitten
+	void renderDoorway(Renderer& renderer, double dx, double width);
 
+	// Ritar en effekt i dörrkarmen
+	void renderHighlight(Renderer& renderer, double width, Color effect, Color background);
 };
 
 

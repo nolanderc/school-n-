@@ -6,6 +6,7 @@
 #include "Bitmap.h"
 #include "Linear.h"
 #include "BoundingBox.h"
+#include "Color.h"
 
 // Olika stilar på linjer
 enum LineStyle {
@@ -91,15 +92,19 @@ public:
 
 	// Sätter kanternas färg
 	void setColor(int r, int g, int b);
+	void setColor(Color color);
 
 	// Sätter fyllningens färg
 	void setFillColor(int r, int g, int b);
-	void setFillColor(COLORREF color);
+	void setFillColor(Color color);
 
 
 	// Sätter textens färg
 	void setTextColor(int r, int g, int b);
+	void setTextColor(Color color);
+
 	void setTextBackgroundColor(int r, int g, int b);
+	void setTextBackgroundColor(Color color);
 
 	// Sätter linjernas tjocklek, i pixlar
 	void setLineWidthAbsolute(int width);

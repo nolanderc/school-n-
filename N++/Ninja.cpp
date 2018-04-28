@@ -13,10 +13,12 @@ Ninja::Ninja(Vector2 start) :
 	groundNormal(nullptr),
 	wallNormal(nullptr),
 
+	movement(NINJA_STILL),
 	jump(false),
 	jumping(false),
 	jumpDuration(0),
-	movement(NINJA_STILL)
+
+	currentPose(POSE_NONE)
 {
 	hull = ConvexHull({
 		{ 0, 0 },
@@ -94,6 +96,11 @@ void Ninja::update(double deltaTime, const std::vector<const Collider*>& collide
 	
 	// Beräkna luftmotståndets påverkan
 	velocity -= DRAG * velocity * deltaTime;
+
+	// Beräkna motståndet när ninjan har en pose
+	if(this->isPosing()) {
+		velocity.x -= 10 * velocity.x * deltaTime;
+	}
 	
 	// Beräkna friktionens påverkan om ninjan nuddar väggen
 	if (this->wallNormal && this->velocity.y > 0) {
@@ -136,6 +143,16 @@ void Ninja::render(Renderer & renderer)
 const ConvexHull& Ninja::getConvexHull() const
 {
 	return this->hull;
+}
+
+void Ninja::pose(NinjaPose ninjaPose)
+{
+	this->currentPose = ninjaPose;
+}
+
+bool Ninja::isPosing()
+{
+	return bool(this->currentPose);
 }
 
 void Ninja::resolveCollisions(const std::vector<const Collider*>& colliders)
@@ -234,7 +251,8 @@ void Ninja::updateSkeleton(double deltaTime)
 {
 	Skeleton target = this->getSkeleton();
 
-	const double factor = 15;
+	// Hur snabbt ninjan anpassar sig till sin nya form
+	const double factor = lerp(normalize(abs(this->velocity.x), 0.0, 4.5), 8, 15);
 	
 	skeleton.shoulder -= (skeleton.shoulder - target.shoulder) * deltaTime * factor;
 	skeleton.hip -= (skeleton.hip - target.hip) * deltaTime * factor;
@@ -249,6 +267,7 @@ void Ninja::updateSkeleton(double deltaTime)
 		skeleton.feet[i] -= (skeleton.feet[i] - target.feet[i]) * deltaTime * factor;
 	}
 
+	// Flytta alla delar så att höften hålls i mitten av kollisionsskalet
 	Vector2 delta = this->hull.average() - skeleton.hip;
 
 	skeleton.shoulder += delta;
@@ -270,143 +289,57 @@ Ninja::Skeleton Ninja::getSkeleton()
 {
 	BoundingBox bounds = this->hull.getBoundingBox();
 
-	double width = bounds.right - bounds.left;
-	double height = bounds.bottom - bounds.top;
-
-	Vector2 mid{ (bounds.left + bounds.right) / 2, (bounds.top + bounds.bottom) / 2 };
-
-	Skeleton skeleton;
+	SkeletonData data;
 	
-	skeleton.shoulder = { mid.x, bounds.top };
-	skeleton.hip = { mid.x, mid.y };
+	data.bounds = bounds;
 
-	double backLength = height / 3;
-	double armLength = height / 5;
-	double legLength = height / 4;
+	data.width = bounds.right - bounds.left;
+	data.height = bounds.bottom - bounds.top;
 
-	// Ska lederna spegelvändas?
-	bool mirror = false;
+	data.mid = Vector2((bounds.left + bounds.right) / 2, (bounds.top + bounds.bottom) / 2);
 
-	// Springer/står stilla
-	if (this->groundNormal) {
-		if (this->velocity.x < 0) {
-			mirror = true;
-		}
+	data.backLength = data.height / 3;
+	data.armLength = data.height / 5;
+	data.legLength = data.height / 4;
+	
+	data.groundNormal = this->groundNormal;
+	data.wallNormal = this->wallNormal;
 
-		double vx = normalize(abs(velocity.x), 0, 2.5);
+	data.velocity = this->velocity;
+	data.pose = this->currentPose;
 
-		double stepLength = width * 3;
-		double p = 2 * fmod(mid.x, stepLength * 2) / (stepLength * 2);
-
-		bool swapped = false;
-		if (p > 1.0) {
-			swapped = true;
-			p -= 1;
-		}
-
-		skeleton.shoulder = skeleton.hip + backLength * Vector2::rotated(80);
+	return Skeleton(data);
+}
 
 
-		double armAngles[2] = {
-			lerp(p, 330, 200),
-			lerp(p, 200, 330),
-		};
+Ninja::Skeleton::Skeleton(SkeletonData data)
+{
+	this->shoulder = { data.mid.x, data.bounds.top };
+	this->hip = { data.mid.x, data.mid.y };
 
-
-		skeleton.elbows[0] = skeleton.shoulder + armLength * Vector2::rotated(armAngles[0]);
-		skeleton.elbows[1] = skeleton.shoulder + armLength * Vector2::rotated(armAngles[1]);
-
-		skeleton.hands[0] = skeleton.elbows[0] + armLength * Vector2::rotated(armAngles[0] + 70);
-		skeleton.hands[1] = skeleton.elbows[1] + armLength * Vector2::rotated(armAngles[1] + 70);
-
-
-		double legMax = 250 - 30 * vx; // 270 - 50
-		double legMin = 290 + 30 * vx; // 270 + 50
-
-		double legAngles[2] = {
-			lerp(p, legMin, legMax),
-			lerp(p, legMax, legMin),
-		};
-
-		skeleton.knees[0] = skeleton.hip + legLength * Vector2::rotated(legAngles[0]);
-		skeleton.knees[1] = skeleton.hip + legLength * Vector2::rotated(legAngles[1]);
-
-
-		double feetMax = 100 * vx;
-
-		skeleton.feet[0] = skeleton.knees[0] + legLength * Vector2::rotated(legAngles[0] - lerp(p, 0.0, feetMax));
-		skeleton.feet[1] = skeleton.knees[1] + legLength * Vector2::rotated(legAngles[1] - lerp(p*p, feetMax, 0.0));
-
-		if (swapped) {
-			std::swap(skeleton.elbows[0], skeleton.elbows[1]);
-			std::swap(skeleton.hands[0], skeleton.hands[1]);
-			std::swap(skeleton.knees[0], skeleton.knees[1]);
-			std::swap(skeleton.feet[0], skeleton.feet[1]);
+	// Står i en pose
+	if (data.pose != POSE_NONE) {
+		switch (data.pose)
+		{
+		case POSE_VICTORY: this->victory(data); break;
 		}
 	}
+
+	// Springer/står stilla
+	else if (data.groundNormal) {
+		this->stand(data);
+	}
+	
 	// Klättrar på en vägg
-	else if (this->wallNormal) {
-		if (this->wallNormal->x < 0) {
-			mirror = true;
-		}
-
-		skeleton.shoulder = skeleton.hip + backLength * Vector2::rotated(75);
-
-		skeleton.elbows[0] = skeleton.shoulder + armLength * Vector2::rotated(160);
-		skeleton.elbows[1] = skeleton.shoulder + armLength * Vector2::rotated(210);
-
-		skeleton.hands[0] = skeleton.elbows[0] + armLength * Vector2::rotated(140);
-		skeleton.hands[1] = skeleton.elbows[1] + armLength * Vector2::rotated(140);
-
-
-		skeleton.knees[0] = skeleton.hip + legLength * Vector2::rotated(130);
-		skeleton.knees[1] = skeleton.hip + legLength * Vector2::rotated(240);
-
-		skeleton.feet[0] = skeleton.knees[0] + legLength * Vector2::rotated(240);
-		skeleton.feet[1] = skeleton.knees[1] + legLength * Vector2::rotated(240);
+	else if (data.wallNormal) {
+		this->climb(data);
 	}
 
 	// I luften: hoppar eller faller
 	else {
-		if (velocity.x < 0) {
-			mirror = true;
-		}
-
-		double vy = normalize(-this->velocity.y, -1, 1.5);
-
-		skeleton.shoulder = skeleton.hip + backLength * Vector2::rotated(lerp(vy, 100, 70));
-
-		skeleton.elbows[0] = skeleton.shoulder + armLength * Vector2::rotated(lerp(vy, 0, -60));
-		skeleton.elbows[1] = skeleton.shoulder + armLength * Vector2::rotated(lerp(vy, 180, 210));
-
-		skeleton.hands[0] = skeleton.elbows[0] + armLength * Vector2::rotated(lerp(vy, 30, 50));
-		skeleton.hands[1] = skeleton.elbows[1] + armLength * Vector2::rotated(lerp(vy, 200, 220));
-
-
-		skeleton.knees[0] = skeleton.hip + legLength * Vector2::rotated(lerp(vy, -60, 10));
-		skeleton.knees[1] = skeleton.hip + legLength * Vector2::rotated(lerp(vy, 350, 240));
-
-		skeleton.feet[0] = skeleton.knees[0] + legLength * Vector2::rotated(lerp(vy, 300, 240));
-		skeleton.feet[1] = skeleton.knees[1] + legLength * Vector2::rotated(lerp(vy, 220, 240));
+		this->fall(data);
 	}
-
-
-	double vy = normalize(-this->velocity.y - 1.0, -2.0, 2.0);
-
-	double angle = lerp(vy, -25, 35);
-	skeleton.head[0] = skeleton.shoulder - width / 7 * Vector2::rotated(angle) - Vector2(0, height / 10);
-	skeleton.head[1] = skeleton.shoulder + width / 5 * Vector2::rotated(angle) - Vector2(0, height / 10);
-
-
-	if (mirror) {
-		skeleton.mirrorX(mid.x);
-	}
-
-
-	return skeleton;
 }
-
-
 
 void Ninja::Skeleton::draw(Renderer & renderer)
 {
@@ -440,5 +373,146 @@ void Ninja::Skeleton::mirrorX(double x)
 		mirror(&hands[i].x, x);
 		mirror(&knees[i].x, x);
 		mirror(&feet[i].x, x);
+	}
+}
+
+void Ninja::Skeleton::createHead(SkeletonData data)
+{
+	double vy = normalize(-data.velocity.y - 1.0, -2.0, 2.0);
+
+	double angle = lerp(vy, -25, 35);
+	this->head[0] = this->shoulder - data.width / 7 * Vector2::rotated(angle) - Vector2(0, data.height / 10);
+	this->head[1] = this->shoulder + data.width / 5 * Vector2::rotated(angle) - Vector2(0, data.height / 10);
+}
+
+void Ninja::Skeleton::stand(SkeletonData data)
+{
+	double vx = normalize(abs(data.velocity.x), 0, 2.5);
+
+	double stepLength = data.width * 3;
+	double p = 2 * fmod(data.mid.x, stepLength * 2) / (stepLength * 2);
+
+	bool swapped = false;
+	if (p > 1.0) {
+		swapped = true;
+		p -= 1;
+	}
+
+	this->shoulder = this->hip + data.backLength * Vector2::rotated(80);
+
+
+	double armAngles[2] = {
+		lerp(p, 330, 200),
+		lerp(p, 200, 330),
+	};
+
+
+	this->elbows[0] = this->shoulder + data.armLength * Vector2::rotated(armAngles[0]);
+	this->elbows[1] = this->shoulder + data.armLength * Vector2::rotated(armAngles[1]);
+
+	this->hands[0] = this->elbows[0] + data.armLength * Vector2::rotated(armAngles[0] + 70);
+	this->hands[1] = this->elbows[1] + data.armLength * Vector2::rotated(armAngles[1] + 70);
+
+
+	double legMax = 250 - 30 * vx; // 270 - 50
+	double legMin = 290 + 30 * vx; // 270 + 50
+
+	double legAngles[2] = {
+		lerp(p, legMin, legMax),
+		lerp(p, legMax, legMin),
+	};
+
+	this->knees[0] = this->hip + data.legLength * Vector2::rotated(legAngles[0]);
+	this->knees[1] = this->hip + data.legLength * Vector2::rotated(legAngles[1]);
+
+
+	double feetMax = 100 * vx;
+
+	this->feet[0] = this->knees[0] + data.legLength * Vector2::rotated(legAngles[0] - lerp(p, 0.0, feetMax));
+	this->feet[1] = this->knees[1] + data.legLength * Vector2::rotated(legAngles[1] - lerp(p*p, feetMax, 0.0));
+
+	if (swapped) {
+		std::swap(this->elbows[0], this->elbows[1]);
+		std::swap(this->hands[0], this->hands[1]);
+		std::swap(this->knees[0], this->knees[1]);
+		std::swap(this->feet[0], this->feet[1]);
+	}
+
+	this->createHead(data);
+
+	if (data.velocity.x < 0) {
+		this->mirrorX(data.mid.x);
+	}
+}
+
+void Ninja::Skeleton::climb(SkeletonData data)
+{
+	this->shoulder = this->hip + data.backLength * Vector2::rotated(75);
+
+	this->elbows[0] = this->shoulder + data.armLength * Vector2::rotated(160);
+	this->elbows[1] = this->shoulder + data.armLength * Vector2::rotated(210);
+
+	this->hands[0] = this->elbows[0] + data.armLength * Vector2::rotated(140);
+	this->hands[1] = this->elbows[1] + data.armLength * Vector2::rotated(140);
+	
+	this->knees[0] = this->hip + data.legLength * Vector2::rotated(130);
+	this->knees[1] = this->hip + data.legLength * Vector2::rotated(240);
+
+	this->feet[0] = this->knees[0] + data.legLength * Vector2::rotated(240);
+	this->feet[1] = this->knees[1] + data.legLength * Vector2::rotated(240);
+
+	this->createHead(data);
+
+	if (data.wallNormal->x < 0) {
+		this->mirrorX(data.mid.x);
+	}
+}
+
+void Ninja::Skeleton::fall(SkeletonData data)
+{
+	double vy = normalize(-data.velocity.y, -1, 1.5);
+
+	this->shoulder = this->hip + data.backLength * Vector2::rotated(lerp(vy, 100, 70));
+
+	this->elbows[0] = this->shoulder + data.armLength * Vector2::rotated(lerp(vy, 0, -60));
+	this->elbows[1] = this->shoulder + data.armLength * Vector2::rotated(lerp(vy, 180, 210));
+
+	this->hands[0] = this->elbows[0] + data.armLength * Vector2::rotated(lerp(vy, 30, 50));
+	this->hands[1] = this->elbows[1] + data.armLength * Vector2::rotated(lerp(vy, 200, 220));
+
+
+	this->knees[0] = this->hip + data.legLength * Vector2::rotated(lerp(vy, -60, 10));
+	this->knees[1] = this->hip + data.legLength * Vector2::rotated(lerp(vy, 350, 240));
+
+	this->feet[0] = this->knees[0] + data.legLength * Vector2::rotated(lerp(vy, 300, 240));
+	this->feet[1] = this->knees[1] + data.legLength * Vector2::rotated(lerp(vy, 220, 240));
+
+	this->createHead(data);
+
+	if (data.velocity.x < 0) {
+		this->mirrorX(data.mid.x);
+	}
+}
+
+void Ninja::Skeleton::victory(SkeletonData data)
+{
+	this->shoulder = this->hip + data.backLength * Vector2::rotated(90);
+
+	this->elbows[0] = this->shoulder + data.armLength * Vector2::rotated(90 + 70);
+	this->elbows[1] = this->shoulder + data.armLength * Vector2::rotated(90 - 70);
+
+	this->hands[0] = this->elbows[0] + data.armLength * Vector2::rotated(90 + 20);
+	this->hands[1] = this->elbows[1] + data.armLength * Vector2::rotated(90 - 20);
+
+	this->knees[0] = this->hip + data.legLength * Vector2::rotated(250);
+	this->knees[1] = this->hip + data.legLength * Vector2::rotated(290);
+
+	this->feet[0] = this->knees[0] + data.legLength * Vector2::rotated(260);
+	this->feet[1] = this->knees[1] + data.legLength * Vector2::rotated(280);
+
+	this->createHead(data);
+
+	if (data.velocity.x > 0) {
+		this->mirrorX(data.mid.x);
 	}
 }
