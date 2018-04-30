@@ -13,29 +13,43 @@
 
 
 
-class NinjaGame: public App
+class NinjaGame: public App, public VictoryCallback
 {
 	// Nivån
 	Level level;
 
 	// Bitmap att rita nivån till
-	Bitmap levelBitmap;
+	Bitmap* levelBitmap;
 
 	// Borde nivån ritas om?
 	bool renderLevel;
 
 	// Att anropa för när nivån är avklarad
 	VictoryCallback* gameCallback;
+	
 
+	// Lagrar en vinst, om det finns en
+	struct Victory {
+		double time;
+		int coins;
+
+		Victory(double time, int coins) : time(time), coins(coins) {}
+	} *victory;
 
 public:
 
 	NinjaGame(App* parent, Level level, VictoryCallback* gameCallback = nullptr);
 
+	~NinjaGame();
 
 	void update(float dt) override;
 
 	void draw(Renderer & renderer) override;
+
+
+
+	// Anropas när nivån är vunnen
+	virtual void onLevelComplete(double time, int coins) override;
 
 protected:
 
@@ -48,6 +62,9 @@ private:
 
 	void updateFrameCounter(double deltaTime);
 
+
+	// Ritar vinstskärmen
+	void renderVictoryScreen(Renderer& renderer);
 
 };
 

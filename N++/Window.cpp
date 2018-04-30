@@ -83,9 +83,10 @@ void Window::close()
 	this->open = false;
 }
 
-SIZE Window::getSize()
+Vector2i Window::getSize()
 {
-	return this->size;
+	Vector2i size(this->size.cx, this->size.cy);
+	return size;
 }
 
 void Window::setSize(int width, int height)
@@ -134,21 +135,21 @@ bool Window::isKeyDown(int key)
 	return false;
 }
 
-Bitmap Window::createCompatibleBitmap(SIZE size)
+WindowsBitmap* Window::createCompatibleBitmap(Vector2i size)
 {
-	return Bitmap(CreateCompatibleBitmap(this->dc, size.cx, size.cy), size);
+	return new WindowsBitmap(CreateCompatibleBitmap(this->dc, size.x, size.y), {size.x, size.y});
 }
 
 
-Renderer Window::getNewRenderer()
+WindowsRenderer Window::getNewRenderer()
 {
 	HDC backDC = CreateCompatibleDC(this->dc);
 
 	SelectObject(backDC, this->backBuffer);
-	return Renderer(backDC, this->size);
+	return WindowsRenderer(backDC, this->size);
 }
 
-void Window::submitRenderer(Renderer & renderer)
+void Window::submitRenderer(WindowsRenderer & renderer)
 {
 	renderer.blitResult(this->dc, 0, 0, this->size.cx, this->size.cy);
 	DeleteDC(renderer.releaseDC());

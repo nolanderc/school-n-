@@ -160,8 +160,8 @@ void projectPoints(Vector2 axis, const std::vector<Vector2>& points, double * mi
 			*min = *max = projection;
 		}
 		else {
-			*min = min(*min, projection);
-			*max = max(*max, projection);
+			*min = *min < projection ? *min : projection;
+			*max = *max > projection ? *max : projection;
 		}
 	}
 }

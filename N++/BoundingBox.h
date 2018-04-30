@@ -19,3 +19,16 @@ struct BoundingBox
 	bool contains(Vector2 point);
 };
 
+
+struct BoundingBoxi
+{
+	int left, right, top, bottom;
+
+	BoundingBoxi();
+	BoundingBoxi(const BoundingBox& other);
+
+	BoundingBoxi(int left, int right, int top, int bottom);
+
+	operator BoundingBox() const;
+};
+

@@ -9,7 +9,8 @@ Level::Level(int width, int height, Difficulty difficulty, VictoryCallback* vict
 	difficulty(difficulty),
 	victoryCallback(victoryCallback),
 	coins(0),
-	time(0)
+	time(0), 
+	running(false)
 {
 	this->tiles.resize(width * height, nullptr);
 
@@ -17,7 +18,13 @@ Level::Level(int width, int height, Difficulty difficulty, VictoryCallback* vict
 }
 
 Level::Level(std::string path, Difficulty difficulty, VictoryCallback* victoryCallback) :
-	ninja(nullptr), needsRedraw(true), difficulty(difficulty)
+	ninja(nullptr), 
+	needsRedraw(true),
+	difficulty(difficulty),
+	victoryCallback(victoryCallback),
+	coins(0),
+	time(0),
+	running(false)
 {
 	std::ifstream file(path);
 
@@ -95,6 +102,8 @@ void Level::reset()
 
 	this->time = 0;
 	this->coins = 0;
+
+	this->running = false;
 }
 
 void Level::retry()
@@ -391,7 +400,6 @@ void Level::completeLevel()
 	}
 	
 	this->ninja->pose(POSE_VICTORY);
-	// this->reset();
 }
 
 void Level::killNinja(CauseOfDeath causeOfDeath)
@@ -440,6 +448,7 @@ Vector2 Level::getNinjaPosition()
 void Level::moveNinja(NinjaMovement move)
 {
 	if (this->ninja && !this->ninja->isPosing()) {
+		this->running = true;
 		this->ninja->move(move);
 	}
 }
@@ -663,37 +672,39 @@ const Tile* Level::getTile(Vector2i coord) const
 
 void Level::update(double deltaTime)
 {
-	if (this->ninja) {
-		ninja->update(deltaTime, {this});
+	if (this->running) {
+		if (this->ninja) {
+			ninja->update(deltaTime, { this });
 
-		double energyMultiplier = 1;
+			double energyMultiplier = 1;
 
-		if (!this->ninja->isPosing())
-		{
-			switch (this->difficulty)
+			if (!this->ninja->isPosing())
 			{
-			case EASY: energyMultiplier /= 1.5; break;;
-			case NORMAL: energyMultiplier /= 1.25; break;
-			case HARD: energyMultiplier /= 1; break;
+				switch (this->difficulty)
+				{
+				case EASY: energyMultiplier /= 1.5; break;;
+				case NORMAL: energyMultiplier /= 1.25; break;
+				case HARD: energyMultiplier /= 1; break;
+				}
+
+				this->currentEnergy -= deltaTime * energyMultiplier;
+
+				if (this->currentEnergy <= 0) {
+					this->killNinja(EXPLOSION);
+				}
 			}
 
-			this->currentEnergy -= deltaTime * energyMultiplier;
-
-			if(this->currentEnergy <= 0) {
-				this->killNinja(EXPLOSION);
-			}
+			this->time += deltaTime;
 		}
 
-		this->time += deltaTime;
+		this->updateTiles(deltaTime);
+
+		this->checkInteractions();
+
+		this->updateEntities(deltaTime);
+
+		this->updateEffects(deltaTime);
 	}
-
-	this->updateTiles(deltaTime);
-
-	this->checkInteractions();
-
-	this->updateEntities(deltaTime);
-
-	this->updateEffects(deltaTime);
 }
 
 void Level::requestRedraw()

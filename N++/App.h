@@ -10,7 +10,7 @@ class App: public WindowEventHandler
 	Window* window;
 
 	// Den önskade storleken på fönstret
-	SIZE preferredWindowSize;
+	Vector2i preferredWindowSize;
 	
 
 	// Appen som "äger" denna app
@@ -73,7 +73,7 @@ protected:
 
 
 	// Returnera fönstrets storlek
-	SIZE getWindowSize();
+	Vector2i getWindowSize();
 
 	// Ändra fönstrets storlek
 	void setWindowSize(int width, int height);
@@ -93,7 +93,7 @@ protected:
 
 
 	// Skapar en bitmap som är kompatibel med fönstret
-	Bitmap createCompatibleBitmap(SIZE size);
+	Bitmap* createCompatibleBitmap(Vector2i size);
 
 
 	// Anger att en ny app ska köras innuti denna app

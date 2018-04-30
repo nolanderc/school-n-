@@ -23,7 +23,7 @@
     <ProjectGuid>{17F81144-CF1F-43B5-9015-9DEFBBE926BC}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>N</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.16299.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -152,7 +152,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp" />
-    <ClCompile Include="Bitmap.cpp" />
+    <ClCompile Include="WindowsBitmap.cpp" />
     <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="Color.cpp" />
     <ClCompile Include="Entities.cpp" />
@@ -174,7 +174,7 @@
     <ClCompile Include="NinjaGame.cpp" />
     <ClCompile Include="Ninja.cpp" />
     <ClCompile Include="NumberUtil.cpp" />
-    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="WindowsRenderer.cpp" />
     <ClCompile Include="SolidTiles.cpp" />
     <ClCompile Include="StringUtil.cpp" />
     <ClCompile Include="TilePalette.cpp" />
@@ -183,6 +183,7 @@
   <ItemGroup>
     <ClInclude Include="App.h" />
     <ClInclude Include="Bitmap.h" />
+    <ClInclude Include="WindowsBitmap.h" />
     <ClInclude Include="BoundingBox.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="Difficulty.h" />
@@ -209,6 +210,7 @@
     <ClInclude Include="Ninja.h" />
     <ClInclude Include="NumberUtil.h" />
     <ClInclude Include="Renderer.h" />
+    <ClInclude Include="WindowsRenderer.h" />
     <ClInclude Include="SolidTiles.h" />
     <ClInclude Include="StringUtil.h" />
     <ClInclude Include="Tile.h" />

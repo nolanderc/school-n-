@@ -1,16 +1,16 @@
-#include "Bitmap.h"
+#include "WindowsBitmap.h"
 
 
 
 
 
-Bitmap::Bitmap()
+WindowsBitmap::WindowsBitmap()
 {
 	this->handle = NULL;
 	this->copies = new int(1);
 }
 
-Bitmap::~Bitmap()
+WindowsBitmap::~WindowsBitmap()
 {
 	*this->copies -= 1;
 	if (*this->copies == 0)
@@ -20,7 +20,7 @@ Bitmap::~Bitmap()
 	}
 }
 
-Bitmap::Bitmap(const Bitmap& source)
+WindowsBitmap::WindowsBitmap(const WindowsBitmap& source)
 {
 	this->handle = source.handle;
 	this->size = source.size;
@@ -29,7 +29,7 @@ Bitmap::Bitmap(const Bitmap& source)
 	*this->copies += 1;
 }
 
-void Bitmap::operator=(const Bitmap& source)
+void WindowsBitmap::operator=(const WindowsBitmap& source)
 {
 	this->handle = source.handle;
 	this->size = source.size;
@@ -38,14 +38,14 @@ void Bitmap::operator=(const Bitmap& source)
 	*this->copies += 1;
 }
 
-Bitmap::Bitmap(HBITMAP bitmap, SIZE size) :
+WindowsBitmap::WindowsBitmap(HBITMAP bitmap, SIZE size) :
 	size(size), handle(bitmap)
 {
 	this->copies = new int(1);
 }
 
 
-Bitmap::Bitmap(std::string path)
+WindowsBitmap::WindowsBitmap(std::string path)
 {
 	HBITMAP img = (HBITMAP)LoadImage(NULL, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 
@@ -58,27 +58,27 @@ Bitmap::Bitmap(std::string path)
 	}
 }
 
-bool Bitmap::isLoaded()
+bool WindowsBitmap::isLoaded()
 {
 	return this->handle != NULL;
 }
 
-HBITMAP Bitmap::selectInto(HDC dc)
+HBITMAP WindowsBitmap::selectInto(HDC dc)
 {
 	return (HBITMAP)SelectObject(dc, this->handle);
 }
 
-SIZE Bitmap::getSize()
+SIZE WindowsBitmap::getSize()
 {
 	return this->size;
 }
 
-int Bitmap::getWidth()
+int WindowsBitmap::getWidth()
 {
 	return this->size.cx;
 }
 
-int Bitmap::getHeight()
+int WindowsBitmap::getHeight()
 {
 	return this->size.cy;
 }

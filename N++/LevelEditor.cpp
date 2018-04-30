@@ -6,16 +6,16 @@ LevelEditor::LevelEditor(App* parent, std::string path) :
 {
 	if (this->level.getWidth() == 0)
 	{
-		this->level = Level(LEVEL_SIZE.cx, LEVEL_SIZE.cy, HARD);
+		this->level = Level(LEVEL_SIZE.x, LEVEL_SIZE.y, HARD);
 	}
 
-	this->setWindowSize(LEVEL_SIZE_PIXELS.cx + PALETTE_WIDTH_PIXELS, LEVEL_SIZE_PIXELS.cy);
+	this->setWindowSize(LEVEL_SIZE_PIXELS.x + PALETTE_WIDTH_PIXELS, LEVEL_SIZE_PIXELS.y);
 
 	this->levelBitmap = this->createCompatibleBitmap(LEVEL_SIZE_PIXELS);
 
 
 	Vector2 buttonPosition = Vector2(
-		LEVEL_SIZE_PIXELS.cx + BUTTONS_HEIGHT_PIXELS / 2,
+		LEVEL_SIZE_PIXELS.x + BUTTONS_HEIGHT_PIXELS / 2,
 		BUTTONS_HEIGHT_PIXELS / 2
 	);
 
@@ -82,20 +82,24 @@ void LevelEditor::drawLevel(Renderer& renderer)
 {
 	if (this->level.needsRerender())
 	{
-		Renderer levelRenderer = renderer.createBitmapRenderer(this->levelBitmap);
+		Renderer* levelRenderer = renderer.createBitmapRenderer(this->levelBitmap);
 
-		levelRenderer.setFillColor(50, 50, 50);
-		levelRenderer.clear();
+		levelRenderer->setFillColor(50, 50, 50);
+		levelRenderer->clear();
 
-		levelRenderer.scale(TILE_SIZE);
+		levelRenderer->scale(TILE_SIZE);
 
-		levelRenderer.setFillColor(0, 0, 0);
-		level.renderStatic(levelRenderer);
+		levelRenderer->setFillColor(0, 0, 0);
+		level.renderStatic(*levelRenderer);
 	}
 
 	// Rita nivån
-	renderer.drawBitmap(this->levelBitmap, 0, 0, this->levelBitmap.getWidth(), this->levelBitmap.getHeight(), 0, 0);
+	renderer.drawBitmap(this->levelBitmap, 0, 0, this->levelBitmap->getWidth(), this->levelBitmap->getHeight(), 0, 0);
 
+	renderer.setFillColor(50, 50, 50);
+	renderer.clear();
+
+	this->level.renderStatic(renderer);
 	this->level.renderDynamic(renderer);
 
 	// Rita en ram runt nivån
@@ -130,7 +134,7 @@ void LevelEditor::drawSelection(Renderer& renderer)
 		renderer.setLineStyle(LINE_SOLID);
 		renderer.setLineWidthAbsolute(2);
 
-		RECT bounds = getSelectionBounds(*this->selectionStart, this->selectionEnd);
+		BoundingBoxi bounds = getSelectionBounds(*this->selectionStart, this->selectionEnd);
 		bounds.right += 1;
 		bounds.bottom += 1;
 		renderer.drawRect(bounds);
@@ -231,7 +235,7 @@ void LevelEditor::mouseMoved(int x, int y)
 void LevelEditor::mousePressed(MouseButton button, int x, int y)
 {
 	if (button == MOUSE_LEFT || button == MOUSE_RIGHT) {
-		if (x < LEVEL_SIZE_PIXELS.cx && y < LEVEL_SIZE_PIXELS.cy) {
+		if (x < LEVEL_SIZE_PIXELS.x && y < LEVEL_SIZE_PIXELS.y) {
 			delete this->selectionStart;
 			this->selectionStart = new Vector2i(x / TILE_SIZE, y / TILE_SIZE);
 			this->selectionEnd = *this->selectionStart;
@@ -327,9 +331,9 @@ void LevelEditor::mouseReleased(MouseButton button, int x, int y)
 	}
 }
 
-RECT getSelectionBounds(Vector2i start, Vector2i end)
+BoundingBoxi getSelectionBounds(Vector2i start, Vector2i end)
 {
-	RECT bounds;
+	BoundingBoxi bounds;
 	if (start.x < end.x) { bounds.left = start.x; bounds.right = end.x; }
 	else { bounds.left = end.x; bounds.right = start.x; }
 
@@ -341,7 +345,7 @@ RECT getSelectionBounds(Vector2i start, Vector2i end)
 
 std::vector<Vector2i> getSelectionCoords(Vector2i start, Vector2i end)
 {
-	RECT bounds = getSelectionBounds(start, end);
+	BoundingBoxi bounds = getSelectionBounds(start, end);
 
 	std::vector<Vector2i> coords;
 

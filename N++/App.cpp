@@ -42,7 +42,7 @@ void App::run()
 			delete this->child;
 			this->child = nullptr;
 
-			this->setWindowSize(preferredWindowSize.cx, preferredWindowSize.cy);
+			this->setWindowSize(preferredWindowSize.x, preferredWindowSize.y);
 		}
 	}
 
@@ -68,7 +68,7 @@ void App::repaint()
 	this->renderApplication();
 }
 
-SIZE App::getWindowSize()
+Vector2i App::getWindowSize()
 {
 	return this->window->getSize();
 }
@@ -98,24 +98,21 @@ Vector2i App::getMousePosition()
 }
 
 
-Bitmap App::createCompatibleBitmap(SIZE size)
+Bitmap* App::createCompatibleBitmap(Vector2i size)
 {
-	return this->window->createCompatibleBitmap(size);
+	return (Bitmap*) this->window->createCompatibleBitmap(size);
 }
 
 void App::addChild(App* child)
 {
-	if(this->child) {
-		delete this->child;
-	}
-
+	delete this->child;
 	this->child = child;
 }
 
 
 void App::renderApplication()
 {
-	Renderer renderer = window->getNewRenderer();
+	WindowsRenderer renderer = window->getNewRenderer();
 	this->draw(renderer);
 	this->window->submitRenderer(renderer);
 }

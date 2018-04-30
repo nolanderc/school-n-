@@ -133,7 +133,7 @@ private:
 	void createThumbnails(const LevelList& list);
 
 	// Ritar en nivå till en bitmapsbild och returnerar denna
-	Bitmap renderLevelThumbnail(Renderer& renderer, Level& level);
+	Bitmap* renderLevelThumbnail(Renderer& renderer, Level& level);
 
 	// Ritar ett lås innuti en rektangel
 	void drawLock(Renderer& renderer, const BoundingBox& container, Color backgroundColor);

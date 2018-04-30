@@ -22,7 +22,7 @@ LevelSelector::LevelSelector(App* parent) :
 
 
 	this->setWindowSize(1440, 800); 
-	this->maxScroll = this->levels.empty() ? 0 : this->levels.back().container.bottom - this->getWindowSize().cy + TILE_MARGIN * TILE_SIZE;
+	this->maxScroll = this->levels.empty() ? 0 : this->levels.back().container.bottom - this->getWindowSize().y + TILE_MARGIN * TILE_SIZE;
 
 	this->createInformationPane();
 }
@@ -66,7 +66,7 @@ void LevelSelector::draw(Renderer& renderer)
 
 	this->drawLevels(renderer);
 
-	Vector2 delta(TILE_SIZE * (3 * TILE_MARGIN + 2 * (LEVEL_SIZE.cx + STAR_SIZE)), TILE_SIZE * TILE_MARGIN);
+	Vector2 delta(TILE_SIZE * (3 * TILE_MARGIN + 2 * (LEVEL_SIZE.x + STAR_SIZE)), TILE_SIZE * TILE_MARGIN);
 	renderer.offset(delta);
 	this->drawLevelInformation(renderer);
 	renderer.offset(-delta);
@@ -306,10 +306,10 @@ void LevelSelector::checkCompletedLevels()
 
 void LevelSelector::createInformationPane()
 {
-	Vector2 topLeft(TILE_SIZE * (3 * TILE_MARGIN + 2 * (LEVEL_SIZE.cx + STAR_SIZE)), TILE_SIZE * TILE_MARGIN);
-	SIZE windowSize = this->getWindowSize();
-	double width = windowSize.cx - topLeft.x - TILE_SIZE * TILE_MARGIN;
-	double height = windowSize.cy - topLeft.y - TILE_SIZE * TILE_MARGIN;
+	Vector2 topLeft(TILE_SIZE * (3 * TILE_MARGIN + 2 * (LEVEL_SIZE.x + STAR_SIZE)), TILE_SIZE * TILE_MARGIN);
+	Vector2i windowSize = this->getWindowSize();
+	double width = windowSize.x - topLeft.x - TILE_SIZE * TILE_MARGIN;
+	double height = windowSize.y - topLeft.y - TILE_SIZE * TILE_MARGIN;
 
 	for (int i = 0; i < 3; ++i)
 	{
@@ -322,10 +322,10 @@ void LevelSelector::createInformationPane()
 
 void LevelSelector::createThumbnails(const LevelList& list)
 {
-	double width = LEVEL_SIZE.cx * TILE_SIZE;
-	double height = LEVEL_SIZE.cy * TILE_SIZE;
+	double width = LEVEL_SIZE.x * TILE_SIZE;
+	double height = LEVEL_SIZE.y * TILE_SIZE;
 
-	double starWidth = (LEVEL_SIZE.cx + STAR_SIZE) * TILE_SIZE;
+	double starWidth = (LEVEL_SIZE.x + STAR_SIZE) * TILE_SIZE;
 
 	double margin = TILE_SIZE * TILE_MARGIN;
 
@@ -364,23 +364,23 @@ void LevelSelector::createThumbnails(const LevelList& list)
 	}
 }
 
-Bitmap LevelSelector::renderLevelThumbnail(Renderer& renderer, Level& level)
+Bitmap* LevelSelector::renderLevelThumbnail(Renderer& renderer, Level& level)
 {
 	int width = TILE_SIZE * level.getWidth();
 	int height = TILE_SIZE * level.getHeight();
 
-	Bitmap target = this->createCompatibleBitmap({width, height});
-	Renderer bitmapRenderer = renderer.createBitmapRenderer(target);
+	Bitmap* target = this->createCompatibleBitmap({width, height});
+	Renderer* bitmapRenderer = renderer.createBitmapRenderer(target);
 
-	bitmapRenderer.setFillColor(63, 174, 12);
-	bitmapRenderer.clear();
+	bitmapRenderer->setFillColor(63, 174, 12);
+	bitmapRenderer->clear();
 
-	bitmapRenderer.scale(TILE_SIZE);
+	bitmapRenderer->scale(TILE_SIZE);
 
-	bitmapRenderer.setFillColor(0, 0, 0);
+	bitmapRenderer->setFillColor(0, 0, 0);
 
-	level.renderStatic(bitmapRenderer);
-	level.renderDynamic(bitmapRenderer);
+	level.renderStatic(*bitmapRenderer);
+	level.renderDynamic(*bitmapRenderer);
 
 	return target;
 }
@@ -513,11 +513,11 @@ void LevelSelector::drawLevels(Renderer& renderer)
 
 
 			if (!thumbnail.levelBitmap) {
-				thumbnail.levelBitmap = new Bitmap(this->renderLevelThumbnail(renderer, thumbnail.level));
+				thumbnail.levelBitmap = this->renderLevelThumbnail(renderer, thumbnail.level);
 			}
 
 			renderer.drawBitmapTransparent(
-				*thumbnail.levelBitmap,
+				thumbnail.levelBitmap,
 				63, 174, 12,
 				thumbnail.container.left, thumbnail.container.top
 			);
@@ -549,10 +549,10 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 {
 	Vector2 offset = renderer.getOffset();
 
-	SIZE windowSize = this->getWindowSize();
+	Vector2i windowSize = this->getWindowSize();
 	double margin = TILE_SIZE * TILE_MARGIN;
-	double width = windowSize.cx - offset.x - margin;
-	double height = windowSize.cy - offset.y - margin;
+	double width = windowSize.x - offset.x - margin;
+	double height = windowSize.y - offset.y - margin;
 
 	int grey = 25;
 
@@ -699,7 +699,7 @@ void LevelSelector::changeSelected(int delta)
 	BoundingBox box = this->levels[*this->selectedLevel].container;
 
 	double center = (box.top + box.bottom) / 2;
-	this->addScroll(center - this->getWindowSize().cy / 2.0);
+	this->addScroll(center - this->getWindowSize().y / 2.0);
 }
 
 void LevelSelector::playLevel(int levelIndex)

@@ -4,13 +4,18 @@
 NinjaGame::NinjaGame(App* parent, Level level, VictoryCallback* victoryCallback) : 
 	App(parent), level(level), gameCallback(victoryCallback)
 {
-	this->level.setVictoryCallback(victoryCallback);
+	this->level.setVictoryCallback(this);
 
 	this->setWindowTitle("N++");
 	this->setWindowSize(level.getWidth() * TILE_SIZE, level.getHeight() * TILE_SIZE + ENERGY_BAR_HEIGHT_PIXELS);
 
 	levelBitmap = this->createCompatibleBitmap(this->getWindowSize());
 	this->renderLevel = true;
+}
+
+NinjaGame::~NinjaGame()
+{
+	delete this->levelBitmap;
 }
 
 void NinjaGame::update(float dt)
@@ -26,7 +31,7 @@ void NinjaGame::update(float dt)
 		if (accumulator > 1) {
 			accumulator = 0;
 		}
-
+		
 		if (this->isKeyDown(VK_LEFT) || this->isKeyDown('A')) { this->level.moveNinja(NINJA_LEFT); }
 		if (this->isKeyDown(VK_RIGHT) || this->isKeyDown('D')) { this->level.moveNinja(NINJA_RIGHT); }
 
@@ -41,26 +46,26 @@ void NinjaGame::draw(Renderer & renderer)
 
 	renderer.setFillColor(255, 255, 0);
 
-	double width = this->getWindowSize().cx * this->level.getEnergyPercentage();
+	double width = this->getWindowSize().x * this->level.getEnergyPercentage();
 
 	renderer.fillRect(0, 0, width, ENERGY_BAR_HEIGHT_PIXELS);
 
 	renderer.scale(TILE_SIZE);
 
 	if (this->renderLevel || this->level.needsRerender()) {
-		Renderer levelRenderer = renderer.createBitmapRenderer(this->levelBitmap);
-		levelRenderer.setFillColor(50, 50, 50);
-		levelRenderer.clear();
+		Renderer* levelRenderer = renderer.createBitmapRenderer(this->levelBitmap);
+		levelRenderer->setFillColor(50, 50, 50);
+		levelRenderer->clear();
 
-		levelRenderer.scale(TILE_SIZE);
+		levelRenderer->scale(TILE_SIZE);
 
-		levelRenderer.setFillColor(0, 0, 0);
-		level.renderStatic(levelRenderer);
+		levelRenderer->setFillColor(0, 0, 0);
+		level.renderStatic(*levelRenderer);
 
 		this->renderLevel = false;
 	}
 
-	renderer.drawBitmap(this->levelBitmap, 0, ENERGY_BAR_HEIGHT_PIXELS, this->levelBitmap.getWidth(), this->levelBitmap.getHeight(), 0, 0);
+	renderer.drawBitmap(this->levelBitmap, 0, ENERGY_BAR_HEIGHT_PIXELS, this->levelBitmap->getWidth(), this->levelBitmap->getHeight(), 0, 0);
 
 	renderer.offset({ 0, double(ENERGY_BAR_HEIGHT_PIXELS) / TILE_SIZE });
 
@@ -68,7 +73,12 @@ void NinjaGame::draw(Renderer & renderer)
 	renderer.setLineWidth(1.0 / TILE_SIZE);
 
 	level.renderDynamic(renderer);
+
+	renderer.scale(1.0 / TILE_SIZE);
+
+	this->renderVictoryScreen(renderer);
 }
+
 
 void NinjaGame::sizeChanged(int width, int height)
 {
@@ -125,6 +135,34 @@ void NinjaGame::updateFrameCounter(double deltaTime)
 
 		this->setWindowTitle(ss.str());
 	}
+}
+
+void NinjaGame::renderVictoryScreen(Renderer & renderer)
+{
+	if (this->victory) {
+		Vector2i windowSize = this->getWindowSize();
+
+		renderer.setFillColor(Color(125));
+		renderer.setLineStyle(LINE_NONE);
+
+		Vector2 center(windowSize.x / 2.0, windowSize.y / 2.0);
+
+		double width = 500;
+		double height = 300;
+
+		renderer.fillRect(
+			center.x - width / 2.0, center.y - height / 2.0,
+			width, height
+		);
+	}
+}
+
+void NinjaGame::onLevelComplete(double time, int coins)
+{
+	if (this->gameCallback) this->gameCallback->onLevelComplete(time, coins);
+
+	delete this->victory;
+	this->victory = new Victory(time, coins);
 }
 
 

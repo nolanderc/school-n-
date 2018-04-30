@@ -17,8 +17,8 @@
 
 #define BUTTONS_HEIGHT_PIXELS 64
 
-const SIZE LEVEL_SIZE = { 45, 25 };
-const SIZE LEVEL_SIZE_PIXELS = { LEVEL_SIZE.cx * TILE_SIZE, LEVEL_SIZE.cy * TILE_SIZE };
+const Vector2i LEVEL_SIZE = { 45, 25 };
+const Vector2i LEVEL_SIZE_PIXELS = { LEVEL_SIZE.x * TILE_SIZE, LEVEL_SIZE.y * TILE_SIZE };
 
 
 
@@ -31,7 +31,7 @@ class LevelEditor : public App
 	Level level;
 
 	// En bitmap att rita nivån till
-	Bitmap levelBitmap;
+	Bitmap* levelBitmap;
 
 
 	// De block som är markerade
@@ -100,7 +100,7 @@ protected:
 
 
 // Returnerar en rektangel som omsluter en markering
-RECT getSelectionBounds(Vector2i start, Vector2i end);
+BoundingBoxi getSelectionBounds(Vector2i start, Vector2i end);
 
 
 // Returnerar alla koordinater innanför två motsatta hörn på en rektangel/innanför en markering

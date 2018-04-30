@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "Renderer.h"
+#include "WindowsRenderer.h"
 
 enum MouseButton {
 	MOUSE_LEFT,
@@ -115,7 +115,7 @@ public:
 	
 
 	// Returnerar fönstrets storlek
-	SIZE getSize();
+	Vector2i getSize();
 	
 	// Ändrar fönstrets storlek
 	void setSize(int width, int height);
@@ -134,14 +134,14 @@ public:
 
 
 	// Skapar en bitmap kompatibel med fönstret
-	Bitmap createCompatibleBitmap(SIZE size);
+	WindowsBitmap* createCompatibleBitmap(Vector2i size);
 
 
 	// Skapar en ny ritare
-	Renderer getNewRenderer();
+	WindowsRenderer getNewRenderer();
 
 	// Avslutar ritningen
-	void submitRenderer(Renderer& renderer);
+	void submitRenderer(WindowsRenderer& renderer);
 
 protected:
 

@@ -52,15 +52,12 @@
     <Filter Include="Level Selection\Level List">
       <UniqueIdentifier>{7c02624d-d79d-4d16-8298-b2f8cf3d0d12}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interface">
+      <UniqueIdentifier>{b50ef03d-b934-4d44-b362-1bfcb62c35ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
-      <Filter>Backend</Filter>
-    </ClCompile>
-    <ClCompile Include="Bitmap.cpp">
-      <Filter>Backend</Filter>
-    </ClCompile>
-    <ClCompile Include="Renderer.cpp">
       <Filter>Backend</Filter>
     </ClCompile>
     <ClCompile Include="Window.cpp">
@@ -136,15 +133,15 @@
     <ClCompile Include="Color.cpp">
       <Filter>Math</Filter>
     </ClCompile>
+    <ClCompile Include="WindowsRenderer.cpp">
+      <Filter>Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowsBitmap.cpp">
+      <Filter>Backend</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Window.h">
-      <Filter>Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="Renderer.h">
-      <Filter>Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="Bitmap.h">
       <Filter>Backend</Filter>
     </ClInclude>
     <ClInclude Include="App.h">
@@ -242,6 +239,18 @@
     </ClInclude>
     <ClInclude Include="Color.h">
       <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowsRenderer.h">
+      <Filter>Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowsBitmap.h">
+      <Filter>Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="Bitmap.h">
+      <Filter>Interface</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

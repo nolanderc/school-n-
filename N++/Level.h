@@ -76,6 +76,10 @@ private:
 	// Tid som nivån har spelats
 	double time;
 
+
+	// Ska nivån spelas?
+	bool running;
+
 public:
 
 	Level(int width, int height, Difficulty difficulty, VictoryCallback* victoryCallback = nullptr);

@@ -1,9 +1,9 @@
-"level0.lvl" {NORMAL 10.0625 11} {NORMAL 10.1333 11}
-"level1.lvl"
-"level2.lvl"
-"level3.lvl"
-"level4.lvl"
-"level5.lvl"
-"level6.lvl"
+"level0.lvl" {NORMAL 10.1458 11} {NORMAL 10.3542 11} {NORMAL 10.9917 9} {NORMAL 10.0417 8} {NORMAL 10.1917 8}
+"level1.lvl" {NORMAL 13.8708 10} {NORMAL 14.0708 10} {NORMAL 14.1917 10} {NORMAL 15.8792 10} {NORMAL 16.2625 10}
+"level2.lvl" {NORMAL 32.6167 24}
+"level3.lvl" {EASY 17.4333 13} {NORMAL 17.3 15} {NORMAL 16.8083 14}
+"level4.lvl" {NORMAL 17.3333 13}
+"level5.lvl" {NORMAL 14.1 9}
+"level6.lvl" {NORMAL 34.3417 30}
 "level7.lvl"
 "level8.lvl"

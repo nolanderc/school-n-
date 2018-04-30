@@ -1,7 +1,7 @@
-#include "Renderer.h"
+#include "WindowsRenderer.h"
 
 
-Renderer::Renderer(HDC target, SIZE targetSize)
+WindowsRenderer::WindowsRenderer(HDC target, SIZE targetSize)
 {
 	this->target = target;
 	this->targetSize = targetSize;
@@ -12,20 +12,21 @@ Renderer::Renderer(HDC target, SIZE targetSize)
 
 	this->currentBrush = defaultBrush();
 	this->oldBrush = (HBRUSH)SelectObject(this->target, this->currentBrush);
-	this->brushStyle = FillStyle::FILL_SOLID;
 
 	this->coordScale = 1;
 }
 
-Renderer Renderer::createBitmapRenderer(Bitmap& bitmap)
+Renderer* WindowsRenderer::createBitmapRenderer(Bitmap* bitmap)
 {
-	HDC dc = CreateCompatibleDC(this->target);
-	bitmap.selectInto(dc);
+	WindowsBitmap* windowsBitmap = (WindowsBitmap*)bitmap;
 
-	return Renderer(dc, bitmap.getSize());
+	HDC dc = CreateCompatibleDC(this->target);
+	windowsBitmap->selectInto(dc);
+
+	return new WindowsRenderer(dc, windowsBitmap->getSize());
 }
 
-Renderer::~Renderer()
+WindowsRenderer::~WindowsRenderer()
 {
 	this->switchPen(this->oldPen);
 	this->switchBrush(this->oldBrush);
@@ -35,105 +36,106 @@ Renderer::~Renderer()
 	}
 }
 
-HDC Renderer::releaseDC()
+HDC WindowsRenderer::releaseDC()
 {
 	HDC dc = this->target;
 	this->target = nullptr;
 	return dc;
 }
 
-void Renderer::scale(double scale)
+void WindowsRenderer::scale(double scale)
 {
 	this->coordScale *= scale;
 }
 
-void Renderer::offset(Vector2 offset)
+void WindowsRenderer::offset(Vector2 offset)
 {
 	this->coordOffset += offset * this->coordScale;
 }
 
-Vector2 Renderer::getOffset()
+Vector2 WindowsRenderer::getOffset()
 {
 	return this->coordOffset;
 }
 
-void Renderer::setColor(int r, int g, int b)
+void WindowsRenderer::setColor(int r, int g, int b)
 {
 	this->currentColor = RGB(r, g, b);
 	this->switchPen(this->createCurrentPen());
 }
 
-void Renderer::setColor(Color color)
+void WindowsRenderer::setColor(Color color)
 {
 	color.clampColors();
 	this->setColor(color.r * 255, color.g * 255, color.b * 255);
 }
 
-void Renderer::setFillColor(int r, int g, int b)
+void WindowsRenderer::setFillColor(int r, int g, int b)
 {
 	this->currentFillColor = RGB(r, g, b);
 	this->switchBrush(this->createCurrentBrush());
 }
 
-void Renderer::setFillColor(Color color)
+void WindowsRenderer::setFillColor(Color color)
 {
 	color.clampColors();
 	this->setFillColor(color.r * 255, color.g * 255, color.b * 255);
 }
 
-void Renderer::setLineStyle(LineStyle style)
+void WindowsRenderer::setLineStyle(LineStyle style)
 {
-	this->penStyle = style;
+	switch (style)
+	{
+	case LINE_SOLID: this->penStyle = PS_SOLID; break;
+	case LINE_NONE: this->penStyle = PS_NULL; break;
+	default: ;
+	}
+
 	this->switchPen(this->createCurrentPen());
 }
 
-void Renderer::setFillStyle(FillStyle style)
-{
-	this->brushStyle = style;
-	this->switchBrush(this->createCurrentBrush());
-}
 
-void Renderer::setTextColor(int r, int g, int b)
+void WindowsRenderer::setTextColor(int r, int g, int b)
 {
 	this->textColor = RGB(r, g, b);
 	SetTextColor(this->target, this->textColor);
 }
 
-void Renderer::setTextColor(Color color)
+void WindowsRenderer::setTextColor(Color color)
 {
 	color.clampColors();
 	this->setTextColor(color.r * 255, color.g * 255, color.b * 255);
 }
 
-void Renderer::setTextBackgroundColor(int r, int g, int b)
+void WindowsRenderer::setTextBackgroundColor(int r, int g, int b)
 {
 	SetBkColor(this->target, RGB(r, g, b));
 }
 
-void Renderer::setTextBackgroundColor(Color color)
+void WindowsRenderer::setTextBackgroundColor(Color color)
 {
 	color.clampColors();
 	this->setTextBackgroundColor(color.r * 255, color.g * 255, color.b * 255);
 }
 
-void Renderer::setLineWidthAbsolute(int width)
+void WindowsRenderer::setLineWidthAbsolute(int width)
 {
 	this->currentLineWidth = width;
 	this->switchPen(this->createCurrentPen());
 }
 
-void Renderer::setLineWidth(double width)
+void WindowsRenderer::setLineWidth(double width)
 {
 	this->currentLineWidth = round(this->coordScale * width);
 	this->switchPen(this->createCurrentPen());
 }
 
-void Renderer::clear()
+void WindowsRenderer::clear()
 {
 	this->fillRect(0, 0, this->targetSize.cx, this->targetSize.cy);
 }
 
-void Renderer::drawLine(double x1, double y1, double x2, double y2)
+void WindowsRenderer::drawLine(double x1, double y1, double x2, double y2)
 {
 	Vector2i start = this->transform({ x1, y1 });
 	Vector2i end = this->transform({ x2, y2 });
@@ -142,12 +144,12 @@ void Renderer::drawLine(double x1, double y1, double x2, double y2)
 	LineTo(this->target, end.x, end.y);
 }
 
-void Renderer::drawLine(Vector2 start, Vector2 end)
+void WindowsRenderer::drawLine(Vector2 start, Vector2 end)
 {
 	this->drawLine(start.x, start.y, end.x, end.y);
 }
 
-void Renderer::fillRect(double x, double y, double width, double height)
+void WindowsRenderer::fillRect(double x, double y, double width, double height)
 {
 	Vector2i topLeft = this->transform({x, y});
 	Vector2i bottomRight(
@@ -164,17 +166,17 @@ void Renderer::fillRect(double x, double y, double width, double height)
 	this->fillRect(rect);
 }
 
-void Renderer::fillRect(BoundingBox box)
+void WindowsRenderer::fillRect(BoundingBox box)
 {
 	this->fillRect(box.left, box.top, box.right - box.left, box.bottom - box.top);
 }
 
-void Renderer::fillRect(RECT rect)
+void WindowsRenderer::fillRect(RECT rect)
 {
 	FillRect(this->target, &rect, this->currentBrush);
 }
 
-void Renderer::drawRect(double x, double y, double width, double height)
+void WindowsRenderer::drawRect(double x, double y, double width, double height)
 {
 	drawLine(x, y, x + width, y);
 	drawLine(x + width, y, x + width, y + height);
@@ -182,12 +184,12 @@ void Renderer::drawRect(double x, double y, double width, double height)
 	drawLine(x, y + height, x, y);
 }
 
-void Renderer::drawRect(BoundingBox box)
+void WindowsRenderer::drawRect(BoundingBox box)
 {
 	this->drawRect(box.left, box.top, box.right - box.left, box.bottom - box.top);
 }
 
-void Renderer::drawRect(RECT rect)
+void WindowsRenderer::drawRect(RECT rect)
 {
 	drawLine(rect.left, rect.top, rect.right, rect.top);
 	drawLine(rect.left, rect.bottom, rect.right, rect.bottom);
@@ -195,7 +197,7 @@ void Renderer::drawRect(RECT rect)
 	drawLine(rect.right, rect.top, rect.right, rect.bottom);
 }
 
-void Renderer::drawCircle(double x, double y, double radius)
+void WindowsRenderer::drawCircle(double x, double y, double radius)
 {
 	Vector2i topLeft = this->transform({ x - radius, y - radius });
 	Vector2i bottomRight = this->transform({ x + radius, y + radius });
@@ -203,7 +205,7 @@ void Renderer::drawCircle(double x, double y, double radius)
 	Arc(this->target, topLeft.x, topLeft.y, bottomRight.x, bottomRight.y, 0, 0, 0, 0);
 }
 
-void Renderer::fillCircle(double x, double y, double radius)
+void WindowsRenderer::fillCircle(double x, double y, double radius)
 {
 	Vector2i topLeft = this->transform({ x - radius, y - radius });
 	Vector2i bottomRight = this->transform({ x + radius, y + radius });
@@ -211,12 +213,12 @@ void Renderer::fillCircle(double x, double y, double radius)
 	Ellipse(this->target, topLeft.x, topLeft.y, bottomRight.x, bottomRight.y);
 }
 
-void Renderer::fillPolygon(std::vector<POINT> points)
+void WindowsRenderer::fillPolygon(std::vector<POINT> points)
 {
 	Polygon(this->target, points.data(), points.size());
 }
 
-void Renderer::fillPolygon(std::vector<Vector2> points)
+void WindowsRenderer::fillPolygon(std::vector<Vector2> points)
 {
 	std::vector<POINT> newPoints;
 
@@ -229,13 +231,13 @@ void Renderer::fillPolygon(std::vector<Vector2> points)
 	this->fillPolygon(newPoints);
 }
 
-void Renderer::drawPolygon(std::vector<POINT> points)
+void WindowsRenderer::drawPolygon(std::vector<POINT> points)
 {
 	points.push_back(points[0]);
 	Polyline(this->target, points.data(), points.size());
 }
 
-void Renderer::drawPolygon(std::vector<Vector2> points)
+void WindowsRenderer::drawPolygon(std::vector<Vector2> points)
 {
 	std::vector<POINT> newPoints;
 
@@ -248,12 +250,12 @@ void Renderer::drawPolygon(std::vector<Vector2> points)
 	this->drawPolygon(newPoints);
 }
 
-void Renderer::drawTextLeftAligned(std::string text, RECT rect)
+void WindowsRenderer::drawTextLeftAligned(std::string text, RECT rect)
 {
 	DrawText(this->target, text.c_str(), text.size(), &rect, DT_VCENTER | DT_SINGLELINE | DT_LEFT | DT_NOCLIP);
 }
 
-void Renderer::drawTextLeftAligned(std::string text, BoundingBox box)
+void WindowsRenderer::drawTextLeftAligned(std::string text, BoundingBox box)
 {
 	Vector2i topLeft = this->transform({ box.left, box.top });
 	Vector2i bottomRight = this->transform({ box.right, box.bottom });
@@ -267,17 +269,17 @@ void Renderer::drawTextLeftAligned(std::string text, BoundingBox box)
 	this->drawTextLeftAligned(text, rect);
 }
 
-void Renderer::drawTextCentered(std::string text, RECT rect)
+void WindowsRenderer::drawTextCentered(std::string text, RECT rect)
 {
 	DrawText(this->target, text.c_str(), text.size(), &rect, DT_VCENTER | DT_CENTER | DT_SINGLELINE | DT_NOCLIP);
 }
 
-void Renderer::drawTextCentered(std::string text, BoundingBox box)
+void WindowsRenderer::drawTextCentered(std::string text, BoundingBox box)
 {
 	this->drawTextCentered(text, box.left, box.right, box.top, box.bottom);
 }
 
-void Renderer::drawTextCentered(std::string text, double left, double right, double top, double bottom)
+void WindowsRenderer::drawTextCentered(std::string text, double left, double right, double top, double bottom)
 {
 	Vector2i topLeft = this->transform({ left, top });
 	Vector2i bottomRight = this->transform({ right, bottom });
@@ -291,12 +293,12 @@ void Renderer::drawTextCentered(std::string text, double left, double right, dou
 	this->drawTextCentered(text, rect);
 }
 
-void Renderer::drawTextRightAligned(std::string text, RECT rect)
+void WindowsRenderer::drawTextRightAligned(std::string text, RECT rect)
 {
 	DrawText(this->target, text.c_str(), text.size(), &rect, DT_VCENTER | DT_SINGLELINE | DT_RIGHT | DT_NOCLIP);
 }
 
-void Renderer::drawTextRightAligned(std::string text, BoundingBox box)
+void WindowsRenderer::drawTextRightAligned(std::string text, BoundingBox box)
 {
 	Vector2i topLeft = this->transform({ box.left, box.top });
 	Vector2i bottomRight = this->transform({ box.right, box.bottom });
@@ -310,15 +312,17 @@ void Renderer::drawTextRightAligned(std::string text, BoundingBox box)
 	this->drawTextRightAligned(text, rect);
 }
 
-void Renderer::drawBitmap(Bitmap& bitmap, int x, int y, int width, int height, int srcX, int srcY)
+void WindowsRenderer::drawBitmap(const Bitmap* bitmap, int x, int y, int width, int height, int srcX, int srcY)
 {
+	WindowsBitmap* windowsBitmap = (WindowsBitmap*)bitmap;
+
 	HDC bitmapDC = CreateCompatibleDC(this->target);
-	HBITMAP old = bitmap.selectInto(bitmapDC);
+	HBITMAP old = windowsBitmap->selectInto(bitmapDC);
 
 	BitBlt(
 		this->target,
 		x, y,
-		width < 0 ? bitmap.getWidth() : width, height < 0 ? bitmap.getHeight() : height,
+		width < 0 ? windowsBitmap->getWidth() : width, height < 0 ? windowsBitmap->getHeight() : height,
 		bitmapDC,
 		srcX, srcY,
 		SRCCOPY
@@ -328,18 +332,20 @@ void Renderer::drawBitmap(Bitmap& bitmap, int x, int y, int width, int height, i
 	DeleteDC(bitmapDC);
 }
 
-void Renderer::drawBitmapTransparent(Bitmap & bitmap, int filterR, int filterG, int filterB, int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
+void WindowsRenderer::drawBitmapTransparent(const Bitmap* bitmap, int filterR, int filterG, int filterB, int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
 {
+	WindowsBitmap* windowsBitmap = (WindowsBitmap*)bitmap;
+
 	HDC bitmapDC = CreateCompatibleDC(this->target);
-	HBITMAP old = bitmap.selectInto(bitmapDC);
+	HBITMAP old = windowsBitmap->selectInto(bitmapDC);
 
 	TransparentBlt(
 		this->target,
 		x, y, 
-		width < 0 ? bitmap.getWidth() : width, height < 0 ? bitmap.getHeight() : height,
+		width < 0 ? windowsBitmap->getWidth() : width, height < 0 ? windowsBitmap->getHeight() : height,
 		bitmapDC, 
 		srcX, srcY, 
-		srcWidth < 0 ? bitmap.getWidth() : srcWidth, srcHeight < 0 ? bitmap.getHeight() : srcHeight,
+		srcWidth < 0 ? windowsBitmap->getWidth() : srcWidth, srcHeight < 0 ? windowsBitmap->getHeight() : srcHeight,
 		RGB(filterR, filterG, filterB)
 	);
 
@@ -347,16 +353,13 @@ void Renderer::drawBitmapTransparent(Bitmap & bitmap, int filterR, int filterG, 
 	DeleteDC(bitmapDC);
 }
 
-void Renderer::blitResult(HDC dc, int x, int y, int w, int h)
+void WindowsRenderer::blitResult(HDC dc, int x, int y, int w, int h)
 {
 	BitBlt(dc, x, y, w, h, this->target, 0, 0, SRCCOPY);
 }
 
-void Renderer::blitResult(Bitmap bitmap, int x, int y, int w, int h)
-{
-}
 
-HPEN Renderer::defaultPen()
+HPEN WindowsRenderer::defaultPen()
 {
 	this->currentColor = RGB(0, 0, 0);
 	this->currentLineWidth = 1;
@@ -364,46 +367,38 @@ HPEN Renderer::defaultPen()
 	return this->createCurrentPen();
 }
 
-HBRUSH Renderer::defaultBrush()
+HBRUSH WindowsRenderer::defaultBrush()
 {
 	this->currentFillColor = RGB(0, 0, 0);
 	return this->createCurrentBrush();
 }
 
-HPEN Renderer::createCurrentPen()
+HPEN WindowsRenderer::createCurrentPen()
 {
 	return CreatePen(this->penStyle, this->currentLineWidth, this->currentColor);
 }
 
-HBRUSH Renderer::createCurrentBrush()
+HBRUSH WindowsRenderer::createCurrentBrush()
 {
-	switch (brushStyle)
-	{
-	case FILL_SOLID:
-		return CreateSolidBrush(this->currentFillColor);
-	case FILL_DIAGONAL_CROSS:
-		return CreateHatchBrush(HS_DIAGCROSS, this->currentFillColor);
-	default:
-		break;
-	}
-
+	return CreateSolidBrush(this->currentFillColor);
 }
 
-void Renderer::switchPen(HPEN pen)
+
+void WindowsRenderer::switchPen(HPEN pen)
 {
 	SelectObject(this->target, pen);
 	DeleteObject(this->currentPen);
 	this->currentPen = pen;
 }
 
-void Renderer::switchBrush(HBRUSH brush)
+void WindowsRenderer::switchBrush(HBRUSH brush)
 {
 	SelectObject(this->target, brush);
 	DeleteObject(this->currentBrush);
 	this->currentBrush = brush;
 }
 
-Vector2i Renderer::transform(Vector2 coord)
+Vector2i WindowsRenderer::transform(Vector2 coord)
 {
 	return Vector2i(
 		floor(coord.x * this->coordScale + this->coordOffset.x),
