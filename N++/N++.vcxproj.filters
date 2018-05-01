@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Backend">
-      <UniqueIdentifier>{7c64f99d-122b-4447-a781-4bec122e756a}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Collision">
       <UniqueIdentifier>{24df51d4-2948-48e1-acef-6ab0d81fcd8c}</UniqueIdentifier>
     </Filter>
@@ -52,17 +49,17 @@
     <Filter Include="Level Selection\Level List">
       <UniqueIdentifier>{7c02624d-d79d-4d16-8298-b2f8cf3d0d12}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Interface">
+    <Filter Include="Windows Backend">
+      <UniqueIdentifier>{7c64f99d-122b-4447-a781-4bec122e756a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Backend Interface">
       <UniqueIdentifier>{b50ef03d-b934-4d44-b362-1bfcb62c35ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Navigation">
+      <UniqueIdentifier>{02bf7ee3-4cbe-4a14-881e-9312518f9d1b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="App.cpp">
-      <Filter>Backend</Filter>
-    </ClCompile>
-    <ClCompile Include="Window.cpp">
-      <Filter>Backend</Filter>
-    </ClCompile>
     <ClCompile Include="ConvexHull.cpp">
       <Filter>Collision</Filter>
     </ClCompile>
@@ -134,19 +131,22 @@
       <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="WindowsRenderer.cpp">
-      <Filter>Backend</Filter>
+      <Filter>Windows Backend</Filter>
     </ClCompile>
     <ClCompile Include="WindowsBitmap.cpp">
-      <Filter>Backend</Filter>
+      <Filter>Windows Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="WindowsWindow.cpp">
+      <Filter>Windows Backend</Filter>
+    </ClCompile>
+    <ClCompile Include="App.cpp">
+      <Filter>Backend Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationBar.cpp">
+      <Filter>Navigation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Window.h">
-      <Filter>Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="App.h">
-      <Filter>Backend</Filter>
-    </ClInclude>
     <ClInclude Include="Collider.h">
       <Filter>Collision</Filter>
     </ClInclude>
@@ -241,16 +241,28 @@
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="WindowsRenderer.h">
-      <Filter>Backend</Filter>
+      <Filter>Windows Backend</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
-      <Filter>Interface</Filter>
+      <Filter>Backend Interface</Filter>
     </ClInclude>
     <ClInclude Include="WindowsBitmap.h">
-      <Filter>Backend</Filter>
+      <Filter>Windows Backend</Filter>
     </ClInclude>
     <ClInclude Include="Bitmap.h">
-      <Filter>Interface</Filter>
+      <Filter>Backend Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="WindowsWindow.h">
+      <Filter>Windows Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="App.h">
+      <Filter>Backend Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Backend Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="NavigationBar.h">
+      <Filter>Navigation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

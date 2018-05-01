@@ -393,8 +393,8 @@ void WindowsRenderer::switchPen(HPEN pen)
 
 void WindowsRenderer::switchBrush(HBRUSH brush)
 {
-	SelectObject(this->target, brush);
 	DeleteObject(this->currentBrush);
+	SelectObject(this->target, brush);
 	this->currentBrush = brush;
 }
 

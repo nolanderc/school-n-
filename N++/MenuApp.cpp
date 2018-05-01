@@ -1,8 +1,17 @@
 ﻿#include "MenuApp.h"
 
-MenuApp::MenuApp() :
-	App(512, 512, "N++"), selectedButton(nullptr)
+MenuApp::MenuApp(Window* window) :
+	App(window), selectedButton(nullptr)
 {
+	if (!std::ifstream("levels/levels.list").is_open()) {
+		this->alert("Error: Missing Files!", "You are missing necessary game files! (Levels)\nPlease yell \"Uh-oh Spaghettios\" for help!");
+		this->close();
+		return;
+	}
+
+	this->setWindowSize(512, 512);
+	this->setWindowTitle("N++");
+
 	time = 0;
 
 	this->buttons.push_back(new PlayButton({ 256 - 64, 256 }, 64));
@@ -45,9 +54,9 @@ void MenuApp::draw(Renderer& renderer)
 	}
 }
 
-void MenuApp::keyPressed(int key)
+void MenuApp::keyPressed(KeyCode key)
 {
-	if (key == VK_RETURN || key == VK_SPACE)
+	if (key == KEY_ENTER || key == KEY_SPACE)
 	{
 		if (this->selectedButton)
 		{
@@ -55,17 +64,17 @@ void MenuApp::keyPressed(int key)
 		}
 	}
 
-	if (key == VK_DOWN || key == 'S')
+	if (key == KEY_DOWN || key == KEY_S)
 	{
 		this->changeSelected(2);
 	}
 
-	if (key == VK_LEFT || key == 'A')
+	if (key == KEY_LEFT || key == KEY_A)
 	{
 		this->changeSelected(0);
 	}
 
-	if (key == VK_RIGHT || key == 'D')
+	if (key == KEY_RIGHT || key == KEY_D)
 	{
 		this->changeSelected(1);
 	}

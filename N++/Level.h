@@ -18,8 +18,11 @@
 
 class VictoryCallback {
 public:
+	// Anropas när en nivå har misslyckats
+	virtual void onLevelFail() {};
+
 	// Anropas när en nivå är avklarad
-	virtual void onLevelComplete(double time, int coins) = 0;
+	virtual void onLevelComplete(double time, int coins) {};
 };
 
 
@@ -103,7 +106,7 @@ public:
 
 
 	// Ändrar blocket vid en viss koordinat
-	void setTile(Vector2i coord, Tile* tile);
+	void setTile(Vector2i coord, Tile* tile) override;
 
 	// Returnerar typen av block vid en viss koordinat
 	const Tile* getTile(Vector2i coord) const;

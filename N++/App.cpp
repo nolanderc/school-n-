@@ -8,15 +8,19 @@ App::App(App* parent) :
 	this->preferredWindowSize = this->getWindowSize();
 }
 
-App::App(int width, int height, std::string title) :
-	window(new Window(width, height, title)), preferredWindowSize({width, height}), running(true)
+App::App(Window* window) :
+	window(window), preferredWindowSize(window->getSize()), running(true)
 {
-	this->window->show(SW_SHOW);
 	this->window->setEventHandler(this);
 }
 
+App::~App()
+{
+	delete this->child;
+}
 
-void App::run()
+
+int App::run()
 {
 	while (window->isOpen() && this->running) {
 		window->pollMessages();
@@ -35,23 +39,25 @@ void App::run()
 
 		previousInstant = now;
 
-		// Kör den ägda appen ifall det är möjligt
-		if (this->child) {
+		while (this->child) {
 			this->window->setEventHandler(this->child);
-			this->child->run();
+			int exitCode = this->child->run();
 			delete this->child;
 			this->child = nullptr;
 
 			this->setWindowSize(preferredWindowSize.x, preferredWindowSize.y);
+			this->childClosed(exitCode);
 		}
 	}
 
 	this->closed();
+	return this->exitCode;
 }
 
-void App::close()
+void App::close(int exitCode)
 {
 	this->running = false;
+	this->exitCode = exitCode;
 
 	if(this->parent)
 	{
@@ -85,16 +91,14 @@ void App::setWindowTitle(std::string title)
 }
 
 
-bool App::isKeyDown(int key)
+bool App::isKeyDown(KeyCode key)
 {
 	return this->window->isKeyDown(key);
 }
 
 Vector2i App::getMousePosition()
 {
-	POINT p = this->window->getMousePosition();
-
-	return { p.x, p.y };
+	return this->window->getMousePosition();
 }
 
 
@@ -109,11 +113,18 @@ void App::addChild(App* child)
 	this->child = child;
 }
 
+void App::alert(std::string title, std::string message) {
+	this->window->alert(title, message);
+}
+
 
 void App::renderApplication()
 {
-	WindowsRenderer renderer = window->getNewRenderer();
-	this->draw(renderer);
-	this->window->submitRenderer(renderer);
+	Renderer* renderer = window->getNewRenderer();
+
+	this->draw(*renderer);
+	this->window->submitRenderer(*renderer);
+
+	delete renderer;
 }
 

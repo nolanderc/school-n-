@@ -1,6 +1,11 @@
 ﻿#include "LevelSelector.h"
 #include "Interpolate.h"
 
+
+const Vector2i CONTENT_SIZE(1440, 800);
+
+
+
 LevelSelector::LevelThumbnail::~LevelThumbnail()
 {
 	delete this->levelBitmap;
@@ -15,16 +20,22 @@ LevelSelector::LevelSelector(App* parent) :
 	scrollTarget(0),
 	recentHighscore(nullptr),
 	difficulty(NORMAL),
-	playButton(Vector2(1440 - TILE_SIZE * TILE_MARGIN - 80, 800 - TILE_SIZE*TILE_MARGIN - 80), 60)
+	playButton(Vector2(CONTENT_SIZE.x - TILE_SIZE * TILE_MARGIN - 80, CONTENT_SIZE.y - TILE_SIZE*TILE_MARGIN - 80), 60),
+	navBar(CONTENT_SIZE.x, 32, this)
 {
 	this->createThumbnails(this->levelList);
 	this->checkCompletedLevels();
 
 
-	this->setWindowSize(1440, 800); 
-	this->maxScroll = this->levels.empty() ? 0 : this->levels.back().container.bottom - this->getWindowSize().y + TILE_MARGIN * TILE_SIZE;
+	this->setWindowSize(CONTENT_SIZE.x, CONTENT_SIZE.y + this->navBar.getHeight());
+	this->maxScroll = this->levels.empty() ? 0 : this->levels.back().container.bottom - CONTENT_SIZE.y + TILE_MARGIN * TILE_SIZE;
 
 	this->createInformationPane();
+
+
+	this->navigation.back = navBar.addButton("Back", KEY_ESCAPE);
+	this->navigation.changeDifficulty = navBar.addButton("Change Difficulty", KEY_TAB);
+	this->navigation.playLevel = navBar.addButton("Play Selected Level", KEY_ENTER);
 }
 
 LevelSelector::~LevelSelector()
@@ -48,6 +59,23 @@ void LevelSelector::onLevelComplete(double time, int coins)
 	);
 
 	this->checkCompletedLevels();
+}
+
+void LevelSelector::navigate(int id)
+{
+	if (id == this->navigation.back) {
+		this->close();
+	}
+
+	if (id == this->navigation.changeDifficulty) {
+		this->changeDifficulty(Difficulty((int(this->difficulty) + 1) % 3));
+	}
+
+	if (id == this->navigation.playLevel) {
+		if (this->selectedLevel) {
+			this->playLevel(*this->selectedLevel);
+		}
+	}
 }
 
 void LevelSelector::update(float deltaTime)
@@ -81,6 +109,11 @@ void LevelSelector::draw(Renderer& renderer)
 
 		renderer.drawTextLeftAligned(this->tooltip, BoundingBox(mouse.x + 10, mouse.x + 10, mouse.y - 10, mouse.y - 10));
 	}
+
+
+	renderer.setTextColor(Color(255));
+	renderer.offset(Vector2(0, this->getWindowSize().y - this->navBar.getHeight()));
+	this->navBar.render(renderer, Color(0));
 }
 
 void LevelSelector::mouseMoved(int x, int y)
@@ -181,44 +214,42 @@ void LevelSelector::mouseScrolled(int wheelDelta, int x, int y)
 	this->addScroll(wheelDelta * -100);
 }
 
-void LevelSelector::keyPressed(int key)
+void LevelSelector::keyPressed(KeyCode key)
 {
-	if (key == VK_ESCAPE)
-	{
-		this->close();
-	}
-
-	if (key == VK_RETURN || key == VK_SPACE)
-	{
-		if (this->selectedLevel)
-		{
-			this->playLevel(*this->selectedLevel);
-		}
-	}
-
-	if(key == VK_UP || key == 'W')
+	this->navBar.keyPressed(key);
+	
+	if(key == KEY_UP || key == KEY_W)
 	{
 		this->changeSelected(-2);
 	}
 
-	if (key == VK_DOWN || key == 'S')
+	if (key == KEY_DOWN || key == KEY_S)
 	{
 		this->changeSelected(2);
 	}
 
-	if (key == VK_LEFT || key == 'A')
+	if (key == KEY_LEFT || key == KEY_A)
 	{
 		this->changeSelected(-1);
 	}
 
-	if (key == VK_RIGHT || key == 'D')
+	if (key == KEY_RIGHT || key == KEY_D)
 	{
 		this->changeSelected(1);
 	}
+}
 
-	if (key == VK_TAB)
-	{
-		this->changeDifficulty(Difficulty((int(this->difficulty) + 1) % 3));
+void LevelSelector::childClosed(int exitCode)
+{
+	if (exitCode == NINJA_GAME_NEXT_LEVEL) {
+		if (this->selectedLevel && *this->selectedLevel == this->levels.size() - 1) {
+			this->alert("Congratulations!", "I didn't want to make a final victory screen, so this is all you get! Congratulations, you finished the game!");
+		} else {
+			this->changeSelected(1);
+			if (this->selectedLevel) {
+				this->playLevel(*this->selectedLevel);
+			}
+		}
 	}
 }
 
@@ -307,9 +338,8 @@ void LevelSelector::checkCompletedLevels()
 void LevelSelector::createInformationPane()
 {
 	Vector2 topLeft(TILE_SIZE * (3 * TILE_MARGIN + 2 * (LEVEL_SIZE.x + STAR_SIZE)), TILE_SIZE * TILE_MARGIN);
-	Vector2i windowSize = this->getWindowSize();
-	double width = windowSize.x - topLeft.x - TILE_SIZE * TILE_MARGIN;
-	double height = windowSize.y - topLeft.y - TILE_SIZE * TILE_MARGIN;
+	double width = CONTENT_SIZE.x - topLeft.x - TILE_SIZE * TILE_MARGIN;
+	double height = CONTENT_SIZE.y - topLeft.y - TILE_SIZE * TILE_MARGIN;
 
 	for (int i = 0; i < 3; ++i)
 	{
@@ -382,6 +412,8 @@ Bitmap* LevelSelector::renderLevelThumbnail(Renderer& renderer, Level& level)
 	level.renderStatic(*bitmapRenderer);
 	level.renderDynamic(*bitmapRenderer);
 
+	delete bitmapRenderer;
+
 	return target;
 }
 
@@ -452,6 +484,8 @@ void LevelSelector::drawLevels(Renderer& renderer)
 	{
 		LevelThumbnail& thumbnail = this->levels[i];
 
+
+		// Rita stjärnor och lås
 		renderer.setFillColor(0, 0, 0);
 		renderer.fillRect(thumbnail.starContainer);
 
@@ -490,6 +524,7 @@ void LevelSelector::drawLevels(Renderer& renderer)
 		}
 
 		
+		// Rita nivån
 		if (this->completedLevelCount + 2 > i)
 		{
 			if (this->selectedLevel && *this->selectedLevel == i) {
@@ -532,27 +567,14 @@ void LevelSelector::drawLevels(Renderer& renderer)
 	}
 }
 
-std::string LevelSelector::formatTime(double time)
-{
-	int tenths = floor(fmod(time, 1) * 10);
-	int hundredths = floor(fmod(time, 0.1) * 100);
-	int minutes = int(time) / 60;
-	int seconds = floor(time) - minutes * 60;
-
-	std::stringstream ss;
-	ss << minutes << " : " << seconds << "." << tenths << hundredths;
-
-	return ss.str();
-}
 
 void LevelSelector::drawLevelInformation(Renderer& renderer)
 {
 	Vector2 offset = renderer.getOffset();
 
-	Vector2i windowSize = this->getWindowSize();
 	double margin = TILE_SIZE * TILE_MARGIN;
-	double width = windowSize.x - offset.x - margin;
-	double height = windowSize.y - offset.y - margin;
+	double width = CONTENT_SIZE.x - offset.x - margin;
+	double height = CONTENT_SIZE.y - offset.y - margin;
 
 	int grey = 25;
 
@@ -691,7 +713,7 @@ void LevelSelector::changeSelected(int delta)
 		);
 	} else
 	{
-		this->selectedLevel = new int(delta > 0 ? 0 : maxLevel);
+		this->selectedLevel = new int(0);
 	}
 
 
@@ -707,6 +729,7 @@ void LevelSelector::playLevel(int levelIndex)
 	if (0 <= levelIndex && levelIndex < this->levels.size())
 	{
 		this->levels[levelIndex].level.setDifficulty(this->difficulty);
+
 		this->addChild(new NinjaGame(this, this->levels[levelIndex].level, this));
 	}
 }

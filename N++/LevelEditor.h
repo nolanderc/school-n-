@@ -89,7 +89,7 @@ protected:
 
 	void closed() override;
 
-	void keyPressed(int key) override;
+	void keyPressed(KeyCode key) override;
 
 	void mouseMoved(int x, int y) override;
 

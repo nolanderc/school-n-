@@ -4,8 +4,7 @@
 LevelEditor::LevelEditor(App* parent, std::string path) :
 	App(parent), path(path), level(path, HARD), grid(true), tilePalette(2, PALETTE_WIDTH_PIXELS / double(TILE_SIZE))
 {
-	if (this->level.getWidth() == 0)
-	{
+	if (this->level.getWidth() == -1) {
 		this->level = Level(LEVEL_SIZE.x, LEVEL_SIZE.y, HARD);
 	}
 
@@ -58,7 +57,7 @@ void LevelEditor::draw(Renderer& renderer)
 	renderer.clear();
 
 	this->drawButtons(renderer);
-	
+
 	renderer.scale(TILE_SIZE);
 
 	this->drawLevel(renderer);
@@ -66,7 +65,6 @@ void LevelEditor::draw(Renderer& renderer)
 	if (grid) this->drawGrid(renderer);
 
 	this->drawSelection(renderer);
-
 
 	renderer.offset({ double(this->level.getWidth()), double(BUTTONS_HEIGHT_PIXELS) / double(TILE_SIZE) });
 	this->tilePalette.draw(renderer);
@@ -83,7 +81,6 @@ void LevelEditor::drawLevel(Renderer& renderer)
 	if (this->level.needsRerender())
 	{
 		Renderer* levelRenderer = renderer.createBitmapRenderer(this->levelBitmap);
-
 		levelRenderer->setFillColor(50, 50, 50);
 		levelRenderer->clear();
 
@@ -91,15 +88,13 @@ void LevelEditor::drawLevel(Renderer& renderer)
 
 		levelRenderer->setFillColor(0, 0, 0);
 		level.renderStatic(*levelRenderer);
+
+		delete levelRenderer;
 	}
 
 	// Rita nivån
 	renderer.drawBitmap(this->levelBitmap, 0, 0, this->levelBitmap->getWidth(), this->levelBitmap->getHeight(), 0, 0);
 
-	renderer.setFillColor(50, 50, 50);
-	renderer.clear();
-
-	this->level.renderStatic(renderer);
 	this->level.renderDynamic(renderer);
 
 	// Rita en ram runt nivån
@@ -184,18 +179,18 @@ void LevelEditor::setSelectionTile(Tile* tile)
 }
 
 
-void LevelEditor::keyPressed(int key)
+void LevelEditor::keyPressed(KeyCode key)
 {
-	if (key == VK_ESCAPE) {
+	if (key == KEY_ESCAPE) {
 		this->close();
 	}
 
-	if (key == 'G')
+	if (key == KEY_G)
 	{
 		this->grid = !this->grid;
 	}
 
-	if (key == 'R' || key == VK_F5)
+	if (key == KEY_R || key == KEY_F5)
 	{
 		this->level.save(this->path);
 

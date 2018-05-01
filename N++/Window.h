@@ -1,12 +1,9 @@
-#pragma once
+ï»¿#pragma once
+#include "Linear.h"
+#include "Bitmap.h"
+#include "Renderer.h"
 
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#include <string>
-#include <vector>
-
-#include "WindowsRenderer.h"
-
+// De olika musknapparna
 enum MouseButton {
 	MOUSE_LEFT,
 	MOUSE_MIDDLE,
@@ -14,150 +11,151 @@ enum MouseButton {
 };
 
 
-// Hanterar meddelanden som kommer ifrån ett fönster
+// De olika tangenterna
+enum KeyCode {
+	// En okÃ¤nd knapp
+	KEY_UNKNOWN,
+
+	// Specialtangenter
+	KEY_ESCAPE,
+	KEY_SPACE,
+	KEY_ENTER,
+	KEY_TAB,
+
+	// Piltangenter
+	KEY_UP,
+	KEY_RIGHT,
+	KEY_DOWN,
+	KEY_LEFT,
+
+	// BokstÃ¤ver
+	KEY_A = 'A',
+	KEY_B,
+	KEY_C,
+	KEY_D,
+	KEY_E,
+	KEY_F,
+	KEY_G,
+	KEY_H,
+	KEY_I,
+	KEY_J,
+	KEY_K,
+	KEY_L,
+	KEY_M,
+	KEY_N,
+	KEY_O,
+	KEY_P,
+	KEY_Q,
+	KEY_R,
+	KEY_S,
+	KEY_T,
+	KEY_U,
+	KEY_V,
+	KEY_W,
+	KEY_X,
+	KEY_Y,
+	KEY_Z,
+
+	// Funktionsknappar
+	KEY_F1,
+	KEY_F2,
+	KEY_F3,
+	KEY_F4,
+	KEY_F5,
+	KEY_F6,
+	KEY_F7,
+	KEY_F8,
+	KEY_F9,
+	KEY_F10,
+	KEY_F11,
+	KEY_F12
+};
+
+
+// Hanterar meddelanden som kommer ifrÃ¥n ett fÃ¶nster
 class WindowEventHandler {
 public:
 	virtual ~WindowEventHandler() = default;
 
-	// Fönstret måste ritas om
-	virtual void repaint() = 0;
+	// FÃ¶nstret mÃ¥ste ritas om
+	virtual void repaint() {};
 
 
-	// Fönstret ändrade storlek
+	// FÃ¶nstret Ã¤ndrade storlek
 	virtual void sizeChanged(int width, int height) {}
 
 
 	// En tangentbordsknapp trycktes
-	virtual void keyPressed(int key) {}
+	virtual void keyPressed(KeyCode key) {}
 
-	// En tangentbordsknapp släpptes
-	virtual void keyReleased(int key) {}
+	// En tangentbordsknapp slÃ¤pptes
+	virtual void keyReleased(KeyCode key) {}
 
-	// En musknapp trycktes eller släpptes
+	// En musknapp trycktes eller slÃ¤pptes
 	virtual void mousePressed(MouseButton button, int x, int y) {}
 	virtual void mouseReleased(MouseButton button, int x, int y) {}
 
-	// Muspekaren rörde sig
+	// Muspekaren rÃ¶rde sig
 	virtual void mouseMoved(int x, int y) {}
 
-	// Musens hjul rörde sig
+	// Musens hjul rÃ¶rde sig
 	virtual void mouseScrolled(int wheelDelta, int x, int y) {}
 };
 
 
+
+// En klass som visar saker fÃ¶r och interagerar med anvÃ¤ndaren
 class Window
 {
-	// Fönstrets "handle"
-	HWND handle;
-
-	// Fönstrets nuvarande dc
-	HDC dc;
-
-	// Fönstrets backbuffer, en bitmapsbild som allt ritas till 
-	HBITMAP backBuffer;
-
-	// Fönstrets id nummer
-	int id;
-
-	// Fönstrets "stil"
-	DWORD style;
-
-	// Avgör om fönstret är öppet eller inte
-	bool open;
-
-	// Storleken av fönstret
-	SIZE size;
-
-
-	// Musens position i fönstret
-	Vector2i mousePosition;
-
-
-	// Lista över alla fönster
-	static std::vector<Window*> windows;
-
-
-	// Lista över alla knappar som är nedtryckta
-	std::vector<int> pressedKeys;
-
-
-	// Hanterare av fönstrets meddelanden
-	WindowEventHandler* eventHandler;
-
 public:
 
-	Window();
+	virtual ~Window() = default;
 
-	// Skapar ett fönster
-	Window(int width, int height, std::string windowName);
+	// Hanterar alla meddelanden som har anlÃ¤nt sedan sita anropet av denna funktion
+	virtual void pollMessages() = 0;
 
-
-	// Visar fönstret
-	void show(int nCmdShow);
-	
-
-	// Väntar på att meddelande ska anlända och hanterar sedan dessa
-	void pollMessages();
-
-	// Sätter fönstrets meddelande hanterare
-	void setEventHandler(WindowEventHandler* handler);
-	
-
-	// Returnerar fönstrets id nummer
-	int getID();
-
-	// Returnerar true om fönstret är öppet
-	bool isOpen();
-
-	// Stänger fönstret
-	void close();
+	// SÃ¤tter den klass som ska hantera fÃ¶nstrets meddelanden
+	virtual void setEventHandler(WindowEventHandler* handler) = 0;
 
 	
+	// Returnerar true om fÃ¶nstret Ã¤r Ã¶ppet
+	virtual bool isOpen() = 0;
 
-	// Returnerar fönstrets storlek
-	Vector2i getSize();
-	
-	// Ändrar fönstrets storlek
-	void setSize(int width, int height);
+	// StÃ¤nger fÃ¶nstret
+	virtual void close() = 0;
 
 
-	// Ändrar fönstrets rubrik/titelrad
-	void setTitle(std::string title);
+
+	// Returnerar fÃ¶nstrets storlek
+	virtual  Vector2i getSize() = 0;
+
+	// Ã„ndrar fÃ¶nstrets storlek
+	virtual void setSize(int width, int height) = 0;
+
+
+	// Ã„ndrar fÃ¶nstrets rubrik/titelrad
+	virtual void setTitle(std::string title) = 0;
 
 
 	// Returnerar musens nuvarande position
-	POINT getMousePosition();
+	virtual Vector2i getMousePosition() = 0;
 
 
-	// Avgör om en knapp är nedtryckt
-	bool isKeyDown(int key);
+	// AvgÃ¶r om en knapp Ã¤r nedtryckt
+	virtual bool isKeyDown(KeyCode key) = 0;
 
 
-	// Skapar en bitmap kompatibel med fönstret
-	WindowsBitmap* createCompatibleBitmap(Vector2i size);
+	// Skapar en bitmap kompatibel med fÃ¶nstret
+	virtual Bitmap* createCompatibleBitmap(Vector2i size) = 0;
 
 
-	// Skapar en ny ritare
-	WindowsRenderer getNewRenderer();
+	// Skapar en ny ritare som ritar till detta fÃ¶nster
+	virtual Renderer* getNewRenderer() = 0;
 
-	// Avslutar ritningen
-	void submitRenderer(WindowsRenderer& renderer);
+	// Avslutar ritningen och presenterar ritarens resultat i fÃ¶nstret
+	virtual void submitRenderer(Renderer& renderer) = 0;
 
-protected:
 
-	// Returnerar fönstrets "handle"
-	HWND getHandle();
-
-private:
-
-	// Windows callback funktion
-	static LRESULT CALLBACK windowProcedure(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam);
-
-	// Skapa en ny window class
-	static WNDCLASSEX createClassEx(HINSTANCE hInstance, LPCSTR className);
-
-	// Justerar storleken av fönstret utifrån den önskade storleken på "fönsterytan"
-	static SIZE adjustSize(int width, int height, DWORD style);
-
+	// Skickar ett varningsmeddelande till anvÃ¤ndaren
+	virtual void alert(std::string title, std::string message) = 0;
 };
-

@@ -38,7 +38,7 @@ public:
 
 	// Returnera storleken på denna bild
 	SIZE getSize();
-	int getWidth();
-	int getHeight();
+	int getWidth() override;
+	int getHeight() override;
 };
 

@@ -124,7 +124,7 @@ void LevelList::load(std::string path)
 		while(std::getline(file, line)) {
 			LevelData data(cwd, line);
 
-			if (data.level.getWidth() != 0) {
+			if (data.level.getWidth() != -1) {
 				this->levels.push_back(data);
 			}
 		}

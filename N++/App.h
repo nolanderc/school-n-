@@ -23,20 +23,24 @@ class App: public WindowEventHandler
 	// En app som denna app "äger"
 	App* child;
 
+	// Den kod denna app kommer att avlsluta med
+	int exitCode;
+
 public:
 
 	// Skapa en ny app innuti en annan app
 	App(App* parent);
 
-	// Skapa en ny app i ett nytt fönster.
-	App(int width, int height, std::string title);
+	// Skapa en ny app i ett fönster.
+	App(Window* window);
 
-	
+	virtual ~App();
+
 	// Kör appen
-	void run();
+	int run();
 
-	// Avslutar appen
-	void close();
+	// Avslutar appen med en int som resultat kod
+	void close(int exitCode = 0);
 
 protected:
 
@@ -50,24 +54,10 @@ protected:
 	// Hantera att appen stängdes ned
 	virtual void closed() {};
 
+	// Hantera att den underordnade appen stängdes ned
+	virtual void childClosed(int exitCode) {}
 
-	// Hantera fönstrets nya storlek
-	void sizeChanged(int width, int height) override {}
-
-
-	// Hantera knapptryck
-	void keyPressed(int key) override {}
-
-	// Hantera musknappar
-	void mousePressed(MouseButton button, int x, int y) override {}
-
-	// Hantera att muspekaren rörde sig
-	void mouseMoved(int x, int y) override {}
-
-	// Hantera att musens hjul rörde sig
-	void mouseScrolled(int wheelDelta, int x, int y) override {}
-
-	
+		
 	// Anropas när delar av fönstret har försvunnit och måste ritas om
 	virtual void redraw() {}
 
@@ -84,7 +74,7 @@ protected:
 	
 
 	// Avgör om en knapp är nedtryckt
-	bool isKeyDown(int key);
+	bool isKeyDown(KeyCode key);
 
 
 	// Returnerar muspekarens position i fönstret
@@ -96,8 +86,11 @@ protected:
 	Bitmap* createCompatibleBitmap(Vector2i size);
 
 
-	// Anger att en ny app ska köras innuti denna app
+	// Anger att en ny app ska köras innuti denna app.
 	void addChild(App* child);
+
+
+	void alert(std::string title, std::string message);
 
 private:
 

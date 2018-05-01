@@ -5,6 +5,7 @@
 #include "Level.h"
 
 #include "Ninja.h"
+#include "NavigationBar.h"
 
 #define TILE_SIZE 32
 
@@ -12,8 +13,13 @@
 
 
 
+enum NinjaGameExitCode {
+	NINJA_GAME_NOTHING,
+	NINJA_GAME_NEXT_LEVEL
+};
 
-class NinjaGame: public App, public VictoryCallback
+
+class NinjaGame: public App, public VictoryCallback, public NavigationCallback
 {
 	// Nivån
 	Level level;
@@ -21,12 +27,14 @@ class NinjaGame: public App, public VictoryCallback
 	// Bitmap att rita nivån till
 	Bitmap* levelBitmap;
 
-	// Borde nivån ritas om?
-	bool renderLevel;
-
 	// Att anropa för när nivån är avklarad
-	VictoryCallback* gameCallback;
+	VictoryCallback* victoryCallback;
 	
+	
+
+	// Lever ninjan?
+	bool alive;
+
 
 	// Lagrar en vinst, om det finns en
 	struct Victory {
@@ -35,6 +43,21 @@ class NinjaGame: public App, public VictoryCallback
 
 		Victory(double time, int coins) : time(time), coins(coins) {}
 	} *victory;
+
+	// Hur länge vinsten har visats
+	double victoryTime;
+
+
+	struct Navigation
+	{
+		int back;
+		int reset;
+		int nextLevel;
+	} navigation;
+
+	// Navigeringshjälp
+	NavigationBar navBar;
+
 
 public:
 
@@ -46,17 +69,19 @@ public:
 
 	void draw(Renderer & renderer) override;
 
-
+	// Anropas när nivån är förlorad
+	void onLevelFail() override;
 
 	// Anropas när nivån är vunnen
-	virtual void onLevelComplete(double time, int coins) override;
+	void onLevelComplete(double time, int coins) override;
+
+	// Navigerar
+	void navigate(int id) override;
 
 protected:
 
-	void sizeChanged(int width, int height) override;
-
-	void keyPressed(int key) override;
-	void keyReleased(int key) override;
+	void keyPressed(KeyCode key) override;
+	void keyReleased(KeyCode key) override;
 
 private:
 
@@ -65,6 +90,10 @@ private:
 
 	// Ritar vinstskärmen
 	void renderVictoryScreen(Renderer& renderer);
+
+
+	// Skapar alla navigeringsknappar
+	void createNavBar();
 
 };
 

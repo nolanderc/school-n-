@@ -6,6 +6,7 @@
 #include "NinjaGame.h"
 #include "LevelEditor.h"
 #include "MenuButtons.h"
+#include "NavigationBar.h"
 
 #define TILE_SIZE 8
 #define TILE_MARGIN 5
@@ -13,7 +14,7 @@
 #define STAR_SIZE (2 * TILE_MARGIN)
 
 
-class LevelSelector : public App, public VictoryCallback
+class LevelSelector : public App, public VictoryCallback, public NavigationCallback
 {
 	struct LevelThumbnail
 	{
@@ -81,6 +82,17 @@ class LevelSelector : public App, public VictoryCallback
 	// Text som visas under muspekaren
 	std::string tooltip;
 
+
+	// Alla navigeringsknappar
+	struct Navigation
+	{
+		int back;
+		int changeDifficulty;
+		int playLevel;
+	} navigation;
+
+	NavigationBar navBar;
+
 public:
 
 	LevelSelector(App* parent);
@@ -88,6 +100,9 @@ public:
 	~LevelSelector();
 
 	void onLevelComplete(double time, int coins) override;
+
+
+	void navigate(int id) override;
 
 protected:
 
@@ -101,10 +116,12 @@ protected:
 	void mousePressed(MouseButton button, int x, int y) override;
 	void mouseReleased(MouseButton button, int x, int y) override;
 
-	void mouseScrolled(int wheelDelta, int x, int y);
+	void mouseScrolled(int wheelDelta, int x, int y) override;
 
-	void keyPressed(int key) override;
+	void keyPressed(KeyCode key) override;
 
+	
+	void childClosed(int exitCode) override;
 
 private:
 
@@ -146,9 +163,7 @@ private:
 	// Ritar alla nivër
 	void drawLevels(Renderer& renderer);
 
-	// Omvandlar tid (i sekunder) till en fin string
-	std::string formatTime(double time);
-
+	
 	// Ritar ut information om den nivå som är vald
 	void drawLevelInformation(Renderer& renderer);
 

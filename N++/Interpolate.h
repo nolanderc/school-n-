@@ -25,7 +25,7 @@ T lerp(double value, T min, T max) {
 // Detta sker "mjukare"/långsammare närmare 0 och 1
 template<class T>
 T easeInOut(double value, T min, T max) {
-	return lerp(3 * value*value - 2 * value*value, min, max);
+	return lerp(3 * value*value - 2 * value*value*value, min, max);
 }
 
 

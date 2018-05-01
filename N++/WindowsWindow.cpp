@@ -1,7 +1,7 @@
-#include "Window.h"
+#include "WindowsWindow.h"
 
 
-std::vector<Window*> Window::windows;
+std::vector<WindowsWindow*> WindowsWindow::windows;
 
 // Return id's in increasing order
 int getNextID() {
@@ -12,11 +12,11 @@ int getNextID() {
 }
 
 
-Window::Window()
+WindowsWindow::WindowsWindow()
 {
 }
 
-Window::Window(int width, int height, std::string windowName)
+WindowsWindow::WindowsWindow(int width, int height, std::string windowName)
 {
 	// Hämta detta programs HINSTANCE
 	HINSTANCE hInstance = GetModuleHandle(NULL);
@@ -60,36 +60,36 @@ Window::Window(int width, int height, std::string windowName)
 	this->backBuffer = CreateCompatibleBitmap(this->dc, this->size.cx, this->size.cy);
 }
 
-void Window::show(int nCmdShow)
+void WindowsWindow::show()
 {
-	ShowWindow(handle, nCmdShow);
+	ShowWindow(handle, SW_SHOW);
 	UpdateWindow(handle);
 
 	open = true;
 }
 
-int Window::getID()
+int WindowsWindow::getID()
 {
 	return id;
 }
 
-bool Window::isOpen()
+bool WindowsWindow::isOpen()
 {
 	return open;
 }
 
-void Window::close()
+void WindowsWindow::close()
 {
 	this->open = false;
 }
 
-Vector2i Window::getSize()
+Vector2i WindowsWindow::getSize()
 {
 	Vector2i size(this->size.cx, this->size.cy);
 	return size;
 }
 
-void Window::setSize(int width, int height)
+void WindowsWindow::setSize(int width, int height)
 {
 	SIZE adjusted = adjustSize(width, height, this->style);
 
@@ -104,12 +104,12 @@ void Window::setSize(int width, int height)
 	SetWindowPos(this->handle, NULL, newX, newY, adjusted.cx, adjusted.cy, NULL);
 }
 
-void Window::setTitle(std::string title)
+void WindowsWindow::setTitle(std::string title)
 {
 	SetWindowText(this->handle, title.c_str());
 }
 
-POINT Window::getMousePosition()
+Vector2i WindowsWindow::getMousePosition()
 {
 	static POINT position;
 
@@ -120,10 +120,10 @@ POINT Window::getMousePosition()
 		}
 	}
 
-	return position;
+	return {position.x, position.y};
 }
 
-bool Window::isKeyDown(int key)
+bool WindowsWindow::isKeyDown(KeyCode key)
 {
 	int keyCount = this->pressedKeys.size();
 	for (int i = 0; i < keyCount; i++) {
@@ -135,28 +135,35 @@ bool Window::isKeyDown(int key)
 	return false;
 }
 
-WindowsBitmap* Window::createCompatibleBitmap(Vector2i size)
+Bitmap* WindowsWindow::createCompatibleBitmap(Vector2i size)
 {
 	return new WindowsBitmap(CreateCompatibleBitmap(this->dc, size.x, size.y), {size.x, size.y});
 }
 
 
-WindowsRenderer Window::getNewRenderer()
+Renderer* WindowsWindow::getNewRenderer()
 {
 	HDC backDC = CreateCompatibleDC(this->dc);
 
 	SelectObject(backDC, this->backBuffer);
-	return WindowsRenderer(backDC, this->size);
+	return new WindowsRenderer(backDC, this->size);
 }
 
-void Window::submitRenderer(WindowsRenderer & renderer)
+void WindowsWindow::submitRenderer(Renderer & renderer)
 {
-	renderer.blitResult(this->dc, 0, 0, this->size.cx, this->size.cy);
-	DeleteDC(renderer.releaseDC());
+	WindowsRenderer* windowsRenderer = (WindowsRenderer*)&renderer;
+
+	windowsRenderer->blitResult(this->dc, 0, 0, this->size.cx, this->size.cy);
+	DeleteDC(windowsRenderer->releaseDC());
+}
+
+void WindowsWindow::alert(std::string title, std::string message)
+{
+	MessageBox(this->handle, message.c_str(), title.c_str(), MB_ICONERROR | MB_OK);
 }
 
 
-void Window::pollMessages()
+void WindowsWindow::pollMessages()
 {
 	// Hantera alla anlända meddelanden
 	MSG msg;
@@ -171,22 +178,22 @@ void Window::pollMessages()
 	}
 }
 
-void Window::setEventHandler(WindowEventHandler * handler)
+void WindowsWindow::setEventHandler(WindowEventHandler * handler)
 {
 	this->eventHandler = handler;
 }
 
-HWND Window::getHandle()
+HWND WindowsWindow::getHandle()
 {
 	return handle;
 }
 
-LRESULT Window::windowProcedure(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+LRESULT WindowsWindow::windowProcedure(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	int windowCount = windows.size();
 	for (int i = 0; i < windowCount; i++)
 	{
-		Window* window = windows[i];
+		WindowsWindow* window = windows[i];
 
 		// Hantera enbart meddelanden ifån fönster vi känner till
 		if (window->handle == hWnd) {
@@ -197,24 +204,27 @@ LRESULT Window::windowProcedure(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 				return DefWindowProc(hWnd, msg, wParam, lParam);
 
 				// Hantera tangentbordet
-			case WM_KEYDOWN:
-				if (!window->isKeyDown(wParam)) {
-					window->eventHandler->keyPressed(wParam);
-					window->pressedKeys.push_back(wParam);
+			case WM_KEYDOWN: {
+				KeyCode key = WindowsWindow::wParamToKeyCode(wParam);
+				if (!window->isKeyDown(key)) {
+					window->eventHandler->keyPressed(key);
+					window->pressedKeys.push_back(key);
 				}
-				break;
+			} break;
 
 			case WM_KEYUP: {
+				KeyCode key = WindowsWindow::wParamToKeyCode(wParam);
+
 				int keyCount = window->pressedKeys.size();
 				for (int i = 0; i < keyCount; i++) {
-					if (window->pressedKeys[i] == wParam) {
+					if (window->pressedKeys[i] == key) {
 						window->pressedKeys.erase(window->pressedKeys.begin() + i);
 						i--;
 						keyCount--;
 					}
 				}
 
-				window->eventHandler->keyReleased(wParam);
+				window->eventHandler->keyReleased(key);
 			}
 			break;
 
@@ -281,12 +291,12 @@ LRESULT Window::windowProcedure(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-WNDCLASSEX Window::createClassEx(HINSTANCE hInstance, LPCSTR className)
+WNDCLASSEX WindowsWindow::createClassEx(HINSTANCE hInstance, LPCSTR className)
 {
 	WNDCLASSEX WndClsEx;
 	WndClsEx.cbSize = sizeof(WNDCLASSEX);
 	WndClsEx.style = CS_HREDRAW | CS_VREDRAW;
-	WndClsEx.lpfnWndProc = Window::windowProcedure;
+	WndClsEx.lpfnWndProc = WindowsWindow::windowProcedure;
 	WndClsEx.cbClsExtra = 0;
 	WndClsEx.cbWndExtra = 0;
 	WndClsEx.hIcon = LoadIcon(NULL, IDI_APPLICATION);
@@ -300,7 +310,7 @@ WNDCLASSEX Window::createClassEx(HINSTANCE hInstance, LPCSTR className)
 	return WndClsEx;
 }
 
-SIZE Window::adjustSize(int width, int height, DWORD style)
+SIZE WindowsWindow::adjustSize(int width, int height, DWORD style)
 {
 	// Fönstrets form
 	RECT windowRect;
@@ -320,4 +330,42 @@ SIZE Window::adjustSize(int width, int height, DWORD style)
 		adjusted.cy = windowRect.bottom - windowRect.top;
 
 	return adjusted;
+}
+
+KeyCode WindowsWindow::wParamToKeyCode(WPARAM wParam)
+{
+	// Bokstäver
+	if ('A' <= wParam && wParam <= 'Z') { 
+		return KeyCode(int(wParam - 'A') + int(KEY_A));
+	}
+
+
+	// Specialtangenter
+	switch (wParam)
+	{
+	case VK_ESCAPE: return KEY_ESCAPE;
+	case VK_SPACE: return KEY_SPACE;
+	case VK_RETURN: return KEY_ENTER;
+	case VK_TAB: return KEY_TAB;
+
+	case VK_UP: return KEY_UP;
+	case VK_RIGHT: return KEY_RIGHT;
+	case VK_DOWN: return KEY_DOWN;
+	case VK_LEFT: return KEY_LEFT;
+
+	case VK_F1: return KEY_F1;
+	case VK_F2: return KEY_F2;
+	case VK_F3: return KEY_F3;
+	case VK_F4: return KEY_F4;
+	case VK_F5: return KEY_F5;
+	case VK_F6: return KEY_F6;
+	case VK_F7: return KEY_F7;
+	case VK_F8: return KEY_F8;
+	case VK_F9: return KEY_F9;
+	case VK_F10: return KEY_F10;
+	case VK_F11: return KEY_F11;
+	case VK_F12: return KEY_F12;
+
+	default: return KEY_UNKNOWN;
+	}
 }

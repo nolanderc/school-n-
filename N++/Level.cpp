@@ -26,12 +26,13 @@ Level::Level(std::string path, Difficulty difficulty, VictoryCallback* victoryCa
 	time(0),
 	running(false)
 {
-	std::ifstream file(path);
+	std::fstream file(path);
 
-	if (file.is_open())
-	{
+	if (file.is_open()) {
 		this->parseLVL(file);
 		file.close();
+	} else {
+		this->height = this->width = -1;
 	}
 
 	this->spawnNinja();
@@ -186,9 +187,6 @@ void Level::renderDynamic(Renderer& renderer)
 		renderer.setLineWidthAbsolute(1);
 
 		this->ninja->render(renderer);
-	}
-	else {
-		renderer.drawTextCentered("Press SPACE to retry!", 0, this->width, 0, this->height);
 	}
 }
 
@@ -408,6 +406,8 @@ void Level::killNinja(CauseOfDeath causeOfDeath)
 	{
 		delete this->ninja;
 		this->ninja = nullptr;
+
+		if (this->victoryCallback) this->victoryCallback->onLevelFail();
 	}
 }
 

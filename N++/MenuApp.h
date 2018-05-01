@@ -19,14 +19,15 @@ class MenuApp: public App
 
 public:
 
-	MenuApp();
+	// Skapar en meny i ett fönster
+	MenuApp(Window* window);
 
 protected:
 
 	void update(float deltaTime) override;
 	void draw(Renderer& renderer) override;
 
-	void keyPressed(int key) override;
+	void keyPressed(KeyCode key) override;
 
 	void mouseMoved(int x, int y) override;
 
