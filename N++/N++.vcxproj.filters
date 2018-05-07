@@ -58,6 +58,12 @@
     <Filter Include="Navigation">
       <UniqueIdentifier>{02bf7ee3-4cbe-4a14-881e-9312518f9d1b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Tutorial">
+      <UniqueIdentifier>{1bf2ba8e-7d33-4549-baba-f650fac32628}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tutorial\Animation">
+      <UniqueIdentifier>{a3b97d86-0bc6-458a-8653-c755f43d31f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConvexHull.cpp">
@@ -144,6 +150,15 @@
     </ClCompile>
     <ClCompile Include="NavigationBar.cpp">
       <Filter>Navigation</Filter>
+    </ClCompile>
+    <ClCompile Include="Tutorial.cpp">
+      <Filter>Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Tutorial\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="ScrollUtil.cpp">
+      <Filter>Util</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -263,6 +278,15 @@
     </ClInclude>
     <ClInclude Include="NavigationBar.h">
       <Filter>Navigation</Filter>
+    </ClInclude>
+    <ClInclude Include="Tutorial.h">
+      <Filter>Tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Tutorial\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="ScrollUtil.h">
+      <Filter>Util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -151,8 +151,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="NavigationBar.cpp" />
+    <ClCompile Include="ScrollUtil.cpp" />
+    <ClCompile Include="Tutorial.cpp" />
     <ClCompile Include="WindowsBitmap.cpp" />
     <ClCompile Include="BoundingBox.cpp" />
     <ClCompile Include="Color.cpp" />
@@ -182,9 +185,12 @@
     <ClCompile Include="WindowsWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.h" />
     <ClInclude Include="App.h" />
     <ClInclude Include="Bitmap.h" />
     <ClInclude Include="NavigationBar.h" />
+    <ClInclude Include="ScrollUtil.h" />
+    <ClInclude Include="Tutorial.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WindowsBitmap.h" />
     <ClInclude Include="BoundingBox.h" />

@@ -5,6 +5,7 @@
 #include "MenuButtons.h"
 
 #include "NinjaGame.h"
+#include "Tutorial.h"
 #include "LevelEditor.h"
 #include "LevelSelector.h"
 

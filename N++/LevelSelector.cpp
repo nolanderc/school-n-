@@ -16,19 +16,20 @@ LevelSelector::LevelSelector(App* parent) :
 	App(parent),
 	completedLevelCount(0),
 	levelList("levels/levels.list"),
-	scrollAmount(0),
-	scrollTarget(0),
 	recentHighscore(nullptr),
 	difficulty(NORMAL),
 	playButton(Vector2(CONTENT_SIZE.x - TILE_SIZE * TILE_MARGIN - 80, CONTENT_SIZE.y - TILE_SIZE*TILE_MARGIN - 80), 60),
-	navBar(CONTENT_SIZE.x, 32, this)
+	navBar(CONTENT_SIZE.x, 32, this),
+	scrollHelper(0.0)
 {
 	this->createThumbnails(this->levelList);
 	this->checkCompletedLevels();
 
 
 	this->setWindowSize(CONTENT_SIZE.x, CONTENT_SIZE.y + this->navBar.getHeight());
-	this->maxScroll = this->levels.empty() ? 0 : this->levels.back().container.bottom - CONTENT_SIZE.y + TILE_MARGIN * TILE_SIZE;
+	double maxScroll = this->levels.empty() ? 0 : this->levels.back().container.bottom - CONTENT_SIZE.y + TILE_MARGIN * TILE_SIZE;
+
+	this->scrollHelper.setMaxScroll(maxScroll);
 
 	this->createInformationPane();
 
@@ -82,8 +83,29 @@ void LevelSelector::update(float deltaTime)
 {
 	this->playButton.update(deltaTime);
 
-	double scrollDelta = this->scrollTarget - this->scrollAmount;
-	this->scroll(abs(scrollDelta) < 1 ? scrollDelta : scrollDelta * deltaTime * 10);
+
+	double scrollBefore = this->scrollHelper.getDistance();
+	this->scrollHelper.update(deltaTime * 10);
+	double scrollAfter = this->scrollHelper.getDistance();
+
+	double delta = scrollAfter - scrollBefore;
+
+	// Flytta alla nivåer nedåt
+	if (delta) {
+		int levelCount = this->levels.size();
+		for (int i = 0; i < levelCount; i++) {
+			LevelThumbnail& level = this->levels[i];
+
+			level.container.top -= delta;
+			level.container.bottom -= delta;
+
+			level.starContainer.top -= delta;
+			level.starContainer.bottom -= delta;
+		}
+
+		Vector2i mouse = this->getMousePosition();
+		this->mouseMoved(mouse.x, mouse.y);
+	}
 }
 
 void LevelSelector::draw(Renderer& renderer)
@@ -211,7 +233,8 @@ void LevelSelector::mouseReleased(MouseButton button, int x, int y)
 
 void LevelSelector::mouseScrolled(int wheelDelta, int x, int y)
 {
-	this->addScroll(wheelDelta * -100);
+	//this->addScroll(wheelDelta * -100);
+	this->scrollHelper.addScroll(wheelDelta * -100);
 }
 
 void LevelSelector::keyPressed(KeyCode key)
@@ -251,44 +274,6 @@ void LevelSelector::childClosed(int exitCode)
 			}
 		}
 	}
-}
-
-void LevelSelector::scroll(double delta)
-{
-	this->scrollAmount += delta;
-
-	if (delta) {
-		int levelCount = this->levels.size();
-		for (int i = 0; i < levelCount; i++) {
-			LevelThumbnail& level = this->levels[i];
-
-			level.container.top -= delta;
-			level.container.bottom -= delta;
-
-			level.starContainer.top -= delta;
-			level.starContainer.bottom -= delta;
-		}
-
-		Vector2i mouse = this->getMousePosition();
-		this->mouseMoved(mouse.x, mouse.y);
-	}
-}
-
-void LevelSelector::addScroll(double delta)
-{
-	double scrollDelta = this->scrollTarget - this->scrollAmount;
-
-	if (sign(scrollDelta) == sign(delta)) {
-		this->scrollTarget += delta;
-	} else {
-		this->scrollTarget = this->scrollAmount + delta;
-	}
-
-	this->scrollTarget = clamp(
-		this->scrollTarget,
-		0.0,
-		this->maxScroll
-	);
 }
 
 void LevelSelector::changeDifficulty(Difficulty difficulty)
@@ -721,7 +706,8 @@ void LevelSelector::changeSelected(int delta)
 	BoundingBox box = this->levels[*this->selectedLevel].container;
 
 	double center = (box.top + box.bottom) / 2;
-	this->addScroll(center - this->getWindowSize().y / 2.0);
+	// this->addScroll(center - this->getWindowSize().y / 2.0);
+	this->scrollHelper.addScroll(center - this->getWindowSize().y / 2.0);
 }
 
 void LevelSelector::playLevel(int levelIndex)

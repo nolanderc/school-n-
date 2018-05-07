@@ -27,6 +27,67 @@ int PlayButton::getID()
 	return BUTTON_PLAY;
 }
 
+
+/////////////////////////////////////////
+
+
+HelpButton::HelpButton(Vector2 position, double radius) :
+	MenuButton(position, radius, 6)
+{
+}
+
+void HelpButton::renderImage(Renderer& renderer, Vector2 center, double radius)
+{
+	double x = center.x;
+	double y = center.y;
+
+	double r = radius / 1.5;
+
+	double s = r / 5;
+	
+	renderer.setFillColor(255, 255, 0);
+
+	// Rita ett frågetecken
+	renderer.fillPolygon({
+		Vector2(x - 1.5 * s, y - 1 * s),
+		Vector2(x - 1.5 * s, y - 2 * s),
+		Vector2(x - 1 * s, y - 2.5 * s),
+
+		Vector2(x + 1 * s, y - 2.5 * s),
+		Vector2(x + 1.5 * s, y - 2 * s),
+		Vector2(x + 1.5 * s, y - 0 * s),
+
+		Vector2(x + 0.5 * s, y + 1 * s),
+		Vector2(x + 0.5 * s, y + 1.5 * s),
+		Vector2(x - 0.5 * s, y + 1.5 * s),
+
+		Vector2(x - 0.5 * s, y + 0.5 * s),
+		Vector2(x + 0.5 * s, y - 0.5 * s),
+
+		Vector2(x + 0.5 * s, y - 1.5 * s),
+		Vector2(x - 0.5 * s, y - 1.5 * s),
+
+		Vector2(x - 0.5 * s, y - 1 * s),
+	});
+
+	renderer.fillPolygon({
+		Vector2(x - 0.5 * s, y + 2.5 * s),
+		Vector2(x + 0.5 * s, y + 2.5 * s),
+		Vector2(x + 0.5 * s, y + 3.5 * s),
+		Vector2(x - 0.5 * s, y + 3.5 * s),
+	});
+}
+
+int HelpButton::getID()
+{
+	return BUTTON_HELP;
+}
+
+
+/////////////////////////////////////////
+
+
+
 EditorButton::EditorButton(Vector2 position, double radius) :
 	MenuButton(position, radius, 6)
 {
@@ -68,6 +129,10 @@ int EditorButton::getID()
 {
 	return BUTTON_EDITOR;
 }
+
+
+/////////////////////////////////////////
+
 
 ExitButton::ExitButton(Vector2 position, double radius) :
 	MenuButton(position, radius, 6)

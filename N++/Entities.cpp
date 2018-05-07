@@ -73,7 +73,7 @@ void Rocket::onNinjaCollide(InteractionHandler* handler)
 	this->alive = false;
 	this->parent->onRocketExplode();
 
-	handler->spawnEffect(new Explosion(this->position, 5));
+	handler->spawnEffect(new Explosion(this->position, 10));
 
 	handler->killNinja(EXPLOSION);
 }

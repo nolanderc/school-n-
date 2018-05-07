@@ -27,7 +27,7 @@ bool Evaporation::isAlive()
 	return this->age < this->LIFETIME;
 }
 
-void Evaporation::update(double deltaTime)
+void Evaporation::update(double deltaTime, InteractionHandler* handler)
 {
 	int streamCount = this->streams.size();
 	for (int i = 0; i < streamCount; i++)

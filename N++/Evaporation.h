@@ -30,7 +30,7 @@ public:
 
 	bool isAlive() override;
 
-	void update(double deltaTime) override;
+	void update(double deltaTime, InteractionHandler* handler) override;
 
 	void render(Renderer& renderer) override;
 };

@@ -7,6 +7,7 @@
 #include "LevelEditor.h"
 #include "MenuButtons.h"
 #include "NavigationBar.h"
+#include "ScrollUtil.h"
 
 #define TILE_SIZE 8
 #define TILE_MARGIN 5
@@ -45,16 +46,9 @@ class LevelSelector : public App, public VictoryCallback, public NavigationCallb
 	// Den nivå som är under muspekaren
 	int* highlightedLevel;
 
-
-	// Hur långt i listan som har skrollats
-	double scrollAmount;
-
-	// Hur långt i listan som borde skrollats
-	double scrollTarget;
-
-	// Hur långt ner som man kan skrolla
-	double maxScroll;
-
+	
+	// Hanterar skrollning i listan
+	ScrollHelper scrollHelper;
 
 
 	struct Highscore {
@@ -124,12 +118,6 @@ protected:
 	void childClosed(int exitCode) override;
 
 private:
-
-	// Skrollar i listan av nivåer
-	void scroll(double delta);
-
-	// Anger att listan borde skrollas visst mycket
-	void addScroll(double delta);
 
 	// Ändrar den nuvarande svårighetsgraden
 	void changeDifficulty(Difficulty difficulty);

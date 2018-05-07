@@ -14,9 +14,12 @@ MenuApp::MenuApp(Window* window) :
 
 	time = 0;
 
-	this->buttons.push_back(new PlayButton({ 256 - 64, 256 }, 64));
+	double ratio = sqrt(1 - 0.5*0.5);
+
+	this->buttons.push_back(new PlayButton({ 256, 256 - 128 * ratio }, 64));
+	this->buttons.push_back(new HelpButton({ 256 - 64, 256 }, 64));
 	this->buttons.push_back(new EditorButton({ 256 + 64, 256 }, 64));
-	this->buttons.push_back(new ExitButton({ 256, 256 + 128 * sqrt(1 - 0.5*0.5) }, 64));
+	this->buttons.push_back(new ExitButton({ 256, 256 + 128 * ratio }, 64));
 }
 
 void MenuApp::update(float deltaTime)
@@ -64,19 +67,25 @@ void MenuApp::keyPressed(KeyCode key)
 		}
 	}
 
-	if (key == KEY_DOWN || key == KEY_S)
-	{
-		this->changeSelected(2);
-	}
-
-	if (key == KEY_LEFT || key == KEY_A)
+	if (key == KEY_UP || key == KEY_W)
 	{
 		this->changeSelected(0);
 	}
 
-	if (key == KEY_RIGHT || key == KEY_D)
+	if (key == KEY_LEFT || key == KEY_A)
 	{
 		this->changeSelected(1);
+	}
+
+	if (key == KEY_DOWN || key == KEY_S)
+	{
+		this->changeSelected(3);
+	}
+
+
+	if (key == KEY_RIGHT || key == KEY_D)
+	{
+		this->changeSelected(2);
 	}
 }
 
@@ -158,8 +167,12 @@ void MenuApp::buttonPressed(int buttonIndex)
 		this->addChild(new LevelSelector(this));
 		break;
 
+	case BUTTON_HELP:
+		this->addChild(new Tutorial(this));
+		break;
+
 	case BUTTON_EDITOR:
-		this->addChild(new LevelEditor(this, "levels/tmpLevel.lvl"));
+		this->addChild(new LevelEditor(this, "levels/tutorials/coins.lvl"));
 		break;
 
 	case BUTTON_EXIT:

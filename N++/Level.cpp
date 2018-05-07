@@ -183,7 +183,7 @@ void Level::renderDynamic(Renderer& renderer)
 
 	// Rita ninjan
 	if (this->ninja) {
-		renderer.setColor(150, 150, 150);
+		renderer.setColor(220, 220, 255);
 		renderer.setLineWidthAbsolute(1);
 
 		this->ninja->render(renderer);
@@ -274,7 +274,7 @@ void Level::updateEffects(double deltaTime)
 	{
 		Effect* effect = this->effects[i];
 		
-		effect->update(deltaTime);
+		effect->update(deltaTime, this);
 		if (!effect->isAlive()) {
 			this->effects.erase(this->effects.begin() + i);
 			i--; effectCount--;

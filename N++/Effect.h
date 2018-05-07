@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Renderer.h"
+#include "InteractionHandler.h"
 
 // En gemensam API för alla effekter
 class Effect
@@ -11,7 +12,7 @@ public:
 	virtual bool isAlive() = 0;
 
 	// Uppdaterar effekten
-	virtual void update(double deltaTime) = 0;
+	virtual void update(double deltaTime, InteractionHandler* handler) = 0;
 
 	// Ritar effekten
 	virtual void render(Renderer& renderer) = 0;
