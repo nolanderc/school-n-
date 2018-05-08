@@ -16,6 +16,7 @@ enum CauseOfDeath
 class InteractionHandler
 {
 public:
+	virtual ~InteractionHandler() = default;
 
 	// Ger ninjan energi
 	virtual void increaseEnergy(double amount) = 0;

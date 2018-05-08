@@ -78,10 +78,12 @@ void LevelEditor::closed()
 
 void LevelEditor::drawLevel(Renderer& renderer)
 {
+	Color background(50);
+
 	if (this->level.needsRerender())
 	{
 		Renderer* levelRenderer = renderer.createBitmapRenderer(this->levelBitmap);
-		levelRenderer->setFillColor(50, 50, 50);
+		levelRenderer->setFillColor(background);
 		levelRenderer->clear();
 
 		levelRenderer->scale(TILE_SIZE);
@@ -95,7 +97,7 @@ void LevelEditor::drawLevel(Renderer& renderer)
 	// Rita nivån
 	renderer.drawBitmap(this->levelBitmap, 0, 0, this->levelBitmap->getWidth(), this->levelBitmap->getHeight(), 0, 0);
 
-	this->level.renderDynamic(renderer);
+	this->level.renderDynamic(renderer, background);
 
 	// Rita en ram runt nivån
 	renderer.setColor(0, 0, 0);

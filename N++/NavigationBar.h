@@ -5,6 +5,8 @@
 class NavigationCallback
 {
 public:
+	virtual ~NavigationCallback() = default;
+
 	// Anger att en navigeringsknapp har tryckts
 	virtual void navigate(int id) = 0;
 };

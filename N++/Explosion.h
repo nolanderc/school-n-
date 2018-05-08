@@ -33,10 +33,10 @@ public:
 	
 	// Skapar en ny, slumpmässig, explosion
 	Explosion(Vector2 center, double size);
-
+	
 	bool isAlive() override;
 
 	void update(double deltaTime, InteractionHandler* handler) override;
 
-	void render(Renderer& renderer) override;
+	void render(Renderer& renderer, Color background) override;
 };

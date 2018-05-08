@@ -39,7 +39,9 @@ class MenuButton
 
 
 public:
-	
+
+	virtual ~MenuButton() = default;
+
 	// Skapar en ny knapp med en viss storlek och antal hörn
 	MenuButton(Vector2 position, double radius, int corners);
 

@@ -1,12 +1,20 @@
 ﻿#include "Tutorial.h"
 
+Tutorial::Tip::Tip(Animation animation, std::string text) :
+animation(animation), text(text)
+{
+}
+
 Tutorial::Tutorial(App* parent) :
 	App(parent),
-	scrollHelper(0.0)
+	scrollHelper(0.0),
+	navBar(1000, 32, this)
 {
-	this->setWindowSize(900, 700);
+	this->setWindowSize(1000, 700);
 
 	this->createAnimations();
+
+	this->navBar.addButton("Back", KEY_ESCAPE);
 }
 
 void Tutorial::update(float deltaTime)
@@ -14,9 +22,9 @@ void Tutorial::update(float deltaTime)
 	int animationCount = this->animations.size();
 	for (int i = 0; i < animationCount; i++)
 	{
-		Animation& animation = this->animations[i];
+		Tip& tip = this->animations[i];
 
-		animation.update(deltaTime);
+		tip.animation.update(deltaTime);
 	}
 
 	this->scrollHelper.update(deltaTime * 10);
@@ -24,7 +32,8 @@ void Tutorial::update(float deltaTime)
 
 void Tutorial::draw(Renderer& renderer)
 {
-	renderer.setFillColor(25, 25, 25);
+	renderer.setFillColor(Color(25));
+	renderer.setTextBackgroundColor(Color(25));
 	renderer.clear();
 
 
@@ -33,34 +42,37 @@ void Tutorial::draw(Renderer& renderer)
 	renderer.scale(32);
 	renderer.offset(Vector2(1, 1));
 
+	Vector2i windowSize = this->getWindowSize();
+
 	int animationCount = this->animations.size();
 	for (int i = 0; i < animationCount; i++)
 	{
-		Animation& animation = this->animations[i];
+		Tip& tip = this->animations[i];
 
-		renderer.setFillColor(50, 50, 50);
-		animation.render(renderer);
+		tip.animation.render(renderer, Color(50));
 
-		renderer.offset(Vector2(0, animation.getHeight() + 1));
+		BoundingBox box;
+		box.top = 0;
+		box.bottom = tip.animation.getHeight();
+		box.left = tip.animation.getWidth() + 1;
+		box.right = windowSize.x / 32.0 - 1;
+
+		renderer.setTextColor(Color(255));
+		renderer.drawTextLeftAligned(tip.text, box);
+		renderer.offset(Vector2(0, tip.animation.getHeight() + 1));
 	}
+
+	renderer.scale(1.0 / 32);
+	renderer.offset(-renderer.getOffset());
+
+	
+	renderer.offset(Vector2(0, this->getWindowSize().y - this->navBar.getHeight()));
+	this->navBar.render(renderer, Color(0));
 }
 
 void Tutorial::keyPressed(KeyCode key)
 {
-	if (key == KEY_ESCAPE)
-	{
-		this->close();
-	}
-
-	if (key == KEY_UP || key == KEY_W)
-	{
-		this->scrollHelper.addScroll(-100);
-	}
-
-	if (key == KEY_DOWN || key == KEY_S)
-	{
-		this->scrollHelper.addScroll(100);
-	}
+	this->navBar.keyPressed(key);
 }
 
 void Tutorial::mouseScrolled(int wheelDelta, int x, int y)
@@ -68,12 +80,19 @@ void Tutorial::mouseScrolled(int wheelDelta, int x, int y)
 	this->scrollHelper.addScroll(wheelDelta * -100);
 }
 
+void Tutorial::navigate(int id)
+{
+	this->close();
+}
+
 void Tutorial::createAnimations()
 {
 	this->createWalkingAnimation();
 	this->createJumpingAnimation();
-	this->createWallJumpingAnimation();
 
+	this->createWallJumpingAnimation();
+	this->createSpeedBoostingAnimation();
+	
 	this->createWinningAnimation();
 	this->createButtonAnimation();
 
@@ -88,7 +107,7 @@ void Tutorial::createAnimations()
 	int animationCount = this->animations.size();
 	for (int i = 0; i < animationCount - 2; i++)
 	{
-		animationHeight += 32 * (this->animations[i].getHeight() + 1);
+		animationHeight += 32 * (this->animations[i].animation.getHeight() + 1);
 	}
 
 	this->scrollHelper.setMaxScroll(animationHeight);
@@ -102,7 +121,10 @@ void Tutorial::createWalkingAnimation()
 	frames.push_back(Keyframe(0.0, 2.0, NINJA_RIGHT));
 	frames.push_back(Keyframe(2.0, 2.0, NINJA_LEFT));
 
-	this->animations.push_back(Animation(level, frames, 4.0, true));
+	this->animations.push_back(Tip(
+		Animation(level, frames, 4.0, true),
+		"Use the 'left and right arrow' keys to move left and right, respectively"
+	));
 }
 
 void Tutorial::createJumpingAnimation()
@@ -112,7 +134,10 @@ void Tutorial::createJumpingAnimation()
 	std::vector<Keyframe> frames;
 	frames.push_back(Keyframe(0.0, 1.0, NINJA_JUMP));
 
-	this->animations.push_back(Animation(level, frames, 4.0, true));
+	this->animations.push_back(Tip(
+		Animation(level, frames, 4.0, true),
+		"Press the 'up arrow' key to jump"
+	));
 }
 
 void Tutorial::createWallJumpingAnimation()
@@ -128,7 +153,32 @@ void Tutorial::createWallJumpingAnimation()
 	frames.push_back(Keyframe(3.0, 0.1, NINJA_JUMP));
 	frames.push_back(Keyframe(3.1, 0.1, NINJA_CANCEL_JUMP));
 
-	this->animations.push_back(Animation(level, frames, 6.0, true));
+	this->animations.push_back(Tip(
+		Animation(level, frames, 6.0, true),
+		"Move toward a wall to slide along it. Jump or press the 'down arrow' key to get off it"
+	));
+}
+
+void Tutorial::createSpeedBoostingAnimation()
+{
+	Level level = Level("levels/tutorials/walking.lvl", HARD);
+
+	std::vector<Keyframe> frames;
+	frames.push_back(Keyframe(0.0, 2.5, NINJA_RIGHT));
+	frames.push_back(Keyframe(1.9, 0.1, NINJA_JUMP));
+	frames.push_back(Keyframe(2.0, 0.1, NINJA_CANCEL_JUMP));
+
+	frames.push_back(Keyframe(3.5, 0.7, NINJA_LEFT));
+
+	frames.push_back(Keyframe(4.0, 0.1, NINJA_JUMP));
+	frames.push_back(Keyframe(4.1, 0.1, NINJA_CANCEL_JUMP));
+
+	frames.push_back(Keyframe(5.5, 1.0, NINJA_LEFT));
+
+	this->animations.push_back(Tip(
+		Animation(level, frames, 7.0, true),
+		"Save momentum by moving 'into' a wall or along the floor"
+	));
 }
 
 void Tutorial::createWinningAnimation()
@@ -138,7 +188,10 @@ void Tutorial::createWinningAnimation()
 	std::vector<Keyframe> frames;
 	frames.push_back(Keyframe(0.0, 3.0, NINJA_RIGHT));
 
-	this->animations.push_back(Animation(level, frames, 4.0, false));
+	this->animations.push_back(Tip(
+		Animation(level, frames, 4.0, false),
+		"Get to the exit to win, the faster the better"
+	));
 }
 
 void Tutorial::createButtonAnimation()
@@ -148,7 +201,10 @@ void Tutorial::createButtonAnimation()
 	std::vector<Keyframe> frames;
 	frames.push_back(Keyframe(0.0, 3.0, NINJA_RIGHT));
 
-	this->animations.push_back(Animation(level, frames, 4.0, false));
+	this->animations.push_back(Tip(
+		Animation(level, frames, 4.0, false),
+		"Activate buttons to open doors"
+	));
 }
 
 void Tutorial::createCoinsAnimation()
@@ -158,7 +214,10 @@ void Tutorial::createCoinsAnimation()
 	std::vector<Keyframe> frames;
 	frames.push_back(Keyframe(0.0, 3.0, NINJA_RIGHT));
 
-	this->animations.push_back(Animation(level, frames, 4.0, false));
+	this->animations.push_back(Tip(
+		Animation(level, frames, 4.0, false),
+		"It's expensive to be a ninja, keep collecting coins or you will go bankrupt"
+	));
 }
 
 void Tutorial::createMinesAnimation()
@@ -174,7 +233,10 @@ void Tutorial::createMinesAnimation()
 	frames.push_back(Keyframe(3.5, 0.1, NINJA_JUMP));
 
 
-	this->animations.push_back(Animation(level, frames, 8.0, false));
+	this->animations.push_back(Tip(
+		Animation(level, frames, 7.0, false),
+		"Mines aren't so nice, if you like being alive"
+	));
 }
 
 void Tutorial::createRocketAnimation()
@@ -184,5 +246,8 @@ void Tutorial::createRocketAnimation()
 	std::vector<Keyframe> frames;
 	frames.push_back(Keyframe(0.0, 1.0, NINJA_RIGHT));
 
-	this->animations.push_back(Animation(level, frames, 3.5, false));
+	this->animations.push_back(Tip(
+		Animation(level, frames, 4.5, false),
+		"Avoid heatseekers, they are deadly"
+	));
 }

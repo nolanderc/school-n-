@@ -10,7 +10,7 @@ Explosion::Explosion(Vector2 center, double size) :
 		TYPE_COUNT
 	};
 
-	this->lifetime = random(0.2 * sqrt(size), 0.3 * sqrt(size));
+	this->lifetime = 0.4 * sqrt(size); // random(0.3 * sqrt(size), 0.3 * sqrt(size));
 
 	int flameCount = random(10 * size, 20 * size);
 	for (int i = 0; i < flameCount; i++)
@@ -18,9 +18,9 @@ Explosion::Explosion(Vector2 center, double size) :
 		Flame flame;
 		flame.center = center;
 		flame.distance = random(0.0, 0.1);
-		flame.speed = random(24.0, 48.0);
+		flame.speed = random(24.0, 32.0);
 		flame.direction = Vector2::rotated(random(0, 360));
-		flame.lifetime = random(lifetime * size * 0.08, lifetime);
+		flame.lifetime = random(lifetime * size * 0.04, lifetime);
 
 		int type;
 		int r = rand() % 100;
@@ -40,8 +40,8 @@ Explosion::Explosion(Vector2 center, double size) :
 			flame.width = random(0.05, 0.1);
 			flame.maxLength = random(1, 2);
 
-			flame.red = 255;
-			flame.green = 50;
+			flame.red = 1.0;
+			flame.green = 0.2;
 			flame.blue = 0;
 			break;
 
@@ -51,9 +51,9 @@ Explosion::Explosion(Vector2 center, double size) :
 			flame.width = random(0.5, 1.0);
 			flame.maxLength = random(0.5, 1);
 
-			flame.red = 75;
-			flame.green = 75;
-			flame.blue = 75;
+			flame.red = 0.4;
+			flame.green = 0.4;
+			flame.blue = 0.4;
 			break;
 
 		case FIRE:
@@ -62,8 +62,8 @@ Explosion::Explosion(Vector2 center, double size) :
 			flame.width = random(0.15, 0.3);
 			flame.maxLength = random(0.5, 1.5);
 
-			flame.red = 255;
-			flame.green = 150;
+			flame.red = 1.0;
+			flame.green = 0.6;
 			flame.blue = 0;
 			break;
 
@@ -88,7 +88,7 @@ void Explosion::update(double deltaTime, InteractionHandler* handler)
 	// Ökar precisionen av reflektioner
 	int samples = 5;
 
-	for (int i = 0; i < samples; i++)
+	for (int sample = 0; sample < samples; sample++)
 	{
 		int count = this->flames.size();
 		for (int i = 0; i < count; i++) {
@@ -123,13 +123,15 @@ void Explosion::update(double deltaTime, InteractionHandler* handler)
 	}
 }
 
-void Explosion::render(Renderer& renderer)
+void Explosion::render(Renderer& renderer, Color background)
 {
 	int count = this->flames.size();
 	for (int i = 0; i < count; i++) {
 		Flame& flame = this->flames[i];
 
-		renderer.setColor(flame.red, flame.green, flame.blue);
+		double p = this->age / this->lifetime;
+		renderer.setColor(background.mix(Color(flame.red, flame.green, flame.blue), 1.0 - p*p*p));
+
 		renderer.setLineWidth(lerp(this->age / flame.lifetime, flame.width, 0.0));
 		renderer.setLineStyle(LINE_SOLID);
 

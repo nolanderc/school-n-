@@ -4,13 +4,25 @@
 #include "Animation.h"
 #include "ScrollUtil.h"
 
-class Tutorial: public App
-{
+#include "NavigationBar.h"
 
-	std::vector<Animation> animations;
+class Tutorial: public App, public NavigationCallback
+{
+	struct Tip
+	{
+		Animation animation;
+		std::string text;
+
+		Tip(Animation animation, std::string text);
+	};
+
+	std::vector<Tip> animations;
 
 
 	ScrollHelper scrollHelper;
+
+	NavigationBar navBar;
+
 
 public:
 	Tutorial(App* parent);
@@ -28,6 +40,7 @@ public:
 
 	void mouseScrolled(int wheelDelta, int x, int y) override;
 
+	void navigate(int id) override;
 
 private:
 
@@ -42,6 +55,9 @@ private:
 
 	// Skapar en animation med ninjan som hoppar på vägger
 	void createWallJumpingAnimation();
+
+	// Skapar en animation med ninjan som glider på väggar och golv
+	void createSpeedBoostingAnimation();
 
 	// Skapar en animation med ninjan som klarar en nivå
 	void createWinningAnimation();

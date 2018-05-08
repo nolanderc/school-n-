@@ -332,7 +332,7 @@ void WindowsRenderer::drawBitmap(const Bitmap* bitmap, int x, int y, int width, 
 	DeleteDC(bitmapDC);
 }
 
-void WindowsRenderer::drawBitmapTransparent(const Bitmap* bitmap, int filterR, int filterG, int filterB, int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
+void WindowsRenderer::drawBitmapTransparent(const Bitmap* bitmap, Color filterColor, int x, int y, int width, int height, int srcX, int srcY, int srcWidth, int srcHeight)
 {
 	WindowsBitmap* windowsBitmap = (WindowsBitmap*)bitmap;
 
@@ -346,7 +346,7 @@ void WindowsRenderer::drawBitmapTransparent(const Bitmap* bitmap, int filterR, i
 		bitmapDC, 
 		srcX, srcY, 
 		srcWidth < 0 ? windowsBitmap->getWidth() : srcWidth, srcHeight < 0 ? windowsBitmap->getHeight() : srcHeight,
-		RGB(filterR, filterG, filterB)
+		this->colorToColorref(filterColor)
 	);
 
 	SelectObject(bitmapDC, old);
@@ -403,5 +403,12 @@ Vector2i WindowsRenderer::transform(Vector2 coord)
 	return Vector2i(
 		floor(coord.x * this->coordScale + this->coordOffset.x),
 		floor (coord.y * this->coordScale + this->coordOffset.y)
+	);
+}
+
+COLORREF WindowsRenderer::colorToColorref(Color color)
+{
+	return RGB(
+		color.r * 255, color.g * 255, color.b * 255
 	);
 }

@@ -7,7 +7,8 @@
 class Effect
 {
 public:
-	
+	virtual ~Effect() = default;
+
 	// Avgör om effekten fortfarande finns
 	virtual bool isAlive() = 0;
 
@@ -15,6 +16,6 @@ public:
 	virtual void update(double deltaTime, InteractionHandler* handler) = 0;
 
 	// Ritar effekten
-	virtual void render(Renderer& renderer) = 0;
+	virtual void render(Renderer& renderer, Color background) = 0;
 
 };

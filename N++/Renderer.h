@@ -111,7 +111,8 @@ public:
 
 
 	// Ritar en bitmapsbild
-	virtual void drawBitmapTransparent(const Bitmap* bitmap, int filterR, int filterG, int filterB,
+	virtual void drawBitmapTransparent(const Bitmap* bitmap, 
+									   Color filterColor,
 	                                   int x, int y, int width = -1, int height = -1,
 	                                   int srcX = 0, int srcY = 0, int srcWidth = -1,
 	                                   int srcHeight = -1) = 0;

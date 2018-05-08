@@ -44,7 +44,7 @@ void Evaporation::update(double deltaTime, InteractionHandler* handler)
 	}
 }
 
-void Evaporation::render(Renderer& renderer)
+void Evaporation::render(Renderer& renderer, Color background)
 {
 	renderer.setLineWidthAbsolute(1);
 	renderer.setLineStyle(LINE_SOLID);

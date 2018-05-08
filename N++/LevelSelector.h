@@ -14,6 +14,8 @@
 
 #define STAR_SIZE (2 * TILE_MARGIN)
 
+const Color BACKGROUND_COLOR = Color(64, 174, 12);
+
 
 class LevelSelector : public App, public VictoryCallback, public NavigationCallback
 {

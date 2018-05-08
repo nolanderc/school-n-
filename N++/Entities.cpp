@@ -8,6 +8,14 @@ Rocket::Rocket(RocketTile* parent, Vector2 position, Vector2 velocity) :
 {
 }
 
+Rocket::~Rocket()
+{
+	if (this->parent)
+	{
+		this->parent->onRocketExplode();
+	}
+}
+
 void Rocket::update(InteractionHandler* handler, double deltaTime)
 {
 	Vector2 direction = (handler->getNinjaPosition() - this->position).normal();
@@ -63,7 +71,6 @@ bool Rocket::isAlive()
 void Rocket::onCollide(InteractionHandler* handler)
 {
 	this->alive = false;
-	this->parent->onRocketExplode();
 
 	handler->spawnEffect(new Explosion(this->position, 2));
 }
@@ -71,7 +78,6 @@ void Rocket::onCollide(InteractionHandler* handler)
 void Rocket::onNinjaCollide(InteractionHandler* handler)
 {
 	this->alive = false;
-	this->parent->onRocketExplode();
 
 	handler->spawnEffect(new Explosion(this->position, 10));
 

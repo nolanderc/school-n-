@@ -7,6 +7,7 @@
 #include <io.h>
 #include <fcntl.h>
 
+
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev, LPSTR cmdLine, int nCmdShow)
 {
 #if 0

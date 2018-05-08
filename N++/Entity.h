@@ -6,6 +6,8 @@ class Entity: public Collider
 {
 public:
 	
+	virtual ~Entity() = default;
+
 	// Uppdaterar entiteten
 	virtual void update(InteractionHandler* handler, double deltaTime) = 0;
 

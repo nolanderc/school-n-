@@ -18,6 +18,8 @@
 
 class VictoryCallback {
 public:
+	virtual ~VictoryCallback() = default;
+
 	// Anropas när en nivå har misslyckats
 	virtual void onLevelFail() {};
 
@@ -127,7 +129,7 @@ public:
 	void renderStatic(Renderer& renderer);
 
 	// Ritar allt som förändras i nivån
-	void renderDynamic(Renderer& renderer);
+	void renderDynamic(Renderer& renderer, Color background);
 
 
 	// Returnerar en vektor som förflyttar skalet ur kollisionen

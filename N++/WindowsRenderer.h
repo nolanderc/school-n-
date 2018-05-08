@@ -155,9 +155,9 @@ public:
 	// Negativa tal för width och height ritar hela bilden
 	void drawBitmap(const Bitmap* bitmap, int x, int y, int width = -1, int height = -1, int srcX = 0, int srcY = 0) override;
 
-	
+
 	// Ritar en bitmapsbild
-	void drawBitmapTransparent(const Bitmap* bitmap, int filterR, int filterG, int filterB, int x, int y, int width = -1, int height = -1, int srcX = 0, int srcY = 0, int srcWidth = -1, int srcHeight = -1) override;
+	void drawBitmapTransparent(const Bitmap* bitmap, Color filterColor, int x, int y, int width = -1, int height = -1, int srcX = 0, int srcY = 0, int srcWidth = -1, int srcHeight = -1) override;
 
 
 	// Kopierar denna ritares resultat till en dc
@@ -190,5 +190,9 @@ private:
 
 	// Omvandlar en koordinat till skärmkoordinater (applicerar skalning och förflyttningar)
 	Vector2i transform(Vector2 coord);
+
+
+	// Omvandlar en färg till en färg i WINAPI
+	COLORREF colorToColorref(Color color);
 };
 

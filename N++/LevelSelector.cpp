@@ -387,7 +387,7 @@ Bitmap* LevelSelector::renderLevelThumbnail(Renderer& renderer, Level& level)
 	Bitmap* target = this->createCompatibleBitmap({width, height});
 	Renderer* bitmapRenderer = renderer.createBitmapRenderer(target);
 
-	bitmapRenderer->setFillColor(63, 174, 12);
+	bitmapRenderer->setFillColor(BACKGROUND_COLOR);
 	bitmapRenderer->clear();
 
 	bitmapRenderer->scale(TILE_SIZE);
@@ -395,7 +395,7 @@ Bitmap* LevelSelector::renderLevelThumbnail(Renderer& renderer, Level& level)
 	bitmapRenderer->setFillColor(0, 0, 0);
 
 	level.renderStatic(*bitmapRenderer);
-	level.renderDynamic(*bitmapRenderer);
+	level.renderDynamic(*bitmapRenderer, BACKGROUND_COLOR);
 
 	delete bitmapRenderer;
 
@@ -538,7 +538,7 @@ void LevelSelector::drawLevels(Renderer& renderer)
 
 			renderer.drawBitmapTransparent(
 				thumbnail.levelBitmap,
-				63, 174, 12,
+				BACKGROUND_COLOR,
 				thumbnail.container.left, thumbnail.container.top
 			);
 		} else {

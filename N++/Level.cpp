@@ -86,6 +86,7 @@ Level::~Level()
 	deleteVectorElements(this->tiles);
 	deleteVectorElements(this->originalTiles);
 	deleteVectorElements(this->effects);
+	deleteVectorElements(this->entities);
 }
 
 void Level::reset()
@@ -144,7 +145,8 @@ void Level::renderStatic(Renderer & renderer)
 	this->needsRedraw = false;
 }
 
-void Level::renderDynamic(Renderer& renderer)
+
+void Level::renderDynamic(Renderer& renderer, Color background)
 {
 	// Rita dynamiska block
 	int tileCount = this->tiles.size();
@@ -167,7 +169,7 @@ void Level::renderDynamic(Renderer& renderer)
 	{
 		Effect* effect = this->effects[i];
 
-		effect->render(renderer);
+		effect->render(renderer, background);
 	}
 
 
@@ -276,6 +278,7 @@ void Level::updateEffects(double deltaTime)
 		
 		effect->update(deltaTime, this);
 		if (!effect->isAlive()) {
+			delete this->effects[i];
 			this->effects.erase(this->effects.begin() + i);
 			i--; effectCount--;
 		}
@@ -325,6 +328,7 @@ void Level::updateEntities(double deltaTime)
 		}
 
 		if (!entity->isAlive()) {
+			delete this->entities[i];
 			this->entities.erase(this->entities.begin() + i);
 			i--; entityCount--;
 		}
@@ -418,7 +422,11 @@ void Level::spawnEffect(Effect* effect)
 
 void Level::spawnEntity(Entity* entity)
 {
-	this->entities.push_back(entity);
+	if (this->ninja) {
+		this->entities.push_back(entity);
+	} else {
+		delete entity;
+	}
 }
 
 void Level::buttonTriggered()
@@ -704,6 +712,17 @@ void Level::update(double deltaTime)
 		this->updateEntities(deltaTime);
 
 		this->updateEffects(deltaTime);
+
+
+		if (this->ninja) {
+			Vector2 center = ninja->getConvexHull().average();
+
+			// Ifall ninjan, mot all förmodan skulle åka utanför nivån
+			if (center.x < -1.0 || center.x > this->width + 1 || center.y < -1.0 || center.y > this->height + 1)
+			{
+				this->reset();
+			}
+		}
 	}
 }
 

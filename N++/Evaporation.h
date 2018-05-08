@@ -32,5 +32,5 @@ public:
 
 	void update(double deltaTime, InteractionHandler* handler) override;
 
-	void render(Renderer& renderer) override;
+	void render(Renderer& renderer, Color background) override;
 };

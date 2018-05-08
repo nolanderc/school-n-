@@ -59,9 +59,11 @@ void NinjaGame::draw(Renderer & renderer)
 
 	renderer.scale(TILE_SIZE);
 
+	Color background(50);
+
 	if (this->level.needsRerender()) {
 		Renderer* levelRenderer = renderer.createBitmapRenderer(this->levelBitmap);
-		levelRenderer->setFillColor(50, 50, 50);
+		levelRenderer->setFillColor(background);
 		levelRenderer->clear();
 
 		levelRenderer->scale(TILE_SIZE);
@@ -79,7 +81,7 @@ void NinjaGame::draw(Renderer & renderer)
 	renderer.setColor(100, 100, 100);
 	renderer.setLineWidth(1.0 / TILE_SIZE);
 
-	level.renderDynamic(renderer);
+	level.renderDynamic(renderer, background);
 
 	renderer.scale(1.0 / TILE_SIZE);
 	renderer.offset(-renderer.getOffset());

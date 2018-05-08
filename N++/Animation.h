@@ -27,6 +27,7 @@ class Animation
 	double duration;
 
 	double time;
+	double accumulator;
 
 	bool loop;
 
@@ -37,7 +38,7 @@ public:
 
 	void update(double deltaTime);
 
-	void render(Renderer& renderer);
+	void render(Renderer& renderer, Color background);
 
 	int getWidth();
 	int getHeight();

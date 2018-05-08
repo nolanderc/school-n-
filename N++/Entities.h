@@ -17,6 +17,7 @@ class Rocket: public Entity
 public:
 
 	Rocket(RocketTile* parent, Vector2 position, Vector2 velocity);
+	~Rocket();
 
 	void update(InteractionHandler* handler, double deltaTime) override;
 

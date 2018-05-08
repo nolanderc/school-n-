@@ -6,6 +6,7 @@
 class Collider
 {
 public:
+	virtual ~Collider() = default;
 
 	virtual Vector2* overlap(const ConvexHull& other) const = 0;
 
