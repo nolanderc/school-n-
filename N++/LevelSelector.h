@@ -132,6 +132,15 @@ private:
 	void checkCompletedLevels();
 
 
+	// Avgör texten som ska stå i en tooltip
+	void checkTooltip(Vector2 mouse);
+	
+	// Avgör texten som ska stå i en tooltip när en nivå är markerad
+	void checkLevelTooltip(Vector2 mouse);
+
+	// Avgör texten som ska stå i en tooltip när en svårighet är markerad
+	void checkDifficultyTooltip(Vector2 mouse);
+
 	// Skapar allt som tillhör informationspanelen
 	void createInformationPane();
 
@@ -153,9 +162,18 @@ private:
 	// Ritar alla nivër
 	void drawLevels(Renderer& renderer);
 
-	
+
 	// Ritar ut information om den nivå som är vald
 	void drawLevelInformation(Renderer& renderer);
+
+	// Ritar alla knappar för svårighet
+	void drawDifficultyContainers(Renderer& renderer, int grey);
+
+	// Ritar tabellhuvud till en highscore
+	void drawHighscoreHeader(Renderer& renderer, BoundingBox box);
+
+	// Rita alla highscores för den markerade nivån
+	void drawHighscores(Renderer& renderer, BoundingBox box);
 
 	// Flyttar det valda alternativet
 	void changeSelected(int delta);

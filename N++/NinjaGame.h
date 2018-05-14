@@ -66,7 +66,7 @@ class NinjaGame: public App, public VictoryCallback, public NavigationCallback
 
 public:
 
-	NinjaGame(App* parent, Level level, VictoryCallback* gameCallback = nullptr);
+	NinjaGame(App* parent, Level level, VictoryCallback* gameCallback = nullptr, std::string playerName = "");
 
 	~NinjaGame();
 

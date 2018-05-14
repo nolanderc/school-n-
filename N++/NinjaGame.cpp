@@ -1,8 +1,8 @@
 #include "NinjaGame.h"
 
 
-NinjaGame::NinjaGame(App* parent, Level level, VictoryCallback* victoryCallback) : 
-	App(parent), level(level), victoryCallback(victoryCallback), navBar(0, 32, this), alive(true)
+NinjaGame::NinjaGame(App* parent, Level level, VictoryCallback* victoryCallback, std::string playerName) : 
+	App(parent), level(level), victoryCallback(victoryCallback), alive(true), playerName(playerName), navBar(0, 32, this)
 {
 	this->level.setVictoryCallback(this);
 

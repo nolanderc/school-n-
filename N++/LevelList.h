@@ -42,6 +42,10 @@ class LevelList
 	// Sökväg till listan
 	std::string path;
 
+
+	// Namnet på den förre spelaren
+	std::string previousName;
+
 public:
 	
 	// Öppnar en ny lista
@@ -64,6 +68,10 @@ public:
 
 	// Returnerar de bästa poängen för en nivå
 	std::vector<Score> getScores(int level, Difficulty difficulty);
+
+
+	// Returnerar namnet på den senaste spelaren som klarat en bana
+	std::string getPreviousName();
 
 private:
 

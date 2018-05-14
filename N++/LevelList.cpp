@@ -72,7 +72,7 @@ double Score::getValue()
 
 
 LevelList::LevelList(std::string path) :
-	path(path)
+	path(path), previousName()
 {
 	this->load(path);
 }
@@ -100,6 +100,8 @@ int LevelList::addNewScore(int level, Difficulty difficulty, Score score)
 	int scoreCount = scores.size();
 	while (i < scoreCount && scores[i].getValue() > score.getValue()) i++;
 
+	this->previousName = score.name;
+
 	scores.insert(scores.begin() + i, score);
 
 	return i;
@@ -108,6 +110,11 @@ int LevelList::addNewScore(int level, Difficulty difficulty, Score score)
 std::vector<Score> LevelList::getScores(int level, Difficulty difficulty)
 {
 	return this->levels[level].bestScores[int(difficulty)];
+}
+
+std::string LevelList::getPreviousName()
+{
+	return this->previousName;
 }
 
 void LevelList::load(std::string path)
@@ -120,13 +127,21 @@ void LevelList::load(std::string path)
 
 		std::string cwd = lastSlash < 0 ? path + "/" : path.substr(0, lastSlash + 1);
 
+		int lineNumber = 0;
 		std::string line;
 		while(std::getline(file, line)) {
-			LevelData data(cwd, line);
+			if (lineNumber == 0) {
+				this->previousName = line;
+			} else
+			{
+				LevelData data(cwd, line);
 
-			if (data.level.getWidth() != -1) {
-				this->levels.push_back(data);
+				if (data.level.getWidth() != -1) {
+					this->levels.push_back(data);
+				}
 			}
+
+			lineNumber += 1;
 		}
 
 		file.close();
@@ -141,6 +156,8 @@ void LevelList::save(std::string path)
 
 	if (file.is_open())
 	{
+		file << this->previousName << std::endl;
+
 		int levelCount = this->levels.size();
 		for (int i = 0; i < levelCount; i++) {
 			file << this->levels[i].asString() << std::endl;

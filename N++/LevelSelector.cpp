@@ -130,7 +130,18 @@ void LevelSelector::draw(Renderer& renderer)
 
 		Vector2i mouse = this->getMousePosition();
 
-		renderer.drawTextLeftAligned(this->tooltip, BoundingBox(mouse.x + 10, mouse.x + 10, mouse.y - 10, mouse.y - 10));
+		std::string line;
+		int lineNumber = 0;
+		std::stringstream stream;
+		stream << this->tooltip;
+
+		while (std::getline(stream, line))
+		{
+			double y = mouse.y - 10 + lineNumber * 16;
+
+			renderer.drawTextLeftAligned(line, BoundingBox(mouse.x + 10, mouse.x + 10, y, y));
+			lineNumber += 1;
+		}
 	}
 
 
@@ -147,35 +158,7 @@ void LevelSelector::mouseMoved(int x, int y)
 		this->highlightedLevel = nullptr;
 	}
 
-	this->tooltip.clear();
-	int levelCount = this->levels.size();
-	for (int i = 0; i < levelCount; i++)
-	{
-		LevelThumbnail& thumbnail = this->levels[i];
-		
-		if (thumbnail.container.contains(Vector2(x, y)))
-		{
-			delete this->highlightedLevel;
-			this->highlightedLevel = new int(i);
-
-			if (this->completedLevelCount + 2 <= i)
-			{
-				int necessaryStars = i - this->completedLevelCount - 1;
-				std::string difficulty = this->difficulty == EASY ? "Easy" : this->difficulty == NORMAL ? "Normal" : "Hard";
-				this->tooltip = "You need " + std::to_string(necessaryStars) + " additional `" + difficulty + "`-star" + (necessaryStars > 1 ? "s" : "") + " to unlock";
-			}
-		}
-
-
-		if (thumbnail.starContainer.contains(Vector2(x, y)))
-		{
-			double p = 1.0 - normalize(y, thumbnail.starContainer.top, thumbnail.starContainer.bottom);
-
-			if (p > 2.0 / 3.0) this->tooltip = "Earned by completing level on `Hard` difficulty";
-			else if (p > 1.0 / 3.0) this->tooltip = "Earned by completing level on `Normal` difficulty or higher";
-			else if (p > 0.0 / 3.0) this->tooltip = "Earned by completing level on `Easy` difficulty or higher";
-		}
-	}
+	this->checkTooltip(Vector2(x, y));
 
 
 	if (this->selectedLevel && this->playButton.contains(Vector2(x, y))) {
@@ -234,7 +217,6 @@ void LevelSelector::mouseReleased(MouseButton button, int x, int y)
 
 void LevelSelector::mouseScrolled(int wheelDelta, int x, int y)
 {
-	//this->addScroll(wheelDelta * -100);
 	this->scrollHelper.addScroll(wheelDelta * -100);
 }
 
@@ -318,6 +300,64 @@ void LevelSelector::checkCompletedLevels()
 		}
 
 		this->levels[i].starCount = stars;
+	}
+}
+
+void LevelSelector::checkTooltip(Vector2 mouse)
+{
+	this->tooltip.clear();
+
+	this->checkLevelTooltip(mouse);
+
+	this->checkDifficultyTooltip(mouse);
+}
+
+void LevelSelector::checkLevelTooltip(Vector2 mouse)
+{
+	int levelCount = this->levels.size();
+	for (int i = 0; i < levelCount; i++)
+	{
+		LevelThumbnail& thumbnail = this->levels[i];
+
+		// För låsta nivåer
+		if (thumbnail.container.contains(mouse))
+		{
+			delete this->highlightedLevel;
+			this->highlightedLevel = new int(i);
+
+			if (this->completedLevelCount + 2 <= i)
+			{
+				int necessaryStars = i - this->completedLevelCount - 1;
+				std::string difficulty = this->difficulty == EASY ? "Easy" : this->difficulty == NORMAL ? "Normal" : "Hard";
+				this->tooltip = "You need " + std::to_string(necessaryStars) + " additional `" + difficulty + "`-star" + (necessaryStars > 1 ? "s" : "") + " to unlock";
+			}
+		}
+
+
+		// För stjärnor
+		if (thumbnail.starContainer.contains(mouse))
+		{
+			double p = 1.0 - normalize(mouse.y, thumbnail.starContainer.top, thumbnail.starContainer.bottom);
+
+			if (p > 2.0 / 3.0) this->tooltip = "Earned by completing level on `Hard` difficulty";
+			else if (p > 1.0 / 3.0) this->tooltip = "Earned by completing level on `Normal` difficulty or higher";
+			else if (p > 0.0 / 3.0) this->tooltip = "Earned by completing level on `Easy` difficulty or higher";
+		}
+	}
+}
+
+void LevelSelector::checkDifficultyTooltip(Vector2 mouse)
+{
+	int difficultyCount = this->difficultyContainers.size();
+	for (int i = 0; i < difficultyCount; i++)
+	{
+		if (this->difficultyContainers[i].contains(mouse))
+		{
+			Difficulty difficulty = Difficulty(i);
+
+			this->tooltip = std::string("Energy Loss: ") + (difficulty == EASY ? "1x" : difficulty == NORMAL ? "1.25x" : "1.5x") + "\n" +
+				std::string("Enemy Speed: ") + (difficulty == EASY ? "1x" : difficulty == NORMAL ? "1.16x" : "1.33x");
+		}
 	}
 }
 
@@ -567,37 +607,33 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 	renderer.setFillColor(grey, grey, grey);
 	renderer.fillRect(0, 0, width, height);
 
-
-	// Rita svårighetens förändringar
-	switch (this->difficulty) { 
-	case EASY: renderer.setTextColor(200, 200, 200); break;
-	case NORMAL: renderer.setTextColor(200, 200, 50); break;
-	case HARD: renderer.setTextColor(200, 50, 50); break;
-	default: ;
-	}
-	renderer.setTextBackgroundColor(grey, grey, grey);
-
-
-	renderer.drawTextLeftAligned(
-		std::string("Energy Loss: ") + (this->difficulty == EASY ? "1x" : this->difficulty == NORMAL ? "1.25x" : "1.5x"),
-		BoundingBox(
-			margin, width - margin,
-			height - 120, height - 80
-		)
-	);
-
-	renderer.drawTextLeftAligned(
-		std::string("Enemy Speed: ") + (this->difficulty == EASY ? "1x" : this->difficulty == NORMAL ? "1.16x" : "1.33x"),
-		BoundingBox(
-			margin, width - margin,
-			height - 80, height - 40
-		)
-	);
-
-
-	renderer.offset(-offset);
-
 	// Rita svårighet
+	renderer.offset(-offset);
+	this->drawDifficultyContainers(renderer, grey);
+	renderer.offset(offset);
+
+	if (this->selectedLevel)
+	{
+		// Rita spel/start
+		renderer.setLineStyle(LINE_NONE);
+		renderer.offset(-offset);
+		this->playButton.render(renderer);
+		renderer.offset(offset);
+
+		BoundingBox highscoreBox;
+		highscoreBox.left = 32;
+		highscoreBox.right = width - highscoreBox.left;
+		highscoreBox.top = 48;
+		highscoreBox.bottom = height - 200;
+
+		// Rita highscores
+		renderer.setTextBackgroundColor(grey, grey, grey);
+		this->drawHighscores(renderer, highscoreBox);
+	}
+}
+
+void LevelSelector::drawDifficultyContainers(Renderer& renderer, int grey)
+{
 	int difficulties = this->difficultyContainers.size();
 	for (int i = 0; i < difficulties; ++i)
 	{
@@ -606,7 +642,8 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 			renderer.setTextBackgroundColor(grey, grey, grey);
 
 			renderer.setTextColor(255, 255, 255);
-		} else {
+		}
+		else {
 			renderer.setFillColor(grey / 2, grey / 2, grey / 2);
 			renderer.setTextBackgroundColor(grey / 2, grey / 2, grey / 2);
 
@@ -614,7 +651,7 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 		}
 
 		renderer.fillRect(this->difficultyContainers[i]);
-			
+
 		std::string text;
 		switch (i)
 		{
@@ -626,40 +663,35 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 
 		renderer.drawTextCentered(text, this->difficultyContainers[i]);
 	}
+}
 
-	renderer.offset(offset);
+void LevelSelector::drawHighscoreHeader(Renderer& renderer, BoundingBox box)
+{
+	BoundingBox nameRect = box;
+	nameRect.left = box.left;
+	nameRect.right = nameRect.left + (box.right - box.left) / 2.5;
+	nameRect.top = box.top;
+	nameRect.bottom = nameRect.top + 32;
 
+	BoundingBox scoreRect = nameRect;
+	scoreRect.left = nameRect.right;
+	scoreRect.right = box.right;
 
-	if (this->selectedLevel)
-	{
-		// Rita spel/start
-		renderer.setLineStyle(LINE_NONE);
-		renderer.offset(-offset);
-		this->playButton.render(renderer);
-		renderer.offset(offset);
+	renderer.drawTextLeftAligned("Name", nameRect);
 
+	renderer.drawTextLeftAligned("Time", scoreRect);
+	renderer.drawTextCentered("Coins", scoreRect);
+	renderer.drawTextRightAligned("Points", scoreRect);
+}
 
-		// Rita highscores
-		renderer.setTextBackgroundColor(grey, grey, grey);
+void LevelSelector::drawHighscores(Renderer& renderer, BoundingBox box)
+{
+	if (this->selectedLevel) {
+		// Rita tabellhuvud
+		renderer.setTextColor(Color(255));
+		this->drawHighscoreHeader(renderer, box);
 
-		renderer.setTextColor(255, 255, 255);
-		BoundingBox headerBox;
-		headerBox.left = 32;
-		headerBox.right = width - headerBox.left;
-		headerBox.top = 48;
-		headerBox.bottom = headerBox.top + 32;
-
-		BoundingBox nameBox = headerBox;
-		nameBox.right = headerBox.left + (headerBox.right - headerBox.left) / 3;
-
-		renderer.drawTextLeftAligned("Name", nameBox);
-
-		BoundingBox scoreBox = headerBox;
-		scoreBox.left = nameBox.right;
-
-		renderer.drawTextLeftAligned("Time", scoreBox);
-		renderer.drawTextCentered("Coins", scoreBox);
-		renderer.drawTextRightAligned("Points", scoreBox);
+		box.top += 48;
 
 		std::vector<Score> highscores = this->levelList.getScores(*this->selectedLevel, this->difficulty);
 		int scoreCount = highscores.size();
@@ -667,34 +699,39 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 		{
 			Score score = highscores[i];
 
-			BoundingBox scoreRect;
-			scoreRect.left = scoreBox.left;
-			scoreRect.right = scoreBox.right;
-			scoreRect.top = headerBox.bottom + 16 + 32 * i;
-			scoreRect.bottom = scoreRect.top + 32;
-
-			BoundingBox nameRect = nameBox;
-			nameRect.top = scoreRect.top;
-			nameRect.bottom = scoreRect.bottom;
-
-			renderer.drawTextLeftAligned(
-				score.name.empty() ? "Unknown" : score.name,
-				nameRect
-			);
-
-
-			if (this->recentHighscore && 
+			if (this->recentHighscore &&
 				this->recentHighscore->level == *this->selectedLevel &&
 				this->recentHighscore->difficulty == this->difficulty &&
-				this->recentHighscore->score == i) 
-			{
+				this->recentHighscore->score == i) {
+				// Det senast tillagda rekordet
 				renderer.setTextColor(255, 255, 0);
-			} else if (i == 0) {
+			}
+			else if (i == 0) {
+				// Den högsta poängen
 				renderer.setTextColor(255, 255, 255);
-			} else {
+			}
+			else {
+				// Resterande poäng
 				renderer.setTextColor(150, 150, 150);
 			}
 
+			BoundingBox nameRect = box;
+			nameRect.left = box.left;
+			nameRect.right = nameRect.left + (box.right - box.left) / 2.5;
+			nameRect.top = box.top + 32 * i;
+			nameRect.bottom = nameRect.top + 32;
+
+			BoundingBox scoreRect = nameRect;
+			scoreRect.left = nameRect.right;
+			scoreRect.right = box.right;
+
+			// Rita namnet, om det finns
+			renderer.drawTextLeftAligned(
+				score.name.empty() ? "---" : score.name,
+				nameRect
+			);
+
+			// Tid, mynt och poäng
 			renderer.drawTextLeftAligned(formatTime(score.time), scoreRect);
 			renderer.drawTextCentered(std::to_string(score.coins), scoreRect);
 			renderer.drawTextRightAligned(std::to_string(int(score.getValue() * 10)), scoreRect);
@@ -725,7 +762,6 @@ void LevelSelector::changeSelected(int delta)
 	BoundingBox box = this->levels[*this->selectedLevel].container;
 
 	double center = (box.top + box.bottom) / 2;
-	// this->addScroll(center - this->getWindowSize().y / 2.0);
 	this->scrollHelper.addScroll(center - this->getWindowSize().y / 2.0);
 }
 
@@ -735,6 +771,6 @@ void LevelSelector::playLevel(int levelIndex)
 	{
 		this->levels[levelIndex].level.setDifficulty(this->difficulty);
 
-		this->addChild(new NinjaGame(this, this->levels[levelIndex].level, this));
+		this->addChild(new NinjaGame(this, this->levels[levelIndex].level, this, this->levelList.getPreviousName()));
 	}
 }
