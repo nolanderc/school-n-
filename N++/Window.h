@@ -21,6 +21,7 @@ enum KeyCode {
 	KEY_SPACE,
 	KEY_ENTER,
 	KEY_TAB,
+	KEY_BACKSPACE,
 
 	// Piltangenter
 	KEY_UP,

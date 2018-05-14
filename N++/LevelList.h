@@ -6,6 +6,7 @@ struct Score
 {
 	double time;
 	int coins;
+	std::string name;
 
 	// Returnerar denna poängs jämförelsevärde
 	double getValue();

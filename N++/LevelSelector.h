@@ -95,7 +95,7 @@ public:
 
 	~LevelSelector();
 
-	void onLevelComplete(double time, int coins) override;
+	void onLevelComplete(double time, int coins, std::string name) override;
 
 
 	void navigate(int id) override;

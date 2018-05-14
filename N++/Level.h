@@ -24,7 +24,7 @@ public:
 	virtual void onLevelFail() {};
 
 	// Anropas när en nivå är avklarad
-	virtual void onLevelComplete(double time, int coins) {};
+	virtual void onLevelComplete(double time, int coins, std::string name = "") {};
 };
 
 

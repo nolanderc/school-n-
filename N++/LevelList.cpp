@@ -21,7 +21,7 @@ LevelList::LevelData::LevelData(std::string cwd, std::string text) :
 
 
 		Score score;
-		stream >> score.time >> score.coins;
+		stream >> score.time >> score.coins >> score.name;
 
 		int diff = -1;
 		if (difficulty == "EASY") diff = int(EASY);
@@ -56,7 +56,7 @@ std::string LevelList::LevelData::asString()
 			default: ss << "NAN"; break;
 			}
 
-			ss << ' ' << score.time << ' ' << score.coins;
+			ss << ' ' << score.time << ' ' << score.coins << ' ' << score.name;
 
 			ss << "}";
 		}

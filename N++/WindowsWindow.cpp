@@ -347,6 +347,7 @@ KeyCode WindowsWindow::wParamToKeyCode(WPARAM wParam)
 	case VK_SPACE: return KEY_SPACE;
 	case VK_RETURN: return KEY_ENTER;
 	case VK_TAB: return KEY_TAB;
+	case VK_BACK: return KEY_BACKSPACE;
 
 	case VK_UP: return KEY_UP;
 	case VK_RIGHT: return KEY_RIGHT;

@@ -113,6 +113,18 @@ void NinjaGame::keyPressed(KeyCode key)
 	if (key == KEY_DOWN || key == KEY_S) {
 		this->level.moveNinja(NINJA_DROP);
 	}
+
+
+	if (this->victory) {
+		if (this->playerName.size() < 20 &&
+			('A' <= key && key <= 'Z')) {
+			this->playerName += key;
+		}
+
+		if (key == KEY_BACKSPACE && !this->playerName.empty()) {
+			this->playerName.pop_back();
+		}
+	}
 }
 
 void NinjaGame::keyReleased(KeyCode key)
@@ -149,13 +161,15 @@ void NinjaGame::renderVictoryScreen(Renderer & renderer)
 
 		renderer.fillRect(box);
 
+		// Rita rubriken
 		BoundingBox completeBox = box;
-		completeBox.bottom = box.top + 64;
+		completeBox.bottom = box.top + 48;
 
 		renderer.setTextColor(Color(255));
 		renderer.drawTextCentered("Level Complete!", completeBox);
 
-
+		
+		// Rita tid och mynt
 		BoundingBox scoreBox = box;
 		scoreBox.left += width / 4;
 		scoreBox.right -= width / 4;
@@ -170,6 +184,17 @@ void NinjaGame::renderVictoryScreen(Renderer & renderer)
 
 		renderer.drawTextLeftAligned("Time:", scoreBox);
 		renderer.drawTextRightAligned(formatTime(this->victory->time), scoreBox);
+
+
+
+		// Rita spelarens namn
+		BoundingBox nameBox = box;
+		nameBox.left += width / 4;
+		nameBox.right -= width / 4;
+		nameBox.top = box.top + 48;
+		nameBox.bottom = nameBox.top + 64;
+
+		renderer.drawTextLeftAligned("Name: " + this->playerName, nameBox);
 	}
 }
 
@@ -180,20 +205,18 @@ void NinjaGame::createNavBar()
 	this->navigation.back = this->navBar.addButton("Back", KEY_ESCAPE);
 
 	if (this->victory || !this->alive)
-		this->navigation.reset = this->navBar.addButton("Retry", KEY_R);
+		this->navigation.reset = this->navBar.addButton("Retry", KEY_SPACE);
 	else 
 		this->navigation.reset = -1;
 
 	if (this->victory) 
-		this->navigation.nextLevel = this->navBar.addButton("Continue to Next Level", KEY_SPACE);
+		this->navigation.nextLevel = this->navBar.addButton("Continue to Next Level", KEY_ENTER);
 	else 
 		this->navigation.nextLevel = -1;
 }
 
-void NinjaGame::onLevelComplete(double time, int coins)
+void NinjaGame::onLevelComplete(double time, int coins, std::string name)
 {
-	if (this->victoryCallback) this->victoryCallback->onLevelComplete(time, coins);
-
 	delete this->victory;
 	this->victory = new Victory(time, coins);
 
@@ -202,6 +225,11 @@ void NinjaGame::onLevelComplete(double time, int coins)
 
 void NinjaGame::navigate(int id)
 {
+	if (this->victory) {
+		if (this->victoryCallback) this->victoryCallback->onLevelComplete(this->victory->time, this->victory->coins, this->playerName);
+	}
+
+
 	if (id == this->navigation.back) {
 		this->close();
 	}

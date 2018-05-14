@@ -48,6 +48,11 @@ class NinjaGame: public App, public VictoryCallback, public NavigationCallback
 	double victoryTime;
 
 
+	// Spelarens namn
+	std::string playerName;
+
+
+
 	struct Navigation
 	{
 		int back;
@@ -73,7 +78,7 @@ public:
 	void onLevelFail() override;
 
 	// Anropas när nivån är vunnen
-	void onLevelComplete(double time, int coins) override;
+	void onLevelComplete(double time, int coins, std::string name) override;
 
 	// Navigerar
 	void navigate(int id) override;

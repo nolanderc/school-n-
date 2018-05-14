@@ -2,7 +2,7 @@
 #include "Interpolate.h"
 
 
-const Vector2i CONTENT_SIZE(1440, 800);
+const Vector2i CONTENT_SIZE(1600, 800);
 
 
 
@@ -46,11 +46,12 @@ LevelSelector::~LevelSelector()
 	delete this->recentHighscore;
 }
 
-void LevelSelector::onLevelComplete(double time, int coins)
+void LevelSelector::onLevelComplete(double time, int coins, std::string name)
 {
 	Score score;
 	score.time = time;
 	score.coins = coins;
+	score.name = name;
 	
 	delete this->recentHighscore;
 	this->recentHighscore = new Highscore(
@@ -642,15 +643,23 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 		renderer.setTextBackgroundColor(grey, grey, grey);
 
 		renderer.setTextColor(255, 255, 255);
-		BoundingBox box;
-		box.left = 32;
-		box.right = width - box.left;
-		box.top = 48;
-		box.bottom = box.top + 32;
+		BoundingBox headerBox;
+		headerBox.left = 32;
+		headerBox.right = width - headerBox.left;
+		headerBox.top = 48;
+		headerBox.bottom = headerBox.top + 32;
 
-		renderer.drawTextLeftAligned("Time", box);
-		renderer.drawTextCentered("Coins", box);
-		renderer.drawTextRightAligned("Points", box);
+		BoundingBox nameBox = headerBox;
+		nameBox.right = headerBox.left + (headerBox.right - headerBox.left) / 3;
+
+		renderer.drawTextLeftAligned("Name", nameBox);
+
+		BoundingBox scoreBox = headerBox;
+		scoreBox.left = nameBox.right;
+
+		renderer.drawTextLeftAligned("Time", scoreBox);
+		renderer.drawTextCentered("Coins", scoreBox);
+		renderer.drawTextRightAligned("Points", scoreBox);
 
 		std::vector<Score> highscores = this->levelList.getScores(*this->selectedLevel, this->difficulty);
 		int scoreCount = highscores.size();
@@ -658,11 +667,21 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 		{
 			Score score = highscores[i];
 
-			BoundingBox rect;
-			rect.left = 32;
-			rect.right = width - rect.left;
-			rect.top = box.bottom + 16 + 32 * i;
-			rect.bottom = rect.top + 32;
+			BoundingBox scoreRect;
+			scoreRect.left = scoreBox.left;
+			scoreRect.right = scoreBox.right;
+			scoreRect.top = headerBox.bottom + 16 + 32 * i;
+			scoreRect.bottom = scoreRect.top + 32;
+
+			BoundingBox nameRect = nameBox;
+			nameRect.top = scoreRect.top;
+			nameRect.bottom = scoreRect.bottom;
+
+			renderer.drawTextLeftAligned(
+				score.name.empty() ? "Unknown" : score.name,
+				nameRect
+			);
+
 
 			if (this->recentHighscore && 
 				this->recentHighscore->level == *this->selectedLevel &&
@@ -676,9 +695,9 @@ void LevelSelector::drawLevelInformation(Renderer& renderer)
 				renderer.setTextColor(150, 150, 150);
 			}
 
-			renderer.drawTextLeftAligned(formatTime(score.time), rect);
-			renderer.drawTextCentered(std::to_string(score.coins), rect);
-			renderer.drawTextRightAligned(std::to_string(int(score.getValue() * 10)), rect);
+			renderer.drawTextLeftAligned(formatTime(score.time), scoreRect);
+			renderer.drawTextCentered(std::to_string(score.coins), scoreRect);
+			renderer.drawTextRightAligned(std::to_string(int(score.getValue() * 10)), scoreRect);
 		}
 	}
 }
