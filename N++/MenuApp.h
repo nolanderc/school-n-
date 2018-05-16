@@ -18,6 +18,18 @@ class MenuApp: public App
 
 	int* selectedButton;
 
+	// Färgen på hemskärmens logo
+	Color logoColors[2];
+
+	// Hur lång tid som har passerat sedan senaste gången färgen bytts
+	double colorChangeCooldown;
+
+	// Hur ofta som hemskärmens logo snurrar
+	const double SPIN_DURATION = 2.0;
+
+	// Hur mycket hemskärmens logo ska blanda dess två färger
+	double mixAmount;
+
 public:
 
 	// Skapar en meny i ett fönster
@@ -43,4 +55,8 @@ private:
 
 	// Anropas när en knapp trycks
 	void buttonPressed(int buttonIndex);
+
+
+	// Ritar en logo
+	void drawLogo(Renderer& renderer, Color color);
 };

@@ -4,6 +4,7 @@ struct Color
 {
 	double r, g, b;
 
+	Color();
 	Color(int grey);
 	Color(double grey);
 	Color(int r, int g, int b);

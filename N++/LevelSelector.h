@@ -131,6 +131,10 @@ private:
 	// Avgör hur många nivåer som är avklarade
 	void checkCompletedLevels();
 
+	// Låser upp alla nivåer
+	void unlockAllLevels();
+
+
 
 	// Avgör texten som ska stå i en tooltip
 	void checkTooltip(Vector2 mouse);

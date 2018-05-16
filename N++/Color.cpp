@@ -1,6 +1,11 @@
 ﻿#include "Color.h"
 #include "Interpolate.h"
 
+Color::Color() :
+	Color(0)
+{
+}
+
 Color::Color(int grey) :
 	Color(grey, grey, grey)
 {

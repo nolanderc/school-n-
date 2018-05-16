@@ -1,30 +1,61 @@
 ﻿#include "MenuApp.h"
 
-MenuApp::MenuApp(Window* window) :
-	App(window), selectedButton(nullptr)
+
+Color randomColor()
 {
+	return Color(
+		random(0, 1),
+		random(0, 1),
+		random(0, 1)
+	);
+}
+
+MenuApp::MenuApp(Window* window) :
+	App(window), selectedButton(nullptr), colorChangeCooldown(0)
+{
+	this->logoColors[0] = randomColor();
+	this->logoColors[1] = randomColor();
+
 	if (!std::ifstream("levels/levels.list").is_open()) {
 		this->alert("Error: Missing Files!", "You are missing necessary game files! (Levels)\nPlease yell \"Uh-oh Spaghettios\" for help!");
 		this->close();
 		return;
 	}
 
-	this->setWindowSize(512, 512);
+	this->setWindowSize(512, 512+256);
 	this->setWindowTitle("N++");
 
 	time = 0;
 
 	double ratio = sqrt(1 - 0.5*0.5);
 
-	this->buttons.push_back(new PlayButton({ 256, 256 - 128 * ratio }, 64));
-	this->buttons.push_back(new HelpButton({ 256 - 64, 256 }, 64));
-	this->buttons.push_back(new EditorButton({ 256 + 64, 256 }, 64));
-	this->buttons.push_back(new ExitButton({ 256, 256 + 128 * ratio }, 64));
+	this->buttons.push_back(new PlayButton({ 256, 512 - 128 * ratio }, 64));
+	this->buttons.push_back(new HelpButton({ 256 - 64, 512 }, 64));
+	this->buttons.push_back(new EditorButton({ 256 + 64, 512 }, 64));
+	this->buttons.push_back(new ExitButton({ 256, 512 + 128 * ratio }, 64));
 }
 
 void MenuApp::update(float deltaTime)
 {
-	time += deltaTime;
+	this->time += deltaTime;
+
+	this->colorChangeCooldown += deltaTime;
+	double start = this->SPIN_DURATION * 0.9;
+	double end = this->SPIN_DURATION * 0.95;
+
+
+	if (this->colorChangeCooldown > start)
+	{
+		this->mixAmount = normalize(this->colorChangeCooldown, start, end);
+
+		if (this->colorChangeCooldown > end)
+		{
+			this->mixAmount = 0;
+			this->colorChangeCooldown -= this->SPIN_DURATION;
+			this->logoColors[0] = this->logoColors[1];
+			this->logoColors[1] = randomColor();
+		}
+	}
 
 	if (this->selectedButton)
 	{
@@ -44,11 +75,17 @@ void MenuApp::draw(Renderer& renderer)
 {
 	renderer.setLineStyle(LINE_NONE);
 
-	double r = 255 * normalize(sin(time), -1, 1);
-	double g = 255 * normalize(cos(time), -1, 1);
+	Color background(
+		normalize(sin(time), -1, 1),
+		normalize(cos(time), -1, 1),
+		0.2
+	);
 
-	renderer.setFillColor(r, g, 50);
+	renderer.setFillColor(background);
 	renderer.clear();
+
+
+	this->drawLogo(renderer, this->logoColors[0].mix(this->logoColors[1], this->mixAmount));
 
 	int buttonCount = this->buttons.size();
 	for (int i = 0; i < buttonCount; i++)
@@ -181,4 +218,37 @@ void MenuApp::buttonPressed(int buttonIndex)
 
 	default: break;
 	}
+}
+
+void MenuApp::drawLogo(Renderer& renderer, Color color)
+{
+	int size = 32;
+	
+	renderer.offset(Vector2(256, 180));
+	renderer.scale(size);
+
+	renderer.setFillColor(color);
+
+
+	double amount = normalize(fmod(this->time, this->SPIN_DURATION), 0.0, this->SPIN_DURATION);
+	amount = pow(amount, 8);
+
+	double angle = easeInOut(amount, 0, 1800) / 10.0;
+
+	// N
+	renderer.fillPolygon({
+		Vector2(1, -1) * Vector2::rotated(angle, Vector2(0 - 2.5, 0 - 2.5)),
+		Vector2(1, -1) * Vector2::rotated(angle, Vector2(0 - 2.5, 5 - 2.5)),
+		Vector2(1, -1) * Vector2::rotated(angle, Vector2(1 - 2.5, 5 - 2.5)),
+		Vector2(1, -1) * Vector2::rotated(angle, Vector2(1 - 2.5, 2 - 2.5)),
+		Vector2(1, -1) * Vector2::rotated(angle, Vector2(4 - 2.5, 5 - 2.5)),
+		Vector2(1, -1) * Vector2::rotated(angle, Vector2(5 - 2.5, 5 - 2.5)),
+		Vector2(1, -1) * Vector2::rotated(angle, Vector2(5 - 2.5, 0 - 2.5)),
+		Vector2(1, -1) * Vector2::rotated(angle, Vector2(4 - 2.5, 0 - 2.5)),
+		Vector2(1, -1) * Vector2::rotated(angle, Vector2(4 - 2.5, 3 - 2.5)),
+		Vector2(1, -1) * Vector2::rotated(angle, Vector2(1 - 2.5, 0 - 2.5))
+	});
+
+	renderer.scale(1.0 / size);
+	renderer.offset(-renderer.getOffset());
 }

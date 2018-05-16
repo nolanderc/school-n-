@@ -6,7 +6,6 @@ NinjaGame::NinjaGame(App* parent, Level level, VictoryCallback* victoryCallback,
 {
 	this->level.setVictoryCallback(this);
 
-	this->setWindowTitle("N++");
 	this->setWindowSize(level.getWidth() * TILE_SIZE, level.getHeight() * TILE_SIZE + ENERGY_BAR_HEIGHT_PIXELS + this->navBar.getHeight());
 
 	this->navBar.setWidth(this->getWindowSize().x);
@@ -23,8 +22,6 @@ NinjaGame::~NinjaGame()
 
 void NinjaGame::update(float dt)
 {
-	updateFrameCounter(dt);
-
 	static double accumulator = 0;
 	accumulator += dt;
 	const double deltaTime = 1.0 / 240;
@@ -205,7 +202,7 @@ void NinjaGame::createNavBar()
 	this->navigation.back = this->navBar.addButton("Back", KEY_ESCAPE);
 
 	if (this->victory || !this->alive)
-		this->navigation.reset = this->navBar.addButton("Retry", KEY_SPACE);
+		this->navigation.reset = this->navBar.addButton("Retry", KEY_TAB);
 	else 
 		this->navigation.reset = -1;
 
@@ -248,27 +245,5 @@ void NinjaGame::navigate(int id)
 
 	if (id == this->navigation.nextLevel) {
 		this->close(NINJA_GAME_NEXT_LEVEL);
-	}
-}
-
-
-#include <sstream>
-
-void NinjaGame::updateFrameCounter(double deltaTime)
-{
-	static double elapsedTime = 0;
-	static int frames = 0;
-
-	elapsedTime += deltaTime;
-	frames += 1;
-	if (elapsedTime > 1) {
-		int fps = round(frames / elapsedTime);
-		elapsedTime = 0;
-		frames = 0;
-
-		std::stringstream ss;
-		ss << "N++ @ " << fps;
-
-		this->setWindowTitle(ss.str());
 	}
 }

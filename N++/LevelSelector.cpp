@@ -178,7 +178,7 @@ void LevelSelector::mousePressed(MouseButton button, int x, int y)
 		for (int i = 0; i < levelCount; i++)
 		{
 			LevelThumbnail& thumbnail = this->levels[i];
-			if(thumbnail.container.contains(Vector2(x, y)))
+			if (thumbnail.container.contains(Vector2(x, y)))
 			{
 				delete this->selectedLevel;
 				this->selectedLevel = new int(i);
@@ -199,6 +199,11 @@ void LevelSelector::mousePressed(MouseButton button, int x, int y)
 			{
 				this->changeDifficulty(Difficulty(i));
 			}
+		}
+
+		// Lås upp alla nivåer (endast för de viljesvaga)
+		if (x == 3 && y == 3) {
+			this->unlockAllLevels();
 		}
 	}
 }
@@ -301,6 +306,22 @@ void LevelSelector::checkCompletedLevels()
 
 		this->levels[i].starCount = stars;
 	}
+}
+
+void LevelSelector::unlockAllLevels()
+{
+	int levelCount = this->levelList.size();
+	for (int i = 0; i < levelCount; i++) {
+		int stars = this->getLevelStarCount(i);
+
+		if (stars > int(this->difficulty)) {
+			this->completedLevelCount++;
+		}
+
+		this->levels[i].starCount = 3;
+	}
+
+	this->completedLevelCount = levelCount;
 }
 
 void LevelSelector::checkTooltip(Vector2 mouse)

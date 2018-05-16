@@ -90,8 +90,6 @@ protected:
 
 private:
 
-	void updateFrameCounter(double deltaTime);
-
 
 	// Ritar vinstskärmen
 	void renderVictoryScreen(Renderer& renderer);
