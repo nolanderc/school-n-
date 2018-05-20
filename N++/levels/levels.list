@@ -1,9 +1,9 @@
-ATOM
-"level0.lvl" {NORMAL 10.1083 11 ATOM} {NORMAL 10.1708 11 ATOM}
-"level1.lvl" {NORMAL 13.2833 6 ATOM}
-"level2.lvl" {NORMAL 29.5542 24 ATOM}
-"level3.lvl" {NORMAL 15.0167 14 ATOM}
-"level4.lvl" {NORMAL 16.8375 13 ATOM}
+
+"level0.lvl"
+"level1.lvl"
+"level2.lvl"
+"level3.lvl"
+"level4.lvl"
 "level5.lvl"
 "level6.lvl"
 "level7.lvl"
