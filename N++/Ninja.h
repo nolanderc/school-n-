@@ -89,6 +89,12 @@ class Ninja
 		// Skapar skelettets huvud
 		void createHead(SkeletonData data);
 
+		
+
+		/*
+		 * Alla dessa funktioner ger skelettet sin form genom att
+		 * beskriva vinkeln mellan alla kroppdelar
+		 */
 
 		// Skapar ett skelett som står stilla
 		void stand(SkeletonData data);

@@ -49,12 +49,6 @@
     <Filter Include="Level Selection\Level List">
       <UniqueIdentifier>{7c02624d-d79d-4d16-8298-b2f8cf3d0d12}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Windows Backend">
-      <UniqueIdentifier>{7c64f99d-122b-4447-a781-4bec122e756a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Backend Interface">
-      <UniqueIdentifier>{b50ef03d-b934-4d44-b362-1bfcb62c35ee}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Navigation">
       <UniqueIdentifier>{02bf7ee3-4cbe-4a14-881e-9312518f9d1b}</UniqueIdentifier>
     </Filter>
@@ -63,6 +57,12 @@
     </Filter>
     <Filter Include="Tutorial\Animation">
       <UniqueIdentifier>{a3b97d86-0bc6-458a-8653-c755f43d31f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windows Frontend">
+      <UniqueIdentifier>{7c64f99d-122b-4447-a781-4bec122e756a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Frontend Interface">
+      <UniqueIdentifier>{b50ef03d-b934-4d44-b362-1bfcb62c35ee}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -137,16 +137,16 @@
       <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="WindowsRenderer.cpp">
-      <Filter>Windows Backend</Filter>
+      <Filter>Windows Frontend</Filter>
     </ClCompile>
     <ClCompile Include="WindowsBitmap.cpp">
-      <Filter>Windows Backend</Filter>
+      <Filter>Windows Frontend</Filter>
     </ClCompile>
     <ClCompile Include="WindowsWindow.cpp">
-      <Filter>Windows Backend</Filter>
+      <Filter>Windows Frontend</Filter>
     </ClCompile>
     <ClCompile Include="App.cpp">
-      <Filter>Backend Interface</Filter>
+      <Filter>Frontend Interface</Filter>
     </ClCompile>
     <ClCompile Include="NavigationBar.cpp">
       <Filter>Navigation</Filter>
@@ -256,25 +256,25 @@
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="WindowsRenderer.h">
-      <Filter>Windows Backend</Filter>
+      <Filter>Windows Frontend</Filter>
     </ClInclude>
     <ClInclude Include="Renderer.h">
-      <Filter>Backend Interface</Filter>
+      <Filter>Frontend Interface</Filter>
     </ClInclude>
     <ClInclude Include="WindowsBitmap.h">
-      <Filter>Windows Backend</Filter>
+      <Filter>Windows Frontend</Filter>
     </ClInclude>
     <ClInclude Include="Bitmap.h">
-      <Filter>Backend Interface</Filter>
+      <Filter>Frontend Interface</Filter>
     </ClInclude>
     <ClInclude Include="WindowsWindow.h">
-      <Filter>Windows Backend</Filter>
+      <Filter>Windows Frontend</Filter>
     </ClInclude>
     <ClInclude Include="App.h">
-      <Filter>Backend Interface</Filter>
+      <Filter>Frontend Interface</Filter>
     </ClInclude>
     <ClInclude Include="Window.h">
-      <Filter>Backend Interface</Filter>
+      <Filter>Frontend Interface</Filter>
     </ClInclude>
     <ClInclude Include="NavigationBar.h">
       <Filter>Navigation</Filter>

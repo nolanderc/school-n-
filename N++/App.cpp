@@ -23,22 +23,29 @@ App::~App()
 int App::run()
 {
 	while (window->isOpen() && this->running) {
+		// Hantera alla meddelanden ifån fönstret
 		window->pollMessages();
 
+
+		// Beräkna tiden sedan den förra uppdateringen
 		static std::chrono::time_point<std::chrono::high_resolution_clock> previousInstant = std::chrono::high_resolution_clock::now();
 
 		std::chrono::time_point<std::chrono::high_resolution_clock> now = std::chrono::high_resolution_clock::now();
 		std::chrono::nanoseconds dur =
 			std::chrono::duration_cast<std::chrono::nanoseconds>(now - previousInstant);
+		previousInstant = now;
 
 		double seconds = double(dur.count()) / 1e9;
 
 
+		// Uppdatera appen
 		this->update(seconds);
+
+		// Rita appen
 		this->renderApplication();
 
-		previousInstant = now;
 
+		// Om denna app har en underordnad app, kör den istället
 		while (this->child) {
 			this->window->setEventHandler(this->child);
 			int exitCode = this->child->run();
@@ -50,6 +57,7 @@ int App::run()
 		}
 	}
 
+	// Appen har stängts
 	this->closed();
 	return this->exitCode;
 }
@@ -59,11 +67,11 @@ void App::close(int exitCode)
 	this->running = false;
 	this->exitCode = exitCode;
 
-	if(this->parent)
-	{
+	// Om denna app är underordnad en annan, överlåt alla meddelanden till denna istället
+	// Annars, stäng fönstret
+	if(this->parent) {
 		this->window->setEventHandler(parent);
-	} else
-	{
+	} else {
 		this->window->close();
 	}
 }
