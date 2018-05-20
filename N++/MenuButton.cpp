@@ -17,18 +17,14 @@ void MenuButton::update(double deltaTime)
 	delta = this->selected ? deltaTime : -deltaTime;
 	this->selectionAmount = clamp(this->selectionAmount + 10 * delta, 0.0, 1.0);
 
-	double extraSize = easeInOut(this->highlightAmount, 0, -10) + easeInOut(this->selectionAmount, 0, -10);
+	double extraSize = easeInOut(this->highlightAmount, 0.0, -10.0) + easeInOut(this->selectionAmount, 0.0, -10.0);
 	this->actualRadius = this->radius + extraSize;
 }
 
 void MenuButton::render(Renderer& renderer)
 {
-	Color result;
-	result.r = easeInOut(this->highlightAmount, this->color.r, this->highlightColor.r);
-	result.g = easeInOut(this->highlightAmount, this->color.g, this->highlightColor.g);
-	result.b = easeInOut(this->highlightAmount, this->color.b, this->highlightColor.b);
-
-	renderer.setFillColor(result.r, result.g, result.b);
+	Color result = this->color.mix(this->highlightColor, easeInOut(this->highlightAmount, 0.0, 1.0));
+	renderer.setFillColor(result);
 	createHull(this->actualRadius).fill(renderer);
 	
 	renderer.setFillColor(255, 255, 255);

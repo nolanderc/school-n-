@@ -63,7 +63,7 @@ void TilePalette::selectTile(Vector2i coord)
 	{
 		int	index = coord.x + coord.y * this->columns;
 
-		if (index < this->tiles.size())
+		if (index < int(this->tiles.size()))
 		{
 			this->currentTile = &this->tiles[index];
 		}

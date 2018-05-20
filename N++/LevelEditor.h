@@ -10,18 +10,6 @@
 #include "NinjaGame.h"
 
 
-#define TILE_SIZE 32
-
-#define PALETTE_WIDTH_PIXELS 128
-#define PALETTE_WIDTH 2
-
-#define BUTTONS_HEIGHT_PIXELS 64
-
-const Vector2i LEVEL_SIZE = { 45, 25 };
-const Vector2i LEVEL_SIZE_PIXELS = { LEVEL_SIZE.x * TILE_SIZE, LEVEL_SIZE.y * TILE_SIZE };
-
-
-
 class LevelEditor : public App
 {
 	// Sökvägen till den nivå som ska redigeras
@@ -83,7 +71,7 @@ private:
 
 protected:
 
-	void update(float deltaTime) override;
+	void update(double deltaTime) override;
 
 	void draw(Renderer& renderer) override;
 

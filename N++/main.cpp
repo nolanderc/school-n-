@@ -26,7 +26,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev, LPSTR cmdLine, int nCmd
 	UNREFERENCED_PARAMETER(nCmdShow);
 	
 	// Skapa ett seed till rand
-	srand(time(nullptr));
+	srand(int(time(nullptr)));
 
 	// Skapa ett fönster som använder sig av WinAPI.
 	// Kunde lika gärna vara en klass som använder en konsol, ett hologram eller stjärnorna på himlen

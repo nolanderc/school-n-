@@ -12,7 +12,7 @@ Explosion::Explosion(Vector2 center, double size) :
 
 	this->lifetime = 0.4 * sqrt(size); // random(0.3 * sqrt(size), 0.3 * sqrt(size));
 
-	int flameCount = random(10 * size, 20 * size);
+	int flameCount = int(random(10 * size, 20 * size));
 	for (int i = 0; i < flameCount; i++)
 	{
 		Flame flame;

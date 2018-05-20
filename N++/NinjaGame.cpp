@@ -1,12 +1,16 @@
 #include "NinjaGame.h"
 
+#define TILE_SIZE 32
+
+#define ENERGY_BAR_HEIGHT_PIXELS 16
+
 
 NinjaGame::NinjaGame(App* parent, Level level, VictoryCallback* victoryCallback, std::string playerName) : 
 	App(parent), level(level), victoryCallback(victoryCallback), alive(true), playerName(playerName), navBar(0, 32, this)
 {
 	this->level.setVictoryCallback(this);
 
-	this->setWindowSize(level.getWidth() * TILE_SIZE, level.getHeight() * TILE_SIZE + ENERGY_BAR_HEIGHT_PIXELS + this->navBar.getHeight());
+	this->setWindowSize(level.getWidth() * TILE_SIZE, level.getHeight() * TILE_SIZE + ENERGY_BAR_HEIGHT_PIXELS + int(this->navBar.getHeight()));
 
 	this->navBar.setWidth(this->getWindowSize().x);
 
@@ -20,7 +24,7 @@ NinjaGame::~NinjaGame()
 	delete this->levelBitmap;
 }
 
-void NinjaGame::update(float dt)
+void NinjaGame::update(double dt)
 {
 	static double accumulator = 0;
 	accumulator += dt;

@@ -45,7 +45,7 @@ public:
 protected:
 
 	// Uppdatera appen varje 'tick'
-	virtual void update(float deltaTime) = 0;
+	virtual void update(double deltaTime) = 0;
 
 	// Rita om appen
 	virtual void draw(Renderer& renderer) = 0;

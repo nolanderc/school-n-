@@ -37,7 +37,7 @@ BoundingBoxi::BoundingBoxi() :
 }
 
 BoundingBoxi::BoundingBoxi(const BoundingBox& other) :
-	left(other.left), right(other.right), top(other.top), bottom(other.bottom)
+	left(int(other.left)), right(int(other.right)), top(int(other.top)), bottom(int(other.bottom))
 {
 }
 

@@ -33,9 +33,7 @@ class MenuButton
 
 
 	// Knappens färg när den är markerad och inte markerad
-	struct Color {
-		double r, g, b;
-	} color, highlightColor;
+	Color color, highlightColor;
 
 
 public:

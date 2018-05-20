@@ -9,13 +9,6 @@
 #include "NavigationBar.h"
 #include "ScrollUtil.h"
 
-#define TILE_SIZE 8
-#define TILE_MARGIN 5
-
-#define STAR_SIZE (2 * TILE_MARGIN)
-
-const Color BACKGROUND_COLOR = Color(64, 174, 12);
-
 
 class LevelSelector : public App, public VictoryCallback, public NavigationCallback
 {
@@ -102,7 +95,7 @@ public:
 
 protected:
 
-	void update(float deltaTime) override;
+	void update(double deltaTime) override;
 
 	void draw(Renderer& renderer) override;
 

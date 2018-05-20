@@ -34,10 +34,10 @@ bool extractRange(std::stringstream& stream, char start, char end, std::string& 
 
 std::string formatTime(double time)
 {
-	int tenths = floor(fmod(time, 1) * 10);
-	int hundredths = floor(fmod(time, 0.1) * 100);
+	int tenths = int(floor(fmod(time, 1) * 10));
+	int hundredths = int(floor(fmod(time, 0.1) * 100));
 	int minutes = int(time) / 60;
-	int seconds = floor(time) - minutes * 60;
+	int seconds = int(floor(time) - minutes * 60);
 
 	std::stringstream ss;
 	ss << minutes << " : " << seconds << "." << tenths << hundredths;

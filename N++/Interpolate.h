@@ -17,7 +17,7 @@ T clamp(T value, T min, T max) {
 // Omvandla en parameter i intervallet [0, 1] till intervallet [min, max]
 template<class T>
 T lerp(double value, T min, T max) {
-	return clamp(value, 0.0, 1.0) * (max - min) + min;
+	return T(clamp(value, 0.0, 1.0)) * (max - min) + min;
 }
 
 

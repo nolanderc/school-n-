@@ -402,8 +402,8 @@ void Ninja::Skeleton::stand(SkeletonData data)
 
 
 	double armAngles[2] = {
-		lerp(p, 330, 200),
-		lerp(p, 200, 330),
+		lerp(p, 330.0, 200.0),
+		lerp(p, 200.0, 330.0),
 	};
 
 

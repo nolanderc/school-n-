@@ -199,10 +199,10 @@ Vector2 * Level::overlap(const ConvexHull & other) const
 	double* smallestOverlap = nullptr;
 
 	BoundingBox bounds = other.getBoundingBox();
-	int left = floor(bounds.left);
-	int right = ceil(bounds.right);
-	int top = floor(bounds.top);
-	int bottom = ceil(bounds.bottom);
+	int left = int(floor(bounds.left));
+	int right = int(ceil(bounds.right));
+	int top = int(floor(bounds.top));
+	int bottom = int(ceil(bounds.bottom));
 
 	for (int x = left; x <= right; x++)
 	{
@@ -305,10 +305,10 @@ void Level::updateEntities(double deltaTime)
 
 		BoundingBox bounds = entity->getBoundingBox();
 
-		int left = floor(bounds.left);
-		int right = ceil(bounds.right);
-		int top = floor(bounds.top);
-		int bottom = ceil(bounds.bottom);
+		int left = int(floor(bounds.left));
+		int right = int(ceil(bounds.right));
+		int top = int(floor(bounds.top));
+		int bottom = int(ceil(bounds.bottom));
 
 		for (int x = left; x <= right; x++)
 		{
@@ -355,10 +355,10 @@ void Level::checkInteractions()
 
 	BoundingBox bounds = ninja->getConvexHull().getBoundingBox();
 
-	int left = floor(bounds.left);
-	int right = ceil(bounds.right);
-	int top = floor(bounds.top);
-	int bottom = ceil(bounds.bottom);
+	int left = int(floor(bounds.left));
+	int right = int(ceil(bounds.right));
+	int top = int(floor(bounds.top));
+	int bottom = int(ceil(bounds.bottom));
 
 	for (int x = left; x <= right; x++)
 	{

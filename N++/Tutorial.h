@@ -29,7 +29,8 @@ public:
 
 protected:
 
-	void update(float deltaTime) override;
+
+	void update(double deltaTime) override;
 
 	void draw(Renderer& renderer) override;
 

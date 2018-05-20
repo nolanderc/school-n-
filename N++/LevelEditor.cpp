@@ -1,5 +1,16 @@
 ﻿#include "LevelEditor.h"
 
+#define TILE_SIZE 32
+
+#define PALETTE_WIDTH_PIXELS 128
+#define PALETTE_WIDTH 2
+
+#define BUTTONS_HEIGHT_PIXELS 64
+
+const Vector2i LEVEL_SIZE = { 45, 25 };
+const Vector2i LEVEL_SIZE_PIXELS = { LEVEL_SIZE.x * TILE_SIZE, LEVEL_SIZE.y * TILE_SIZE };
+
+
 
 LevelEditor::LevelEditor(App* parent, std::string path) :
 	App(parent), path(path), level(path, HARD), grid(true), tilePalette(2, PALETTE_WIDTH_PIXELS / double(TILE_SIZE))
@@ -42,7 +53,7 @@ void LevelEditor::createLevelBorder()
 	}
 }
 
-void LevelEditor::update(float deltaTime)
+void LevelEditor::update(double deltaTime)
 {
 	int count = this->buttons.size();
 	for (int i = 0; i < count; i++)

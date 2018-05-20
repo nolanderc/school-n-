@@ -67,7 +67,11 @@ void WindowsRenderer::setColor(int r, int g, int b)
 void WindowsRenderer::setColor(Color color)
 {
 	color.clampColors();
-	this->setColor(color.r * 255, color.g * 255, color.b * 255);
+	this->setColor(
+		int(color.r * 255), 
+		int(color.g * 255), 
+		int(color.b * 255)
+	);
 }
 
 void WindowsRenderer::setFillColor(int r, int g, int b)
@@ -79,7 +83,11 @@ void WindowsRenderer::setFillColor(int r, int g, int b)
 void WindowsRenderer::setFillColor(Color color)
 {
 	color.clampColors();
-	this->setFillColor(color.r * 255, color.g * 255, color.b * 255);
+	this->setFillColor(
+		int(color.r * 255), 
+		int(color.g * 255), 
+		int(color.b * 255)
+	);
 }
 
 void WindowsRenderer::setLineStyle(LineStyle style)
@@ -104,7 +112,11 @@ void WindowsRenderer::setTextColor(int r, int g, int b)
 void WindowsRenderer::setTextColor(Color color)
 {
 	color.clampColors();
-	this->setTextColor(color.r * 255, color.g * 255, color.b * 255);
+	this->setTextColor(
+		int(color.r * 255),
+		int(color.g * 255),
+		int(color.b * 255)
+	);
 }
 
 void WindowsRenderer::setTextBackgroundColor(int r, int g, int b)
@@ -115,7 +127,11 @@ void WindowsRenderer::setTextBackgroundColor(int r, int g, int b)
 void WindowsRenderer::setTextBackgroundColor(Color color)
 {
 	color.clampColors();
-	this->setTextBackgroundColor(color.r * 255, color.g * 255, color.b * 255);
+	this->setTextBackgroundColor(
+		int(color.r * 255),
+		int(color.g * 255),
+		int(color.b * 255)
+	);
 }
 
 void WindowsRenderer::setLineWidthAbsolute(int width)
@@ -126,7 +142,7 @@ void WindowsRenderer::setLineWidthAbsolute(int width)
 
 void WindowsRenderer::setLineWidth(double width)
 {
-	this->currentLineWidth = round(this->coordScale * width);
+	this->currentLineWidth = int(round(this->coordScale * width));
 	this->switchPen(this->createCurrentPen());
 }
 
@@ -401,8 +417,8 @@ void WindowsRenderer::switchBrush(HBRUSH brush)
 Vector2i WindowsRenderer::transform(Vector2 coord)
 {
 	return Vector2i(
-		floor(coord.x * this->coordScale + this->coordOffset.x),
-		floor (coord.y * this->coordScale + this->coordOffset.y)
+		int(floor(coord.x * this->coordScale + this->coordOffset.x)),
+		int(floor(coord.y * this->coordScale + this->coordOffset.y))
 	);
 }
 

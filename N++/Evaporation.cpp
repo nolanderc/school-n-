@@ -3,7 +3,7 @@
 Evaporation::Evaporation(Vector2 center, double width, double height) :
 	LIFETIME(0.3)
 {
-	int streamCount = random(7, 20);
+	int streamCount = int(random(7, 20));
 	for (int i = 0; i < streamCount; i++) {
 		Stream stream;
 
@@ -57,9 +57,9 @@ void Evaporation::render(Renderer& renderer, Color background)
 		Vector2 end = stream.base - Vector2(0, stream.distance);
 		Vector2 start = end + Vector2(0, stream.distance < stream.length ? stream.distance : stream.length);
 
-		double rg = 200 + stream.brightness * 55;
-		double b = 255 * stream.brightness;
-		renderer.setColor(rg, rg, b);
+		double rg = 0.8 + stream.brightness * 0.2;
+		
+		renderer.setColor(Color(rg, rg, stream.brightness));
 		renderer.drawLine(start, end);
 	}
 }

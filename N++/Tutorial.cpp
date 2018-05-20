@@ -17,7 +17,7 @@ Tutorial::Tutorial(App* parent) :
 	this->navBar.addButton("Back", KEY_ESCAPE);
 }
 
-void Tutorial::update(float deltaTime)
+void Tutorial::update(double deltaTime)
 {
 	int animationCount = this->animations.size();
 	for (int i = 0; i < animationCount; i++)

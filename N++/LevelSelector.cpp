@@ -2,6 +2,15 @@
 #include "Interpolate.h"
 
 
+#define TILE_SIZE 8
+
+#define TILE_MARGIN 5
+
+#define STAR_SIZE (2 * TILE_MARGIN)
+
+const Color BACKGROUND_COLOR = Color(64, 174, 12);
+
+const Vector2i LEVEL_SIZE(45, 25);
 const Vector2i CONTENT_SIZE(1600, 800);
 
 
@@ -26,7 +35,7 @@ LevelSelector::LevelSelector(App* parent) :
 	this->checkCompletedLevels();
 
 
-	this->setWindowSize(CONTENT_SIZE.x, CONTENT_SIZE.y + this->navBar.getHeight());
+	this->setWindowSize(CONTENT_SIZE.x, CONTENT_SIZE.y + int(this->navBar.getHeight()));
 	double maxScroll = this->levels.empty() ? 0 : this->levels.back().container.bottom - CONTENT_SIZE.y + TILE_MARGIN * TILE_SIZE;
 
 	this->scrollHelper.setMaxScroll(maxScroll);
@@ -80,7 +89,7 @@ void LevelSelector::navigate(int id)
 	}
 }
 
-void LevelSelector::update(float deltaTime)
+void LevelSelector::update(double deltaTime)
 {
 	this->playButton.update(deltaTime);
 
@@ -601,7 +610,7 @@ void LevelSelector::drawLevels(Renderer& renderer)
 			renderer.drawBitmapTransparent(
 				thumbnail.levelBitmap,
 				BACKGROUND_COLOR,
-				thumbnail.container.left, thumbnail.container.top
+				int(thumbnail.container.left), int(thumbnail.container.top)
 			);
 		} else {
 			renderer.setFillColor(50, 50, 50);
@@ -788,7 +797,7 @@ void LevelSelector::changeSelected(int delta)
 
 void LevelSelector::playLevel(int levelIndex)
 {
-	if (0 <= levelIndex && levelIndex < this->levels.size())
+	if (0 <= levelIndex && levelIndex < int(this->levels.size()))
 	{
 		this->levels[levelIndex].level.setDifficulty(this->difficulty);
 

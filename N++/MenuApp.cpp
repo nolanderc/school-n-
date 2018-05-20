@@ -25,7 +25,7 @@ MenuApp::MenuApp(Window* window) :
 	this->setWindowSize(512, 512+256);
 	this->setWindowTitle("N++");
 
-	time = 0;
+	this->time = 0;
 
 	double ratio = sqrt(1 - 0.5*0.5);
 
@@ -35,7 +35,12 @@ MenuApp::MenuApp(Window* window) :
 	this->buttons.push_back(new ExitButton({ 256, 512 + 128 * ratio }, 64));
 }
 
-void MenuApp::update(float deltaTime)
+MenuApp::~MenuApp()
+{
+	deleteVectorElements(this->buttons);
+}
+
+void MenuApp::update(double deltaTime)
 {
 	this->time += deltaTime;
 
@@ -175,7 +180,7 @@ void MenuApp::mouseReleased(MouseButton button, int x, int y)
 
 void MenuApp::changeSelected(int index)
 {
-	if (0 <= index && index < this->buttons.size())
+	if (0 <= index && index < int(this->buttons.size()))
 	{
 		if (this->selectedButton)
 		{
@@ -233,7 +238,7 @@ void MenuApp::drawLogo(Renderer& renderer, Color color)
 	double amount = normalize(fmod(this->time, this->SPIN_DURATION), 0.0, this->SPIN_DURATION);
 	amount = pow(amount, 8);
 
-	double angle = easeInOut(amount, 0, 1800) / 10.0;
+	double angle = easeInOut(amount, 0.0, 1800.0) / 10.0;
 
 	// N
 	renderer.fillPolygon({

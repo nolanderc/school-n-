@@ -7,11 +7,6 @@
 #include "Ninja.h"
 #include "NavigationBar.h"
 
-#define TILE_SIZE 32
-
-#define ENERGY_BAR_HEIGHT_PIXELS 16
-
-
 
 enum NinjaGameExitCode {
 	NINJA_GAME_NOTHING,
@@ -52,7 +47,7 @@ class NinjaGame: public App, public VictoryCallback, public NavigationCallback
 	std::string playerName;
 
 
-
+	// Koder för alla typer av navigation
 	struct Navigation
 	{
 		int back;
@@ -70,7 +65,7 @@ public:
 
 	~NinjaGame();
 
-	void update(float dt) override;
+	void update(double dt) override;
 
 	void draw(Renderer & renderer) override;
 
