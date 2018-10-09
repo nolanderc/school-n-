@@ -1,4 +1,3 @@
-Se till så att spelet byggs med RELEASE och inte DEBUG.
-Spelet riskerar att upplevas långsamt annars.
+# N++
 
-Det är viktigt att katalogen "levels" finns med intill programmet.
+My final project for the highschool programming course.
